@@ -4,6 +4,8 @@ from copy import deepcopy
 import importlib
 import json
 from pathlib import Path
+import subprocess
+import sys
 
 import pytest
 
@@ -246,3 +248,40 @@ def test_pack_rejects_a_missing_materialized_card(tmp_path: Path) -> None:
         _module().resolve_knowledge_pack(
             _selection(), sources=sources, root=tmp_path
         )
+
+
+def test_cli_audit_search_and_pack_are_machine_readable() -> None:
+    audit = subprocess.run(
+        [sys.executable, "scripts/knowledge-vault.py", "audit"],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=True,
+    )
+    assert json.loads(audit.stdout) == {"ok": True, "findings": []}
+
+    search = subprocess.run(
+        [sys.executable, "scripts/knowledge-vault.py", "search", "photo_to_motion"],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=True,
+    )
+    assert json.loads(search.stdout)[0]["entity_type"] == "technique"
+
+    pack = subprocess.run(
+        [
+            sys.executable,
+            "scripts/knowledge-vault.py",
+            "pack",
+            "--selection",
+            "tests/fixtures/youtube_factory/technique_selection.valid.json",
+        ],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=True,
+    )
+    payload = json.loads(pack.stdout)
+    assert len(payload["technique_cards"]) == 5
+    assert len(payload["skill_cards"]) <= 7

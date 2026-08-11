@@ -13,6 +13,7 @@ direct the visual language; OpenMontage still owns state, gates, execution, and 
 - Optional reference-video and source-media analyses
 - `config/visual-grammars/HERITAGE_FORGE.yaml`
 - `config/visual-technique-registry.yaml`
+- Audited `knowledge/` vault and the shot-specific bounded knowledge pack
 - Active style playbook, normally `styles/heritage-forge.yaml`
 
 ## Required Outputs
@@ -35,6 +36,35 @@ direct the visual language; OpenMontage still owns state, gates, execution, and 
 6. Assign a fallback route. Provider choice must never be the story logic.
 7. Bind exact overlays to verified claim IDs and exact literals.
 8. Mark AI reconstruction and disclosure placement at plan time.
+
+## Knowledge Vault Gate
+
+The Obsidian vault makes all audited techniques, skills, tools, sources, models, and
+TopView functions searchable. It does not make all of them active. Before selecting
+techniques, verify that its generated cards still match the canonical registries:
+
+```bash
+.venv/bin/python scripts/knowledge-vault.py audit
+```
+
+Stop visual planning if the audit reports drift, a missing card, a broken link, or
+unsafe Obsidian state. Search may expose `ON_DEMAND`, `REFERENCE_ONLY`, `BLOCKED`, and
+Reddit `ANECDOTAL_SIGNAL` records for discovery, but those labels remain binding.
+
+After `visual-techniques.py select` produces the reviewed selector JSON, resolve the
+small production reading set:
+
+```bash
+.venv/bin/python scripts/knowledge-vault.py pack \
+  --selection projects/<project_id>/artifacts/<selection>.json \
+  --output projects/<project_id>/artifacts/<knowledge-pack>.json
+```
+
+Read only the files listed in `load_order`. The pack must contain exactly **3–7**
+selected technique cards and no more than seven related skill, tool, or source cards
+per family. Respect every recorded exclusion. Do not replace a missing or excluded
+record with a similar provider-specific method. The pack cannot call a provider,
+change OpenMontage state, or complete a Human Gate.
 
 ## Selective Technique Routing
 

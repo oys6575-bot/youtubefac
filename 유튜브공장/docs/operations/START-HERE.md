@@ -66,6 +66,23 @@ bangjja-pilot 프로젝트의 research 단계부터 시작해.
 TopView는 API나 자동 브라우저 조작 없이 수동 작업지시서만 만들어.
 ```
 
+## Obsidian 지식창고 열기
+
+Obsidian에서 **Open folder as vault**를 누르고 이 프로젝트 안의 `knowledge/`
+폴더를 선택한다. 첫 화면은 `00-START-HERE.md`이며, 촬영법·편집법·전환·타이포,
+스킬, 도구, GitHub/Hugging Face 자료, Reddit 참고 신호, 로컬 모델, TopView 기능을
+각 지도에서 찾을 수 있다.
+
+- 카드의 자동 생성 본문은 직접 고치지 않는다.
+- 실제 제작에서 얻은 메모는 각 카드의 `USER-NOTES` 두 표시 사이에 적는다.
+- 아직 분류하지 않은 메모는 `10-INBOX/`에 둔다.
+- 제작 시작 전 `.venv/bin/python scripts/knowledge-vault.py audit`를 실행한다.
+- 검색 결과 전체를 장면에 넣지 말고, 승인된 선택 JSON으로 `pack`을 만들어
+  `load_order`에 적힌 카드만 해당 장면의 지침으로 읽는다.
+
+이 지식창고는 오프라인 검색·지시 계층이다. OpenMontage의 상태, Human Gate,
+TopView 수동 운용 원칙, 유료 실행 승인을 대신하지 않는다.
+
 ## 실제 제작 순서
 
 1. `research`에서 참고 영상, 출처, 저작권 상태, 사실을 조사한다.

@@ -72,6 +72,39 @@ def test_visual_plan_stage_is_wired_to_the_selective_technique_catalog() -> None
         assert required_text in director
 
 
+def test_visual_plan_stage_is_wired_to_the_audited_knowledge_vault() -> None:
+    manifest = load_pipeline("youtube-factory")
+    knowledge = manifest["metadata"]["knowledge_vault"]
+    visual_stage = next(stage for stage in manifest["stages"] if stage["name"] == "visual_plan")
+
+    assert knowledge["root"] == "knowledge"
+    assert knowledge["audit_before_selection"] is True
+    assert knowledge["pack_after_selection"] is True
+    assert knowledge["per_entity_budget"] == 7
+    assert knowledge["technique_budget"] == {"minimum": 3, "maximum": 7}
+    assert manifest["metadata"]["topview_integration_mode"] == "manual_ui"
+    assert "Knowledge-vault audit passes before technique selection" in visual_stage[
+        "review_focus"
+    ]
+    assert any(
+        "Bounded knowledge pack is recorded" in item
+        for item in visual_stage["success_criteria"]
+    )
+
+    director = (
+        ROOT / "skills/pipelines/youtube-factory/mk-visual-director.md"
+    ).read_text(encoding="utf-8")
+    for required_text in (
+        "knowledge-vault.py audit",
+        "knowledge-vault.py pack",
+        "load_order",
+        "3–7",
+        "Human Gate",
+        "TopView",
+    ):
+        assert required_text in director
+
+
 def test_pipeline_keeps_all_required_human_gates() -> None:
     manifest = load_pipeline("youtube-factory")
     stages = {stage["name"]: stage for stage in manifest["stages"]}

@@ -42,6 +42,20 @@ metadata:
     maximum: 7
     provider_isolation_required: true
     on_demand_requires_explicit_selection: true
+  knowledge_vault:
+    root: knowledge
+    start_page: knowledge/00-START-HERE.md
+    catalog: knowledge/.factory-catalog.json
+    audit_before_selection: true
+    pack_after_selection: true
+    technique_budget:
+      minimum: 3
+      maximum: 7
+    per_entity_budget: 7
+    authority: canonical_registries
+    network_access: false
+    provider_execution: false
+    human_gate_authority: false
   topview_integration_mode: manual_ui
   network_publish_enabled: false
   router_modes:
@@ -187,6 +201,7 @@ stages:
     checkpoint_required: true
     human_approval_default: false
     review_focus:
+      - Knowledge-vault audit passes before technique selection
       - Meaning and sequence are resolved before camera decoration
       - Selected technique IDs are recorded per sequence and per shot
       - No more than seven relevant techniques are active in one sequence
@@ -196,6 +211,7 @@ stages:
       - AI content and disclosure fields are internally consistent
     success_criteria:
       - VisualPlan passes schema and semantic validation
+      - Bounded knowledge pack is recorded with its load order and exclusions
       - Provider-specific technique exclusions are recorded
       - Compiled scene_plan passes the OpenMontage schema
 
