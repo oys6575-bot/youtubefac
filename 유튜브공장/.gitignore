@@ -103,6 +103,7 @@ venv/
 .cache/
 .remotion/
 .superpowers/
+.factory-cache/creative-sources/
 tmp/
 remotion-composer/node_modules/
 projects/*

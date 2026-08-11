@@ -29,6 +29,29 @@
         "end_seconds": 7
       },
       "evidence_ids": ["SRC_ARCHIVE", "CLAIM_DATE"],
+      "technique_selection": {
+        "registry_version": "2026-08-12",
+        "query_intents": [
+          "evidence_first",
+          "exact_fact",
+          "photo_to_motion",
+          "semantic_transition"
+        ],
+        "provider_scopes": ["GENERIC", "TOPVIEW_MANUAL"],
+        "render_runtimes": ["HYPERFRAMES"],
+        "include_on_demand": false,
+        "selected_ids": [
+          "direction.sequence_meaning_first",
+          "camera.variable_velocity_push",
+          "transition.semantic_match_cut",
+          "typography.exact_fact_overlay"
+        ],
+        "rejected_provider_specific_ids": [
+          "provider.higgsfield.camera_preset",
+          "provider.seedance.multishot_continuity"
+        ],
+        "selection_reason": "증거에서 재현으로 넘어가는 의미를 유지하면서 정확한 날짜와 절제된 움직임을 분리해 설계한다."
+      },
       "selected_grammar": "HERITAGE_FORGE",
       "pacing_profile": "steady",
       "entry_transition": {
@@ -49,6 +72,10 @@
           "coverage_role": "evidence_insert",
           "factual_precision": "exact",
           "evidence_ids": ["SRC_ARCHIVE", "CLAIM_DATE"],
+          "technique_ids": [
+            "typography.exact_fact_overlay",
+            "transition.semantic_match_cut"
+          ],
           "provider_route": {
             "mode": "HYPERFRAMES",
             "cost_tier": "zero"
@@ -106,6 +133,11 @@
           "coverage_role": "hero",
           "factual_precision": "medium",
           "evidence_ids": ["SRC_ARCHIVE", "CLAIM_DATE"],
+          "technique_ids": [
+            "direction.sequence_meaning_first",
+            "camera.variable_velocity_push",
+            "transition.semantic_match_cut"
+          ],
           "provider_route": {
             "mode": "TOPVIEW_HANDOFF",
             "model_requirements": ["image-to-video", "reference-consistency"],

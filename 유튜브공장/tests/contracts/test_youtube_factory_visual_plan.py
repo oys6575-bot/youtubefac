@@ -47,6 +47,10 @@ def test_factory_schemas_compile_and_accept_valid_fixture() -> None:
         visual_schema, format_checker=FormatChecker()
     ).validate(_load("visual_plan.valid.json"))
 
+    sequence = _load("visual_plan.valid.json")["sequences"][0]
+    assert 3 <= len(sequence["technique_selection"]["selected_ids"]) <= 7
+    assert all(shot["technique_ids"] for shot in sequence["shots"])
+
 
 def test_route_contract_is_manual_topview_and_has_no_api_route() -> None:
     schema = json.loads(
@@ -89,6 +93,35 @@ def test_ai_route_rejects_contains_ai_and_disclosure_contradictions() -> None:
 
     assert "SHOT_002: AI route requires contains_ai=true" in errors
     assert "SHOT_002: AI content requires disclosure" in errors
+
+
+def test_shot_techniques_must_be_selected_at_sequence_level() -> None:
+    plan = _load("visual_plan.valid.json")
+    plan["sequences"][0]["shots"][0]["technique_ids"].append(
+        "camera.static_evidence_hold"
+    )
+
+    errors = _validator_module().validate_visual_plan(
+        plan, _load("evidence_registry.valid.json")
+    )
+
+    assert (
+        "SHOT_001: technique_id camera.static_evidence_hold is not selected for SEQ_INTRO"
+        in errors
+    )
+
+
+def test_blocked_or_unknown_techniques_cannot_enter_visual_plan() -> None:
+    plan = _load("visual_plan.valid.json")
+    selection = plan["sequences"][0]["technique_selection"]
+    selection["selected_ids"][0] = "research.hf.av_skills"
+    plan["sequences"][0]["shots"][0]["technique_ids"][0] = "research.hf.av_skills"
+
+    errors = _validator_module().validate_visual_plan(
+        plan, _load("evidence_registry.valid.json")
+    )
+
+    assert "SEQ_INTRO: technique research.hf.av_skills has forbidden status BLOCKED" in errors
 
 
 def test_bridge_preserves_order_timing_and_route_metadata() -> None:

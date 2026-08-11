@@ -38,6 +38,40 @@ def test_pipeline_stage_order_places_manual_work_between_budget_and_asset_gate()
     assert manifest["extensions"]["custom_tools"] is True
 
 
+def test_visual_plan_stage_is_wired_to_the_selective_technique_catalog() -> None:
+    manifest = load_pipeline("youtube-factory")
+    visual_stage = next(stage for stage in manifest["stages"] if stage["name"] == "visual_plan")
+
+    assert manifest["metadata"]["visual_technique_registry"] == (
+        "config/visual-technique-registry.yaml"
+    )
+    assert manifest["metadata"]["visual_technique_selection"] == {
+        "minimum_recommended": 3,
+        "maximum": 7,
+        "provider_isolation_required": True,
+        "on_demand_requires_explicit_selection": True,
+    }
+    assert "Selected technique IDs are recorded per sequence and per shot" in visual_stage[
+        "review_focus"
+    ]
+    assert "Provider-specific technique exclusions are recorded" in visual_stage[
+        "success_criteria"
+    ]
+
+    director = (
+        ROOT / "skills/pipelines/youtube-factory/mk-visual-director.md"
+    ).read_text(encoding="utf-8")
+    for required_text in (
+        "visual-technique-registry.yaml",
+        "3–7",
+        "provider-specific",
+        "selected_ids",
+        "technique_ids",
+        "visual-techniques.py select",
+    ):
+        assert required_text in director
+
+
 def test_pipeline_keeps_all_required_human_gates() -> None:
     manifest = load_pipeline("youtube-factory")
     stages = {stage["name"]: stage for stage in manifest["stages"]}

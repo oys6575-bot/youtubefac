@@ -8,6 +8,8 @@ from typing import Any
 
 from jsonschema import Draft202012Validator, FormatChecker
 
+from lib.visual_technique_registry import TechniqueRegistryError, load_registry
+
 
 ROOT = Path(__file__).resolve().parents[1]
 VISUAL_PLAN_SCHEMA = ROOT / "schemas" / "artifacts" / "visual_plan.schema.json"
@@ -52,6 +54,17 @@ def validate_visual_plan(
     }
     evidence_ids = set(sources) | set(claims)
 
+    try:
+        technique_registry = load_registry()
+    except TechniqueRegistryError as exc:
+        technique_registry = None
+        technique_records: dict[str, dict[str, Any]] = {}
+        errors.append(f"visual technique registry invalid: {exc}")
+    else:
+        technique_records = {
+            item["id"]: item for item in technique_registry["techniques"]
+        }
+
     if plan.get("project_id") != evidence_registry.get("project_id"):
         errors.append("plan project_id must match evidence registry project_id")
     if plan.get("evidence_lock", {}).get("registry_version") != evidence_registry.get(
@@ -79,6 +92,67 @@ def validate_visual_plan(
             if evidence_id not in evidence_ids:
                 errors.append(f"{sequence_id}: unknown evidence_id {evidence_id}")
 
+        technique_selection = sequence.get("technique_selection", {})
+        selected_technique_ids = set(technique_selection.get("selected_ids", []))
+        if technique_registry is not None:
+            registry_version = technique_selection.get("registry_version")
+            if registry_version != technique_registry.get("catalog_version"):
+                errors.append(
+                    f"{sequence_id}: technique registry_version {registry_version!r} "
+                    f"does not match catalog {technique_registry.get('catalog_version')!r}"
+                )
+
+            include_on_demand = technique_selection.get("include_on_demand") is True
+            sequence_provider_scopes = set(
+                technique_selection.get("provider_scopes", [])
+            )
+            sequence_render_runtimes = set(
+                technique_selection.get("render_runtimes", [])
+            )
+            for technique_id in sorted(selected_technique_ids):
+                record = technique_records.get(technique_id)
+                if record is None:
+                    errors.append(f"{sequence_id}: unknown technique {technique_id}")
+                    continue
+                status = record["status"]
+                if status in {"REFERENCE_ONLY", "BLOCKED"}:
+                    errors.append(
+                        f"{sequence_id}: technique {technique_id} has forbidden status {status}"
+                    )
+                elif status == "ON_DEMAND" and not include_on_demand:
+                    errors.append(
+                        f"{sequence_id}: technique {technique_id} requires include_on_demand=true"
+                    )
+                if not record["selectable"]:
+                    errors.append(f"{sequence_id}: technique {technique_id} is not selectable")
+
+                record_provider_scopes = set(record["provider_scopes"])
+                if (
+                    "GENERIC" not in record_provider_scopes
+                    and not record_provider_scopes & sequence_provider_scopes
+                ):
+                    errors.append(
+                        f"{sequence_id}: technique {technique_id} does not match provider scopes"
+                    )
+
+                record_runtimes = set(record["render_runtimes"])
+                if (
+                    "ANY" not in record_runtimes
+                    and "ANY" not in sequence_render_runtimes
+                    and not record_runtimes & sequence_render_runtimes
+                ):
+                    errors.append(
+                        f"{sequence_id}: technique {technique_id} does not match render runtimes"
+                    )
+
+            for rejected_id in sorted(
+                technique_selection.get("rejected_provider_specific_ids", [])
+            ):
+                if rejected_id not in technique_records:
+                    errors.append(
+                        f"{sequence_id}: unknown rejected provider technique {rejected_id}"
+                    )
+
         planned_duration = sum(
             float(shot.get("duration_seconds", 0)) for shot in sequence.get("shots", [])
         )
@@ -98,6 +172,13 @@ def validate_visual_plan(
             for evidence_id in shot.get("evidence_ids", []):
                 if evidence_id not in evidence_ids:
                     errors.append(f"{shot_id}: unknown evidence_id {evidence_id}")
+
+            for technique_id in shot.get("technique_ids", []):
+                if technique_id not in selected_technique_ids:
+                    errors.append(
+                        f"{shot_id}: technique_id {technique_id} is not selected for "
+                        f"{sequence_id}"
+                    )
 
             route = shot.get("provider_route", {}).get("mode")
             representation = shot.get("representation")
@@ -158,4 +239,3 @@ def assert_valid_visual_plan(
     errors = validate_visual_plan(plan, evidence_registry)
     if errors:
         raise ValueError("Invalid VisualPlan:\n- " + "\n- ".join(errors))
-

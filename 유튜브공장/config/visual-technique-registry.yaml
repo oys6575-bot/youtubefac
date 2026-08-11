@@ -1,0 +1,774 @@
+schema_version: "1.0.0"
+catalog_version: "2026-08-12"
+source_manifest: vendor/creative-sources/manifest.json
+
+policy:
+  default_limit: 7
+  minimum_recommended: 3
+  maximum_limit: 7
+  normal_statuses: [ACTIVE]
+  opt_in_statuses: [ON_DEMAND]
+  never_select_statuses: [REFERENCE_ONLY, BLOCKED]
+
+techniques:
+  - id: direction.sequence_meaning_first
+    name: Sequence meaning before decoration
+    description: Resolve the viewer question, dramatic turn, proof, and exit before choosing camera ornament.
+    category: direction
+    status: ACTIVE
+    selectable: true
+    priority: 100
+    phases: [visual_plan, animatic]
+    intents: [sequence_meaning, evidence_first, narrative_function]
+    tags: [documentary, sequence, proof, story]
+    provider_scopes: [GENERIC]
+    render_runtimes: [ANY]
+    source: {type: local_skill, label: Motion Art Direction, license: PROJECT_LOCAL, path: .agents/skills/motion-art-direction/SKILL.md}
+    activation: {default_allowed: true, requires_human_opt_in: false, requires_license_review: false, requires_network: false}
+    directives:
+      - Write the sequence question and exit condition before listing shots.
+      - Reject a beautiful shot that does not add fact, feeling, or causality.
+
+  - id: direction.shot_motivation
+    name: Motivated shot design
+    description: Give each shot one narrative function and let composition follow that function.
+    category: direction
+    status: ACTIVE
+    selectable: true
+    priority: 96
+    phases: [visual_plan, animatic]
+    intents: [shot_motivation, narrative_function, composition]
+    tags: [shot_design, hierarchy, documentary]
+    provider_scopes: [GENERIC]
+    render_runtimes: [ANY]
+    source: {type: local_skill, label: Shot Composition, license: PROJECT_LOCAL, path: .agents/skills/shot-composition/SKILL.md}
+    activation: {default_allowed: true, requires_human_opt_in: false, requires_license_review: false, requires_network: false}
+    directives:
+      - State what the viewer learns or feels before naming lens, angle, or motion.
+      - Keep one dominant visual idea per shot.
+
+  - id: continuity.process_geography
+    name: Establish process geography
+    description: Show the relationship among maker, tool, material, and workspace before fragmenting into details.
+    category: continuity
+    status: ACTIVE
+    selectable: true
+    priority: 98
+    phases: [visual_plan, production, edit]
+    intents: [process_geography, spatial_orientation, craft_process]
+    tags: [wide_shot, geography, process, continuity]
+    provider_scopes: [GENERIC]
+    render_runtimes: [ANY]
+    source: {type: local_skill, label: Shot Composition, license: PROJECT_LOCAL, path: .agents/skills/shot-composition/SKILL.md}
+    activation: {default_allowed: true, requires_human_opt_in: false, requires_license_review: false, requires_network: false}
+    directives:
+      - Use an establishing relationship shot before a run of macros.
+      - Re-establish geography after a meaningful location or process-axis change.
+
+  - id: continuity.screen_direction
+    name: Preserve action and eye-line direction
+    description: Maintain tool travel, gaze, material flow, and screen direction unless the cut deliberately disrupts them.
+    category: continuity
+    status: ACTIVE
+    selectable: true
+    priority: 91
+    phases: [visual_plan, production, edit]
+    intents: [screen_direction, action_continuity, eye_line]
+    tags: [continuity, match_action, direction]
+    provider_scopes: [GENERIC]
+    render_runtimes: [ANY]
+    source: {type: local_skill, label: Shot Composition, license: PROJECT_LOCAL, path: .agents/skills/shot-composition/references/camera-and-grids.md}
+    activation: {default_allowed: true, requires_human_opt_in: false, requires_license_review: false, requires_network: false}
+    directives:
+      - Record the dominant vector for each process action.
+      - Cross the axis only with an orienting shot or a deliberate disorientation beat.
+
+  - id: camera.material_macro_parallax
+    name: Material macro with restrained parallax
+    description: Turn a still material detail into depth by separating foreground, subject plane, and background motion.
+    category: camera
+    status: ACTIVE
+    selectable: true
+    priority: 97
+    phases: [visual_plan, animatic, production, compose]
+    intents: [material_macro, photo_to_motion, tactile_detail]
+    tags: [macro, parallax, still_image, texture, craft]
+    provider_scopes: [GENERIC]
+    render_runtimes: [HYPERFRAMES, REMOTION]
+    source: {type: local_skill, label: Motion Art Direction, license: PROJECT_LOCAL, path: .agents/skills/motion-art-direction/references/direction-playbook.md}
+    activation: {default_allowed: true, requires_human_opt_in: false, requires_license_review: false, requires_network: false}
+    directives:
+      - Move planes at different rates and keep the material fact readable.
+      - Limit a macro to one tactile fact rather than decorative closeness.
+
+  - id: camera.variable_velocity_push
+    name: Variable-velocity camera push
+    description: Accelerate through low-information space and decelerate into the factual or emotional focal point.
+    category: camera
+    status: ACTIVE
+    selectable: true
+    priority: 99
+    phases: [visual_plan, animatic, production, compose]
+    intents: [variable_camera_speed, photo_to_motion, camera_motion, attention_landing]
+    tags: [speed_ramp, push_in, slow_fast_slow, easing]
+    provider_scopes: [GENERIC]
+    render_runtimes: [HYPERFRAMES, REMOTION]
+    source: {type: local_skill, label: HyperFrames nudge curve, license: Apache-2.0, path: .agents/skills/hyperframes-animation/rules/nudge-curve.md}
+    activation: {default_allowed: true, requires_human_opt_in: false, requires_license_review: false, requires_network: false}
+    directives:
+      - Put the fastest motion between information beats, not across text that must be read.
+      - Let the landing hold long enough for recognition.
+
+  - id: camera.slow_observational_push
+    name: Slow observational push
+    description: Use a restrained push when the viewer needs time to inspect labor, texture, or evidence.
+    category: camera
+    status: ACTIVE
+    selectable: true
+    priority: 82
+    phases: [visual_plan, animatic, production]
+    intents: [observational_camera, contemplation, evidence_hold]
+    tags: [slow_push, documentary, inspection]
+    provider_scopes: [GENERIC]
+    render_runtimes: [ANY]
+    source: {type: project_doc, label: Heritage Forge grammar, license: PROJECT_LOCAL, path: config/visual-grammars/HERITAGE_FORGE.yaml}
+    activation: {default_allowed: true, requires_human_opt_in: false, requires_license_review: false, requires_network: false}
+    directives:
+      - Start from a composed readable frame and move only enough to focus attention.
+      - Do not repeat the same slow push across consecutive shots.
+
+  - id: camera.static_evidence_hold
+    name: Static evidence hold
+    description: Stop camera motion when movement would compete with verification of a document, artifact, date, or measurement.
+    category: camera
+    status: ACTIVE
+    selectable: true
+    priority: 94
+    phases: [visual_plan, animatic, edit]
+    intents: [evidence_hold, exact_fact, document_reading]
+    tags: [static, evidence, readability, proof]
+    provider_scopes: [GENERIC]
+    render_runtimes: [ANY]
+    source: {type: project_doc, label: Heritage Forge grammar, license: PROJECT_LOCAL, path: config/visual-grammars/HERITAGE_FORGE.yaml}
+    activation: {default_allowed: true, requires_human_opt_in: false, requires_license_review: false, requires_network: false}
+    directives:
+      - Hold the frame for the actual reading task, not for a generic cinematic pause.
+      - Cut directly into evidence when narration makes a verifiable claim.
+
+  - id: camera.rack_focus
+    name: Two-plane rack focus
+    description: Shift sharpness between authored depth planes to redirect attention without moving the whole frame.
+    category: camera
+    status: ON_DEMAND
+    selectable: true
+    priority: 70
+    phases: [visual_plan, compose]
+    intents: [rack_focus, depth_shift, attention_shift]
+    tags: [blur, depth_of_field, focus]
+    provider_scopes: [GENERIC]
+    render_runtimes: [HYPERFRAMES]
+    source: {type: local_skill, label: HyperFrames depth-of-field rule, license: Apache-2.0, path: .agents/skills/hyperframes-animation/rules/depth-of-field-blur.md}
+    activation: {default_allowed: false, requires_human_opt_in: true, requires_license_review: false, requires_network: false, note: Use only when the shot has authored depth planes.}
+    directives:
+      - Keep one plane genuinely sharp at all times.
+      - Use one motivated focus transfer rather than continuous focus hunting.
+
+  - id: transition.semantic_match_cut
+    name: Semantic match cut
+    description: Join shots through a shared shape, gesture, material state, light vector, or action meaning.
+    category: transition
+    status: ACTIVE
+    selectable: true
+    priority: 99
+    phases: [visual_plan, animatic, edit, compose]
+    intents: [semantic_transition, match_cut, visual_bridge]
+    tags: [shape_match, gesture_match, material_match, meaning]
+    provider_scopes: [GENERIC]
+    render_runtimes: [ANY]
+    source: {type: local_skill, label: Beat Sync Editing, license: PROJECT_LOCAL, path: .agents/skills/beat-sync-editing/references/editing-techniques.md}
+    activation: {default_allowed: true, requires_human_opt_in: false, requires_license_review: false, requires_network: false}
+    directives:
+      - Name the shared visual or causal property before approving the cut.
+      - Reject a morph that falsely implies factual continuity.
+
+  - id: transition.velocity_matched
+    name: Velocity-matched handoff
+    description: Meet an accelerating exit with a decelerating entrance so two shots read as one continuous move.
+    category: transition
+    status: ACTIVE
+    selectable: true
+    priority: 90
+    phases: [animatic, edit, compose]
+    intents: [velocity_match, continuous_camera, whip_transition, camera_motion]
+    tags: [speed_match, blur, directional_cut]
+    provider_scopes: [GENERIC]
+    render_runtimes: [HYPERFRAMES, REMOTION]
+    source: {type: local_skill, label: HyperFrames beat direction, license: Apache-2.0, path: .agents/skills/hyperframes-creative/references/beat-direction.md}
+    activation: {default_allowed: true, requires_human_opt_in: false, requires_license_review: false, requires_network: false}
+    directives:
+      - Match exit and entry direction and approximate peak velocity.
+      - Resolve blur immediately at the new focal point.
+
+  - id: transition.sound_bridge
+    name: Sound bridge across picture cuts
+    description: Carry a process sound, ambience, or narration edge across a visual boundary to preserve continuity or anticipation.
+    category: transition
+    status: ACTIVE
+    selectable: true
+    priority: 88
+    phases: [visual_plan, animatic, edit]
+    intents: [sound_bridge, audio_continuity, anticipation]
+    tags: [j_cut, l_cut, ambience, transition]
+    provider_scopes: [GENERIC]
+    render_runtimes: [ANY]
+    source: {type: project_doc, label: Sound Design, license: PROJECT_LOCAL, path: skills/creative/sound-design.md}
+    activation: {default_allowed: true, requires_human_opt_in: false, requires_license_review: false, requires_network: false}
+    directives:
+      - Start the next sound early to create anticipation or let the prior sound decay to preserve consequence.
+      - Keep documentary source sound distinct from designed effects.
+
+  - id: transition.causal_hard_cut
+    name: Causal hard cut
+    description: Cut without decoration when the next image is the direct consequence, proof, or contradiction of the current statement.
+    category: transition
+    status: ACTIVE
+    selectable: true
+    priority: 93
+    phases: [visual_plan, animatic, edit]
+    intents: [causal_cut, proof_cut, disruption]
+    tags: [hard_cut, causality, evidence]
+    provider_scopes: [GENERIC]
+    render_runtimes: [ANY]
+    source: {type: local_skill, label: Beat Sync Editing, license: PROJECT_LOCAL, path: .agents/skills/beat-sync-editing/SKILL.md}
+    activation: {default_allowed: true, requires_human_opt_in: false, requires_license_review: false, requires_network: false}
+    directives:
+      - Prefer the cut itself when the idea supplies enough force.
+      - Use a hard cut to change register, reveal proof, or interrupt complacency.
+
+  - id: transition.material_state_dissolve
+    name: Material-state dissolve
+    description: Use a restrained dissolve only for elapsed time, memory, or a visible material transformation.
+    category: transition
+    status: ACTIVE
+    selectable: true
+    priority: 77
+    phases: [visual_plan, animatic, edit]
+    intents: [material_transformation, elapsed_time, memory]
+    tags: [dissolve, patina, heat, time]
+    provider_scopes: [GENERIC]
+    render_runtimes: [ANY]
+    source: {type: project_doc, label: Heritage Forge grammar, license: PROJECT_LOCAL, path: config/visual-grammars/HERITAGE_FORGE.yaml}
+    activation: {default_allowed: true, requires_human_opt_in: false, requires_license_review: false, requires_network: false}
+    directives:
+      - Align the material feature that survives the dissolve.
+      - Do not use long dissolves as a universal polish layer.
+
+  - id: editing.radio_paper_cut
+    name: Story-first radio and paper edit
+    description: Lock the argument and emotional order with narration and evidence before filling coverage gaps with B-roll.
+    category: editing
+    status: ACTIVE
+    selectable: true
+    priority: 100
+    phases: [script, visual_plan, animatic, edit]
+    intents: [radio_edit, paper_edit, story_structure]
+    tags: [documentary, a_roll, story_lock]
+    provider_scopes: [GENERIC]
+    render_runtimes: [ANY]
+    source: {type: project_doc, label: Long-form editing, license: PROJECT_LOCAL, path: skills/creative/long-form.md}
+    activation: {default_allowed: true, requires_human_opt_in: false, requires_license_review: false, requires_network: false}
+    directives:
+      - Build the story without decorative coverage first.
+      - Treat missing visual proof as a story hole, not an excuse for generic B-roll.
+
+  - id: editing.tension_release_pacing
+    name: Tension and release pacing
+    description: Alternate compression, acceleration, stillness, and payoff instead of maintaining one smooth tempo.
+    category: editing
+    status: ACTIVE
+    selectable: true
+    priority: 92
+    phases: [visual_plan, animatic, edit]
+    intents: [tension_release, pacing_arc, rhythm]
+    tags: [pace, hold, acceleration, payoff]
+    provider_scopes: [GENERIC]
+    render_runtimes: [ANY]
+    source: {type: local_skill, label: Motion Art Direction, license: PROJECT_LOCAL, path: .agents/skills/motion-art-direction/SKILL.md}
+    activation: {default_allowed: true, requires_human_opt_in: false, requires_license_review: false, requires_network: false}
+    directives:
+      - Name the sequence rhythm before assigning shot durations.
+      - Use stillness after intense motion as a deliberate release.
+
+  - id: editing.rhythmic_variation
+    name: Non-uniform edit rhythm
+    description: Mix hard cuts, short transitions, held frames, and varied easing so the edit does not feel uniformly synthetic.
+    category: editing
+    status: ACTIVE
+    selectable: true
+    priority: 89
+    phases: [animatic, edit, compose]
+    intents: [rhythmic_variation, avoid_ai_smoothness, beat_sync]
+    tags: [rhythm, hard_cut, hold, varied_easing]
+    provider_scopes: [GENERIC]
+    render_runtimes: [ANY]
+    source: {type: local_skill, label: Beat Sync Editing, license: PROJECT_LOCAL, path: .agents/skills/beat-sync-editing/SKILL.md}
+    activation: {default_allowed: true, requires_human_opt_in: false, requires_license_review: false, requires_network: false}
+    directives:
+      - Let content and sound accents determine cut density.
+      - Avoid applying one transition preset to every boundary.
+
+  - id: typography.exact_fact_overlay
+    name: Evidence-bound exact typography
+    description: Render exact dates, names, quotations, and quantities in authored graphics bound to verified claims.
+    category: typography
+    status: ACTIVE
+    selectable: true
+    priority: 100
+    phases: [visual_plan, animatic, compose, qc]
+    intents: [exact_fact, evidence_overlay, readable_typography]
+    tags: [date, statistic, quotation, claim_id]
+    provider_scopes: [GENERIC]
+    render_runtimes: [HYPERFRAMES, REMOTION]
+    source: {type: local_skill, label: Kinetic Typography, license: PROJECT_LOCAL, path: .agents/skills/kinetic-typography/SKILL.md}
+    activation: {default_allowed: true, requires_human_opt_in: false, requires_license_review: false, requires_network: false}
+    directives:
+      - Copy the verified literal exactly and record its claim ID.
+      - Hold the resolved factual state long enough to read and verify.
+
+  - id: typography.kinetic_emphasis
+    name: Kinetic emphasis with semantic restraint
+    description: Animate only the words whose timing or physical behavior clarifies meaning.
+    category: typography
+    status: ACTIVE
+    selectable: true
+    priority: 79
+    phases: [visual_plan, animatic, compose]
+    intents: [kinetic_typography, word_emphasis, title_motion]
+    tags: [type, emphasis, timing, hierarchy]
+    provider_scopes: [GENERIC]
+    render_runtimes: [HYPERFRAMES, REMOTION]
+    source: {type: local_skill, label: Kinetic Typography, license: PROJECT_LOCAL, path: .agents/skills/kinetic-typography/SKILL.md}
+    activation: {default_allowed: true, requires_human_opt_in: false, requires_license_review: false, requires_network: false}
+    directives:
+      - Choose a motion verb for the emphasized word.
+      - Resolve to a stable readable state rather than constant motion.
+
+  - id: graphics.progressive_diagram_reveal
+    name: Progressive mechanism reveal
+    description: Reveal a process diagram in the same order that narration explains parts and relationships.
+    category: graphics
+    status: ACTIVE
+    selectable: true
+    priority: 90
+    phases: [visual_plan, animatic, compose]
+    intents: [mechanism_explainer, progressive_reveal, process_diagram]
+    tags: [diagram, connector, sequence, causality]
+    provider_scopes: [GENERIC]
+    render_runtimes: [HYPERFRAMES, REMOTION]
+    source: {type: local_skill, label: Diagram Animation, license: PROJECT_LOCAL, path: .agents/skills/diagram-animation/SKILL.md}
+    activation: {default_allowed: true, requires_human_opt_in: false, requires_license_review: false, requires_network: false}
+    directives:
+      - Add each label only when its object or relationship becomes relevant.
+      - Freeze the completed diagram before leaving the scene.
+
+  - id: graphics.map_spatial_context
+    name: Map as spatial argument
+    description: Use a map to establish distance, movement, distribution, or geographic stakes rather than as decoration.
+    category: graphics
+    status: ACTIVE
+    selectable: true
+    priority: 83
+    phases: [visual_plan, animatic, compose]
+    intents: [map_context, geographic_stakes, route_animation]
+    tags: [map, location, distance, route]
+    provider_scopes: [GENERIC]
+    render_runtimes: [HYPERFRAMES, REMOTION]
+    source: {type: local_skill, label: Map Animation, license: PROJECT_LOCAL, path: .agents/skills/map-animation/SKILL.md}
+    activation: {default_allowed: true, requires_human_opt_in: false, requires_license_review: false, requires_network: false}
+    directives:
+      - State the geographic question the map answers.
+      - Keep labels exact and source-bound.
+
+  - id: graphics.data_relationship_motion
+    name: Animate data relationships
+    description: Move position, scale, and connection to explain a relationship instead of decorating a number.
+    category: graphics
+    status: ACTIVE
+    selectable: true
+    priority: 86
+    phases: [visual_plan, animatic, compose]
+    intents: [data_relationship, comparison, statistic_motion]
+    tags: [chart, data, comparison, exact_fact]
+    provider_scopes: [GENERIC]
+    render_runtimes: [HYPERFRAMES, REMOTION]
+    source: {type: local_skill, label: Color Motion, license: PROJECT_LOCAL, path: .agents/skills/color-motion/SKILL.md}
+    activation: {default_allowed: true, requires_human_opt_in: false, requires_license_review: false, requires_network: false}
+    directives:
+      - Keep no more than two information layers active at once.
+      - Make the final quantitative relationship inspectable in a stable hold.
+
+  - id: sound.j_l_cut
+    name: J-cut and L-cut narration flow
+    description: Offset picture and sound boundaries to create anticipation or preserve emotional consequence.
+    category: sound
+    status: ACTIVE
+    selectable: true
+    priority: 87
+    phases: [animatic, edit]
+    intents: [j_cut, l_cut, narration_flow]
+    tags: [audio_edit, transition, anticipation]
+    provider_scopes: [GENERIC]
+    render_runtimes: [ANY]
+    source: {type: project_doc, label: Sound Design, license: PROJECT_LOCAL, path: skills/creative/sound-design.md}
+    activation: {default_allowed: true, requires_human_opt_in: false, requires_license_review: false, requires_network: false}
+    directives:
+      - Use early sound to pose the next question and late sound to preserve the prior consequence.
+      - Do not let the music bed erase meaningful production sound.
+
+  - id: sound.material_motif
+    name: Material sound motif
+    description: Recur a specific tactile sound to bind process stages without repeating the same image.
+    category: sound
+    status: ACTIVE
+    selectable: true
+    priority: 84
+    phases: [visual_plan, animatic, edit]
+    intents: [material_motif, tactile_sound, craft_process]
+    tags: [hammer, scrape, heat, resonance, motif]
+    provider_scopes: [GENERIC]
+    render_runtimes: [ANY]
+    source: {type: project_doc, label: Sound Design, license: PROJECT_LOCAL, path: skills/creative/sound-design.md}
+    activation: {default_allowed: true, requires_human_opt_in: false, requires_license_review: false, requires_network: false}
+    directives:
+      - Preserve real source sound when available and label designed substitutes.
+      - Vary distance and intensity while keeping the motif recognizable.
+
+  - id: runtime.hyperframes_seek_safe
+    name: Seek-safe authored motion
+    description: Use a single deterministic paused timeline for exact motion graphics and virtual-camera treatments.
+    category: runtime
+    status: ACTIVE
+    selectable: true
+    priority: 95
+    phases: [animatic, compose, qc]
+    intents: [seek_safe_motion, exact_timing, hyperframes]
+    tags: [gsap, deterministic, motion_graphics]
+    provider_scopes: [GENERIC]
+    render_runtimes: [HYPERFRAMES]
+    source: {type: local_skill, label: HyperFrames Core, license: Apache-2.0, path: .agents/skills/hyperframes-core/SKILL.md}
+    activation: {default_allowed: true, requires_human_opt_in: false, requires_license_review: false, requires_network: false}
+    directives:
+      - Keep all render-critical state a pure function of timeline time.
+      - Verify snapshots and final MP4 frames, not only lint output.
+
+  - id: runtime.remotion_scene_reuse
+    name: Reuse a verified Remotion scene pattern
+    description: Adapt the closest tested React scene when the runtime and shot design are already locked to Remotion.
+    category: runtime
+    status: ON_DEMAND
+    selectable: true
+    priority: 74
+    phases: [compose]
+    intents: [remotion_scene, react_composition, reusable_scene]
+    tags: [remotion, component, scene_library]
+    provider_scopes: [GENERIC]
+    render_runtimes: [REMOTION]
+    source: {type: local_skill, label: Remotion Bits, license: UNVERIFIED_UPSTREAM, path: .agents/skills/remotion-bits/SKILL.md}
+    activation: {default_allowed: false, requires_human_opt_in: true, requires_license_review: true, requires_network: false, note: Recheck the upstream example license before copying code.}
+    directives:
+      - Adapt a close pattern rather than assembling unrelated templates.
+      - Verify component wiring, props, Root registration, type check, and render.
+
+  - id: provider.local_ltx.motion_pilot
+    name: Local LTX motion pilot
+    description: Test low-cost non-critical motion locally before considering an external generation pass.
+    category: provider
+    status: ACTIVE
+    selectable: true
+    priority: 80
+    phases: [production]
+    intents: [local_motion_pilot, image_to_video, low_cost_test]
+    tags: [ltx, comfyui, local, mps]
+    provider_scopes: [LOCAL_LTX]
+    render_runtimes: [ANY]
+    source: {type: local_skill, label: LTX2, license: PROJECT_LOCAL, path: .agents/skills/ltx2/SKILL.md}
+    activation: {default_allowed: true, requires_human_opt_in: false, requires_license_review: false, requires_network: false}
+    directives:
+      - Start with a short fixed-seed draft and inspect actual frames for MPS corruption.
+      - Never promote a generated clip from candidate to selected without the asset gate.
+
+  - id: provider.topview.first_last_frame_bridge
+    name: TopView first/last-frame bridge
+    description: Manually request a controlled transformation between approved start and end frames in TopView.
+    category: provider
+    status: ON_DEMAND
+    selectable: true
+    priority: 88
+    phases: [production]
+    intents: [first_last_frame, photo_to_motion, camera_motion, provider_prompting]
+    tags: [topview, frame_bridge, manual_ui]
+    provider_scopes: [TOPVIEW_MANUAL]
+    render_runtimes: [ANY]
+    source: {type: project_doc, label: TopView capability catalog, license: PROJECT_LOCAL, path: config/topview-capabilities.yaml}
+    activation: {default_allowed: false, requires_human_opt_in: true, requires_license_review: false, requires_network: true, note: Human operates the TopView UI after budget approval.}
+    directives:
+      - Freeze both reference frames and record their hashes in the manual job packet.
+      - Record the exact visible model label and cost before the user submits.
+
+  - id: provider.topview.multi_reference_continuity
+    name: TopView multi-reference continuity
+    description: Use manual Omni/Multi Reference only for a shot whose identity or environment continuity cannot be carried by one frame.
+    category: provider
+    status: ON_DEMAND
+    selectable: true
+    priority: 87
+    phases: [production]
+    intents: [multi_reference, identity_continuity, provider_prompting, camera_motion]
+    tags: [topview, omni_reference, manual_ui]
+    provider_scopes: [TOPVIEW_MANUAL]
+    render_runtimes: [ANY]
+    source: {type: project_doc, label: TopView capability catalog, license: PROJECT_LOCAL, path: config/topview-capabilities.yaml}
+    activation: {default_allowed: false, requires_human_opt_in: true, requires_license_review: false, requires_network: true, note: Human operates the TopView UI after budget approval.}
+    directives:
+      - Assign one explicit role to each reference and remove redundant references.
+      - Compare returned candidates in OpenMontage before asset selection.
+
+  - id: provider.higgsfield.camera_preset
+    name: Higgsfield-specific camera vocabulary
+    description: Preserve unofficial Higgsfield camera-preset terminology for a future explicitly chosen Higgsfield manual route.
+    category: provider
+    status: ON_DEMAND
+    selectable: true
+    priority: 60
+    phases: [production]
+    intents: [camera_motion, provider_prompting, higgsfield_preset]
+    tags: [higgsfield, provider_specific, manual_ui]
+    provider_scopes: [HIGGSFIELD_MANUAL]
+    render_runtimes: [ANY]
+    source: {type: external_repository, label: Higgsfield AI Prompt Skill, license: MIT, manifest_id: github.higgsfield_prompt_skill}
+    activation: {default_allowed: false, requires_human_opt_in: true, requires_license_review: false, requires_network: true, note: Verify terminology against the current provider UI before use.}
+    directives:
+      - Never use these preset names in TopView, Seedance, or local LTX instructions.
+      - Recheck the live provider before constructing a job packet.
+
+  - id: provider.seedance.multishot_continuity
+    name: Seedance-specific multi-shot continuity
+    description: Preserve Seedance-oriented multi-shot and frame-reference guidance for a future explicitly selected Seedance route.
+    category: provider
+    status: ON_DEMAND
+    selectable: true
+    priority: 62
+    phases: [production]
+    intents: [multi_reference, first_last_frame, provider_prompting, multishot]
+    tags: [seedance, provider_specific, continuity]
+    provider_scopes: [SEEDANCE_MANUAL]
+    render_runtimes: [ANY]
+    source: {type: external_repository, label: Seedance 2.0 skill, license: MIT, manifest_id: github.seedance_prompt_skill}
+    activation: {default_allowed: false, requires_human_opt_in: true, requires_license_review: false, requires_network: true, note: Verify current model labels and limitations before use.}
+    directives:
+      - Never present Seedance-specific syntax as a generic TopView instruction.
+      - Treat multi-shot output as candidates requiring continuity review.
+
+  - id: library.directorskills.film_language
+    name: DirectorSkills film-language collection
+    description: Index of broad directing, master-shot, transition, color, and sound references for later item-level review.
+    category: library
+    status: REFERENCE_ONLY
+    selectable: false
+    priority: 30
+    phases: [research, visual_plan]
+    intents: [film_language_library, master_shots, scene_transitions]
+    tags: [director, cinematography, source_library]
+    provider_scopes: [GENERIC]
+    render_runtimes: [ANY]
+    source: {type: external_repository, label: DirectorSkills, license: MIT_WITH_CONTENT_REVIEW, manifest_id: github.directorskills}
+    activation: {default_allowed: false, requires_human_opt_in: true, requires_license_review: true, requires_network: true, note: Review every selected module for quotation and derivation risk before vendoring.}
+    directives:
+      - Use as a discovery index only until an individual module is reviewed.
+
+  - id: library.nolanx.long_form_continuity
+    name: NolanX long-form continuity library
+    description: On-demand continuity bible, blocking, shot-design, and visual-language modules for complex productions.
+    category: library
+    status: ON_DEMAND
+    selectable: false
+    priority: 50
+    phases: [research, visual_plan]
+    intents: [continuity_bible, scene_blocking, storyboard_shot_design]
+    tags: [long_form, continuity, source_library]
+    provider_scopes: [GENERIC]
+    render_runtimes: [ANY]
+    source: {type: external_repository, label: NolanX, license: MIT, manifest_id: github.nolanx}
+    activation: {default_allowed: false, requires_human_opt_in: true, requires_license_review: false, requires_network: true, note: Stage only the needed module into the isolated cache.}
+    directives:
+      - Search and review a specific module; never load the whole collection into every scene.
+
+  - id: library.remotion_scenes.patterns
+    name: Remotion Scenes implementation library
+    description: Large collection of ready-made React scene patterns retained for a future Remotion-locked shot.
+    category: library
+    status: ON_DEMAND
+    selectable: false
+    priority: 45
+    phases: [compose]
+    intents: [remotion_scene_library, motion_graphics_pattern, implementation_reference]
+    tags: [remotion, react, source_library]
+    provider_scopes: [GENERIC]
+    render_runtimes: [REMOTION]
+    source: {type: external_repository, label: Remotion Scenes, license: MIT, manifest_id: github.remotion_scenes}
+    activation: {default_allowed: false, requires_human_opt_in: true, requires_license_review: false, requires_network: true, note: Stage only after render_runtime is locked to Remotion.}
+    directives:
+      - Reuse mechanics, then redesign the scene for the approved visual grammar.
+
+  - id: library.x_cut.recipe_retrieval
+    name: X-Cut recipe-retrieval architecture
+    description: Reference architecture for retrieving style recipes without making X-Cut a production dependency.
+    category: library
+    status: REFERENCE_ONLY
+    selectable: false
+    priority: 20
+    phases: [research]
+    intents: [recipe_retrieval, editing_architecture, long_form_automation]
+    tags: [architecture, retrieval, agpl]
+    provider_scopes: [GENERIC]
+    render_runtimes: [ANY]
+    source: {type: external_repository, label: X-Cut, license: AGPL-3.0, manifest_id: github.x_cut}
+    activation: {default_allowed: false, requires_human_opt_in: true, requires_license_review: true, requires_network: true}
+    directives:
+      - Borrow the retrieval boundary, not unverified production behavior.
+
+  - id: research.hf.camera_motion_classifier
+    name: Camera-motion classifier research pointer
+    description: Potential classifier for auditing motion categories, blocked until license terms are declared.
+    category: research
+    status: BLOCKED
+    selectable: false
+    priority: 10
+    phases: [research, qc]
+    intents: [camera_motion, motion_classifier, training_dataset]
+    tags: [huggingface, model, license_unknown]
+    provider_scopes: [GENERIC]
+    render_runtimes: [ANY]
+    source: {type: huggingface, label: Kandinsky VideoMAE camera motion, license: UNDECLARED, manifest_id: hf.camera_motion_classifier}
+    activation: {default_allowed: false, requires_human_opt_in: true, requires_license_review: true, requires_network: true}
+    directives:
+      - Do not download or execute until the license is resolved.
+
+  - id: research.hf.edit_intent_timeline
+    name: Edit-intent-to-timeline research pointer
+    description: Apache-licensed metadata pointer for future editing-intent evaluator experiments.
+    category: research
+    status: REFERENCE_ONLY
+    selectable: false
+    priority: 15
+    phases: [research]
+    intents: [edit_intent, timeline_generation, training_dataset]
+    tags: [huggingface, dataset, evaluator]
+    provider_scopes: [GENERIC]
+    render_runtimes: [ANY]
+    source: {type: huggingface, label: Reolyy edit intent, license: Apache-2.0, manifest_id: hf.reolyy_edit_intent}
+    activation: {default_allowed: false, requires_human_opt_in: true, requires_license_review: false, requires_network: true}
+    directives:
+      - Keep this out of production until a bounded evaluator experiment is designed.
+
+  - id: research.hf.premiere_trajectories
+    name: Professional editing-trajectory research
+    description: Small Premiere editing-trajectory set retained to study action sequences, not to define documentary taste.
+    category: research
+    status: REFERENCE_ONLY
+    selectable: false
+    priority: 12
+    phases: [research]
+    intents: [editing_trajectory, training_dataset, professional_editing]
+    tags: [huggingface, premiere, research]
+    provider_scopes: [GENERIC]
+    render_runtimes: [ANY]
+    source: {type: huggingface, label: Contra Labs Premiere trajectories, license: CC-BY-4.0, manifest_id: hf.premiere_editing_trajectories}
+    activation: {default_allowed: false, requires_human_opt_in: true, requires_license_review: false, requires_network: true}
+    directives:
+      - Use only for bounded research and preserve attribution.
+
+  - id: research.hf.film_eval
+    name: FilmEval non-commercial research
+    description: Non-commercial film-evaluation dataset retained only as a pointer.
+    category: research
+    status: BLOCKED
+    selectable: false
+    priority: 5
+    phases: [research, qc]
+    intents: [noncommercial_research, film_evaluation, training_dataset]
+    tags: [huggingface, cc_by_nc, blocked]
+    provider_scopes: [GENERIC]
+    render_runtimes: [ANY]
+    source: {type: huggingface, label: FilmEval, license: CC-BY-NC-4.0, manifest_id: hf.film_eval}
+    activation: {default_allowed: false, requires_human_opt_in: true, requires_license_review: true, requires_network: true}
+    directives:
+      - Never use in the normal commercial production path.
+
+  - id: research.hf.vera_layered_video
+    name: Vera layered-video research pointer
+    description: Large layered-video dataset retained as an architecture and evaluation reference without downloading its payload.
+    category: research
+    status: REFERENCE_ONLY
+    selectable: false
+    priority: 8
+    phases: [research]
+    intents: [layered_video, training_dataset, video_editing_research]
+    tags: [huggingface, large_dataset, metadata_only]
+    provider_scopes: [GENERIC]
+    render_runtimes: [ANY]
+    source: {type: huggingface, label: Netflix Vera, license: Apache-2.0, manifest_id: hf.vera_layered_video}
+    activation: {default_allowed: false, requires_human_opt_in: true, requires_license_review: false, requires_network: true}
+    directives:
+      - Retain the revision pointer; do not download the full dataset into the factory.
+
+  - id: research.hf.shotplan
+    name: ShotPlan restricted research pointer
+    description: Shot-planning research retained only for later legal and usefulness review.
+    category: research
+    status: BLOCKED
+    selectable: false
+    priority: 5
+    phases: [research]
+    intents: [shot_planning, noncommercial_research, training_dataset]
+    tags: [huggingface, license_review, blocked]
+    provider_scopes: [GENERIC]
+    render_runtimes: [ANY]
+    source: {type: huggingface, label: ShotPlan, license: OTHER, manifest_id: hf.shotplan}
+    activation: {default_allowed: false, requires_human_opt_in: true, requires_license_review: true, requires_network: true}
+    directives:
+      - Do not activate until legal terms and concrete value are reviewed.
+
+  - id: research.hf.av_skills
+    name: AV-Skills non-commercial research pointer
+    description: Audio-visual skill research retained only as a metadata pointer because its terms are non-commercial.
+    category: research
+    status: BLOCKED
+    selectable: false
+    priority: 5
+    phases: [research]
+    intents: [noncommercial_research, training_dataset, camera_motion]
+    tags: [huggingface, audiovisual, blocked]
+    provider_scopes: [GENERIC]
+    render_runtimes: [ANY]
+    source: {type: huggingface, label: NVIDIA AV-Skills, license: OTHER-NONCOMMERCIAL, manifest_id: hf.av_skills}
+    activation: {default_allowed: false, requires_human_opt_in: true, requires_license_review: true, requires_network: true}
+    directives:
+      - Never activate in the normal commercial production path.
+
+  - id: research.hf.seedance_prompt_scrape
+    name: Scraped Seedance prompt dataset
+    description: Scraped prompt collection blocked from ingestion because source rights and embedded content provenance are uncertain.
+    category: research
+    status: BLOCKED
+    selectable: false
+    priority: 0
+    phases: [research]
+    intents: [provider_prompting, training_dataset, scraped_prompts]
+    tags: [huggingface, provenance_risk, blocked]
+    provider_scopes: [SEEDANCE_MANUAL]
+    render_runtimes: [ANY]
+    source: {type: huggingface, label: GokuScraper Seedance prompts, license: CC-BY-4.0_WITH_PROVENANCE_RISK, manifest_id: hf.seedance_prompt_scrape}
+    activation: {default_allowed: false, requires_human_opt_in: true, requires_license_review: true, requires_network: true}
+    directives:
+      - Do not import the dataset wholesale or treat scraped examples as cleared training material.

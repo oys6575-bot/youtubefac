@@ -1,0 +1,221 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "youtube-factory/visual-technique-registry",
+  "title": "YouTube Factory Visual Technique Registry",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "catalog_version",
+    "source_manifest",
+    "policy",
+    "techniques"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "catalog_version": {"type": "string", "format": "date"},
+    "source_manifest": {"type": "string", "minLength": 1},
+    "policy": {
+      "type": "object",
+      "required": [
+        "default_limit",
+        "minimum_recommended",
+        "maximum_limit",
+        "normal_statuses",
+        "opt_in_statuses",
+        "never_select_statuses"
+      ],
+      "properties": {
+        "default_limit": {"type": "integer", "minimum": 1, "maximum": 20},
+        "minimum_recommended": {"type": "integer", "minimum": 1, "maximum": 20},
+        "maximum_limit": {"type": "integer", "minimum": 1, "maximum": 20},
+        "normal_statuses": {
+          "type": "array",
+          "items": {"const": "ACTIVE"},
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "opt_in_statuses": {
+          "type": "array",
+          "items": {"const": "ON_DEMAND"},
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "never_select_statuses": {
+          "type": "array",
+          "items": {"enum": ["REFERENCE_ONLY", "BLOCKED"]},
+          "minItems": 2,
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "techniques": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/technique"}
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "status": {
+      "type": "string",
+      "enum": ["ACTIVE", "ON_DEMAND", "REFERENCE_ONLY", "BLOCKED"]
+    },
+    "phase": {
+      "type": "string",
+      "enum": [
+        "ALL",
+        "research",
+        "proposal",
+        "script",
+        "visual_plan",
+        "animatic",
+        "budget",
+        "production",
+        "edit",
+        "compose",
+        "qc"
+      ]
+    },
+    "providerScope": {
+      "type": "string",
+      "enum": [
+        "GENERIC",
+        "TOPVIEW_MANUAL",
+        "HIGGSFIELD_MANUAL",
+        "SEEDANCE_MANUAL",
+        "LOCAL_LTX"
+      ]
+    },
+    "renderRuntime": {
+      "type": "string",
+      "enum": ["ANY", "FFMPEG", "REMOTION", "HYPERFRAMES"]
+    },
+    "source": {
+      "type": "object",
+      "required": ["type", "label", "license"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "local_skill",
+            "project_doc",
+            "external_repository",
+            "huggingface",
+            "field_research"
+          ]
+        },
+        "label": {"type": "string", "minLength": 1},
+        "license": {"type": "string", "minLength": 1},
+        "path": {"type": "string", "minLength": 1},
+        "manifest_id": {"type": "string", "minLength": 1},
+        "url": {"type": "string", "format": "uri"},
+        "revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      },
+      "additionalProperties": false
+    },
+    "activation": {
+      "type": "object",
+      "required": [
+        "default_allowed",
+        "requires_human_opt_in",
+        "requires_license_review",
+        "requires_network"
+      ],
+      "properties": {
+        "default_allowed": {"type": "boolean"},
+        "requires_human_opt_in": {"type": "boolean"},
+        "requires_license_review": {"type": "boolean"},
+        "requires_network": {"type": "boolean"},
+        "note": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "technique": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "description",
+        "category",
+        "status",
+        "selectable",
+        "priority",
+        "phases",
+        "intents",
+        "tags",
+        "provider_scopes",
+        "render_runtimes",
+        "source",
+        "activation",
+        "directives"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$"
+        },
+        "name": {"type": "string", "minLength": 1},
+        "description": {"type": "string", "minLength": 1},
+        "category": {
+          "type": "string",
+          "enum": [
+            "direction",
+            "continuity",
+            "camera",
+            "transition",
+            "editing",
+            "typography",
+            "graphics",
+            "sound",
+            "runtime",
+            "provider",
+            "library",
+            "research"
+          ]
+        },
+        "status": {"$ref": "#/$defs/status"},
+        "selectable": {"type": "boolean"},
+        "priority": {"type": "integer", "minimum": 0, "maximum": 100},
+        "phases": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/phase"},
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "intents": {
+          "type": "array",
+          "items": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "tags": {
+          "type": "array",
+          "items": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "provider_scopes": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/providerScope"},
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "render_runtimes": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/renderRuntime"},
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "source": {"$ref": "#/$defs/source"},
+        "activation": {"$ref": "#/$defs/activation"},
+        "directives": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "minItems": 1
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "category": "kinetic-type",
+  "duration_s": 9,
+  "fps": 30,
+  "canvas": {"w": 1920, "h": 1080, "aspect": "16:9"},
+  "style": "warm editorial documentary test, restrained brass accent, evidence-first hierarchy",
+  "palette": ["#11100d", "#e9e1cf", "#b8873d", "#6f8f86"],
+  "font": "Apple SD Gothic Neo",
+  "beats": [0.3, 0.8, 2.8, 5.2, 6.4, 8.5],
+  "export": "mp4",
+  "asset_needs": [],
+  "customize": {
+    "local_asset": "assets/source.jpg",
+    "selected_techniques": [
+      "camera.material_macro_parallax",
+      "camera.variable_velocity_push",
+      "transition.semantic_match_cut",
+      "typography.exact_fact_overlay"
+    ]
+  },
+  "content": {
+    "scenes": [
+      {
+        "id": "technique-reel",
+        "start": 0,
+        "end": 9,
+        "text": "정지 이미지 → 속도 설계 → 정확한 합성 타이포",
+        "emphasis_words": ["속도", "정확한"],
+        "emotion": "observational to precise",
+        "motion": "multi-phase camera + nudge curve + card morph anchor",
+        "beats": [0.3, 0.8, 2.8, 5.2, 6.4, 8.5]
+      }
+    ]
+  }
+}

@@ -79,6 +79,10 @@
       "type": "string",
       "pattern": "^[A-Z][A-Z0-9_-]{2,63}$"
     },
+    "techniqueId": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$"
+    },
     "evidenceId": {
       "type": "string",
       "pattern": "^(SRC|CLAIM)_[A-Z0-9_-]{1,58}$"
@@ -125,6 +129,7 @@
         "purpose",
         "narration_range",
         "evidence_ids",
+        "technique_selection",
         "selected_grammar",
         "pacing_profile",
         "entry_transition",
@@ -148,6 +153,63 @@
           "type": "array",
           "items": { "$ref": "#/$defs/evidenceId" },
           "uniqueItems": true
+        },
+        "technique_selection": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "registry_version",
+            "query_intents",
+            "provider_scopes",
+            "render_runtimes",
+            "include_on_demand",
+            "selected_ids",
+            "rejected_provider_specific_ids",
+            "selection_reason"
+          ],
+          "properties": {
+            "registry_version": { "type": "string", "format": "date" },
+            "query_intents": {
+              "type": "array",
+              "items": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "provider_scopes": {
+              "type": "array",
+              "items": {
+                "enum": [
+                  "GENERIC",
+                  "TOPVIEW_MANUAL",
+                  "HIGGSFIELD_MANUAL",
+                  "SEEDANCE_MANUAL",
+                  "LOCAL_LTX"
+                ]
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "render_runtimes": {
+              "type": "array",
+              "items": { "enum": ["ANY", "FFMPEG", "REMOTION", "HYPERFRAMES"] },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "include_on_demand": { "type": "boolean" },
+            "selected_ids": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/techniqueId" },
+              "minItems": 3,
+              "maxItems": 7,
+              "uniqueItems": true
+            },
+            "rejected_provider_specific_ids": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/techniqueId" },
+              "uniqueItems": true
+            },
+            "selection_reason": { "type": "string", "minLength": 1 }
+          }
         },
         "grammar_candidates": {
           "type": "array",
@@ -192,7 +254,8 @@
         "overlay",
         "disclosure",
         "duration_seconds",
-        "fallback"
+        "fallback",
+        "technique_ids"
       ],
       "properties": {
         "shot_id": { "$ref": "#/$defs/id" },
@@ -211,6 +274,13 @@
         "evidence_ids": {
           "type": "array",
           "items": { "$ref": "#/$defs/evidenceId" },
+          "uniqueItems": true
+        },
+        "technique_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/techniqueId" },
+          "minItems": 1,
+          "maxItems": 4,
           "uniqueItems": true
         },
         "provider_route": {

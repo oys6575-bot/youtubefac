@@ -1,0 +1,157 @@
+{
+  "schema_version": "1.0.0",
+  "captured_at": "2026-08-12T01:30:00+09:00",
+  "policy": {
+    "large_payloads_in_git": false,
+    "auto_activation": false,
+    "provider_specific_recheck_required": true,
+    "cache_path": ".factory-cache/creative-sources",
+    "rule": "A source lock preserves future retrievability; it never grants execution authority."
+  },
+  "sources": [
+    {
+      "id": "github.topview_official_skill",
+      "kind": "github_repository",
+      "url": "https://github.com/topviewai/skill",
+      "revision": "5e0fa64642cd732ad18382e91195171f2957453d",
+      "license": "Apache-2.0",
+      "activation_status": "REFERENCE_ONLY",
+      "reason": "Official capability vocabulary only; the factory forbids TopView API and MCP execution."
+    },
+    {
+      "id": "github.directorskills",
+      "kind": "github_repository",
+      "url": "https://github.com/geegl/directorskills",
+      "revision": "57d2ef52de61b926bdcac13fe27d07c17bc36516",
+      "license": "MIT",
+      "activation_status": "REFERENCE_ONLY",
+      "reason": "Broad directing library; quotations and source-book derivations require item-level review before public vendoring."
+    },
+    {
+      "id": "github.nolanx",
+      "kind": "github_repository",
+      "url": "https://github.com/nolanx-ai/nolanx.ai",
+      "revision": "595d86364377f654e24ddf2c9e875496d85e8246",
+      "license": "MIT",
+      "activation_status": "ON_DEMAND",
+      "reason": "Useful continuity, blocking, storyboard, and visual-language modules; stage only the needed module."
+    },
+    {
+      "id": "github.remotion_scenes",
+      "kind": "github_repository",
+      "url": "https://github.com/lifeprompt-team/remotion-scenes",
+      "revision": "02c7a84241da7010b5f59c420b0110aafd1d6f0d",
+      "license": "MIT",
+      "activation_status": "ON_DEMAND",
+      "reason": "Large implementation library; use as source patterns only after the runtime is locked to Remotion."
+    },
+    {
+      "id": "github.higgsfield_prompt_skill",
+      "kind": "github_repository",
+      "url": "https://github.com/OSideMedia/higgsfield-ai-prompt-skill",
+      "revision": "35ee7fd5692fa7fc23af610068fc27245b63fb65",
+      "license": "MIT",
+      "activation_status": "ON_DEMAND",
+      "reason": "Unofficial provider-specific terminology; never mix into TopView or local routes."
+    },
+    {
+      "id": "github.seedance_prompt_skill",
+      "kind": "github_repository",
+      "url": "https://github.com/Emily2040/seedance-2.0",
+      "revision": "44b514992963a2570beee71aaf2a8720785f7ec2",
+      "license": "MIT",
+      "activation_status": "ON_DEMAND",
+      "reason": "Provider-specific multi-shot and frame-bridge reference; recheck the live product before use."
+    },
+    {
+      "id": "github.x_cut",
+      "kind": "github_repository",
+      "url": "https://github.com/MeiGen-AI/X-Cut",
+      "revision": "dccf847f8815c409a4e844995a220c97f46b65a5",
+      "license": "AGPL-3.0",
+      "activation_status": "REFERENCE_ONLY",
+      "reason": "Architecture inspiration for recipe retrieval; not a mature production dependency."
+    },
+    {
+      "id": "hf.camera_motion_classifier",
+      "kind": "huggingface_model",
+      "url": "https://huggingface.co/ai-forever/kandinsky-videomae-large-camera-motion",
+      "revision": "3e9a74ff25249837e084ca23c4e31317ca014af3",
+      "license": "UNDECLARED",
+      "activation_status": "BLOCKED",
+      "reason": "Potential camera-motion classifier, but license is not declared."
+    },
+    {
+      "id": "hf.reolyy_edit_intent",
+      "kind": "huggingface_dataset",
+      "url": "https://huggingface.co/datasets/zarnite/reolyy-edit-intent-to-timeline",
+      "revision": "b54440bfc0232eac1a6a99e2b0c27a19a7e255b2",
+      "license": "Apache-2.0",
+      "activation_status": "ON_DEMAND",
+      "reason": "Editing-intent research data; metadata pointer only until a concrete evaluator is approved."
+    },
+    {
+      "id": "hf.premiere_editing_trajectories",
+      "kind": "huggingface_dataset",
+      "url": "https://huggingface.co/datasets/contralabs/premiere-video-editing-trajectories",
+      "revision": "8cdf02c4cfbac847e86b5653f52962ca623f3d6b",
+      "license": "CC-BY-4.0",
+      "activation_status": "REFERENCE_ONLY",
+      "reason": "Small professional editing-trajectory research set; not general documentary doctrine."
+    },
+    {
+      "id": "hf.descript_editing_trajectories",
+      "kind": "huggingface_dataset",
+      "url": "https://huggingface.co/datasets/contralabs/descript-video-editing-trajectories",
+      "revision": "c5a6653b70b7a371a8e5e5416f17c409c179b013",
+      "license": "CC-BY-4.0",
+      "activation_status": "REFERENCE_ONLY",
+      "reason": "Editing-agent research set; retain for later evaluation design."
+    },
+    {
+      "id": "hf.film_eval",
+      "kind": "huggingface_dataset",
+      "url": "https://huggingface.co/datasets/ZuoHaotong/FilmEval",
+      "revision": "00a8e7b4ee875f6053ba6ab43422be0a1aba4e27",
+      "license": "CC-BY-NC-4.0",
+      "activation_status": "BLOCKED",
+      "reason": "Non-commercial evaluation data; not allowed in the normal production path."
+    },
+    {
+      "id": "hf.vera_layered_video",
+      "kind": "huggingface_dataset",
+      "url": "https://huggingface.co/datasets/netflix/Vera-Layered-Video-Dataset",
+      "revision": "8e0b98ee9bce66fdae345e75aa766ef7c0a04d4e",
+      "license": "Apache-2.0",
+      "activation_status": "REFERENCE_ONLY",
+      "reason": "Large layered-video research dataset; keep only a revision pointer, not the 320 GB payload."
+    },
+    {
+      "id": "hf.shotplan",
+      "kind": "huggingface_dataset",
+      "url": "https://huggingface.co/datasets/Pensioner/shotplan",
+      "revision": "9a0c27adf14ae9fe6c74fe504ab50010e4b0c3f2",
+      "license": "OTHER",
+      "activation_status": "BLOCKED",
+      "reason": "Research/non-commercial terms require legal review."
+    },
+    {
+      "id": "hf.av_skills",
+      "kind": "huggingface_dataset",
+      "url": "https://huggingface.co/datasets/nvidia/av-skills",
+      "revision": "4429e34ee80f4fe13de31b5c8def4d86c4f0daa2",
+      "license": "OTHER-NONCOMMERCIAL",
+      "activation_status": "BLOCKED",
+      "reason": "Non-commercial license; research reference only."
+    },
+    {
+      "id": "hf.seedance_prompt_scrape",
+      "kind": "huggingface_dataset",
+      "url": "https://huggingface.co/datasets/GokuScraper/seedance-2-prompts-datasets",
+      "revision": "336b4f8373044ad92231ba05a04871bc595e71d3",
+      "license": "CC-BY-4.0",
+      "activation_status": "BLOCKED",
+      "reason": "Scraped internet prompts carry provenance and embedded-rights risk despite the dataset label."
+    }
+  ]
+}
