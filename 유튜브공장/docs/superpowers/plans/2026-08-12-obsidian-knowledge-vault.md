@@ -48,7 +48,7 @@ Obsidian core settings.
 - Produces: `KnowledgeSources`, `ResearchLink`, and
   `load_knowledge_sources(*, root: Path) -> KnowledgeSources`.
 
-- [ ] **Step 1: Write the failing loader test**
+- [x] **Step 1: Write the failing loader test**
 
 ```python
 def test_loads_every_audited_knowledge_source() -> None:
@@ -66,7 +66,7 @@ def test_loads_every_audited_knowledge_source() -> None:
     assert len(sources.topview_models) == 12
 ```
 
-- [ ] **Step 2: Run the loader test and witness RED**
+- [x] **Step 2: Run the loader test and witness RED**
 
 Run:
 
@@ -76,7 +76,7 @@ Run:
 
 Expected: FAIL because `lib.knowledge_vault` does not exist.
 
-- [ ] **Step 3: Implement the minimal loader**
+- [x] **Step 3: Implement the minimal loader**
 
 Implement immutable dataclasses and parse only explicit files:
 
@@ -110,11 +110,11 @@ receive `CITED_REFERENCE`. Merge skill routing and skill manifest entries by exa
 skill name, fail on a missing counterpart, and retain `project_root` so temporary-vault
 tests still resolve canonical local source paths against the real isolated factory.
 
-- [ ] **Step 4: Run the loader test and witness GREEN**
+- [x] **Step 4: Run the loader test and witness GREEN**
 
 Run the command from Step 2. Expected: `1 passed`.
 
-- [ ] **Step 5: Commit the loader cycle**
+- [x] **Step 5: Commit the loader cycle**
 
 ```bash
 git add tests/contracts/test_knowledge_vault.py lib/knowledge_vault.py
@@ -135,7 +135,7 @@ git commit -m "feat: load factory knowledge inventories"
 - Produces: `SyncReport` and
   `sync_vault(sources: KnowledgeSources, *, root: Path) -> SyncReport`.
 
-- [ ] **Step 1: Write failing sync, idempotence, and note-preservation tests**
+- [x] **Step 1: Write failing sync, idempotence, and note-preservation tests**
 
 ```python
 def test_sync_creates_complete_portable_vault(tmp_path: Path) -> None:
@@ -164,7 +164,7 @@ def test_sync_is_idempotent_and_preserves_production_notes(tmp_path: Path) -> No
     assert third.created == 0 and third.updated == 0
 ```
 
-- [ ] **Step 2: Run the sync tests and witness RED**
+- [x] **Step 2: Run the sync tests and witness RED**
 
 Run:
 
@@ -174,7 +174,7 @@ Run:
 
 Expected: FAIL because `sync_vault` and `SyncReport` are absent.
 
-- [ ] **Step 3: Implement record normalization and rendering**
+- [x] **Step 3: Implement record normalization and rendering**
 
 Add internal `CardRecord` objects with `card_id`, `entity_type`, `title`, `status`,
 `relative_path`, canonical frontmatter, body sections, and typed related IDs. Build
@@ -204,18 +204,18 @@ preserve exactly the text between:
 
 Write only when bytes differ. Never delete an unexpected card during sync.
 
-- [ ] **Step 4: Generate Maps of Content and portable Obsidian settings**
+- [x] **Step 4: Generate Maps of Content and portable Obsidian settings**
 
 Create `00-START-HERE.md`, all files under `01-MAPS/`, provider/runtime/playbook pages,
 five templates, and `.obsidian/app.json`, `appearance.json`, `core-plugins.json`.
 Configure native Markdown/wiki links and no community plugins. Ignore workspace files,
 cache, trash, and community-plugin state in `knowledge/.gitignore`.
 
-- [ ] **Step 5: Run sync tests and witness GREEN**
+- [x] **Step 5: Run sync tests and witness GREEN**
 
 Run the command from Step 2. Expected: all sync tests pass.
 
-- [ ] **Step 6: Materialize the real vault**
+- [x] **Step 6: Materialize the real vault**
 
 Run:
 
@@ -225,7 +225,7 @@ Run:
 
 Expected: `knowledge/` contains 380 entity cards plus navigation and template files.
 
-- [ ] **Step 7: Commit cards and sync behavior**
+- [x] **Step 7: Commit cards and sync behavior**
 
 ```bash
 git add lib/knowledge_vault.py tests/contracts/test_knowledge_vault.py knowledge
@@ -246,7 +246,7 @@ git commit -m "feat: materialize Obsidian factory knowledge"
   `audit_vault(sources: KnowledgeSources, *, root: Path) -> list[str]` and
   `search_vault(query: str, *, entity_types: tuple[str, ...] | None, root: Path) -> list[dict]`.
 
-- [ ] **Step 1: Write failing behavioral tests for drift, orphan, links, and search**
+- [x] **Step 1: Write failing behavioral tests for drift, orphan, links, and search**
 
 ```python
 def test_audit_detects_policy_drift_and_orphan_without_deleting(tmp_path: Path) -> None:
@@ -271,7 +271,7 @@ def test_search_exposes_all_statuses_but_labels_reddit_as_anecdotal(tmp_path: Pa
     assert any(item["evidence_class"] == "ANECDOTAL_SIGNAL" for item in reddit)
 ```
 
-- [ ] **Step 2: Run audit/search tests and witness RED**
+- [x] **Step 2: Run audit/search tests and witness RED**
 
 ```bash
 .venv/bin/python -m pytest tests/contracts/test_knowledge_vault.py -k "audit or search" -q
@@ -279,7 +279,7 @@ def test_search_exposes_all_statuses_but_labels_reddit_as_anecdotal(tmp_path: Pa
 
 Expected: FAIL because audit and search functions do not exist.
 
-- [ ] **Step 3: Implement audit**
+- [x] **Step 3: Implement audit**
 
 Parse every entity card frontmatter, report duplicate IDs and unexpected paths, render
 the canonical expected card around the preserved notes, and report field-level drift.
@@ -287,18 +287,18 @@ Validate all generated `[[wikilinks]]`, local `source_path` targets, portable JS
 settings, absence of workspace/community-plugin state, and orphan cards. Return findings
 without mutating the vault.
 
-- [ ] **Step 4: Implement deterministic search**
+- [x] **Step 4: Implement deterministic search**
 
 Tokenize the normalized query and score exact ID/intent/tag matches before title, then
 body text. Return stable order by descending score and card ID. Include entity type,
 status, evidence class, path, score, and matched terms. Never filter dormant statuses
 unless `entity_types` is supplied.
 
-- [ ] **Step 5: Run audit/search tests and witness GREEN**
+- [x] **Step 5: Run audit/search tests and witness GREEN**
 
 Run the command from Step 2. Expected: all audit/search tests pass.
 
-- [ ] **Step 6: Commit audit and search**
+- [x] **Step 6: Commit audit and search**
 
 ```bash
 git add lib/knowledge_vault.py tests/contracts/test_knowledge_vault.py
@@ -319,7 +319,7 @@ git commit -m "feat: audit and search the knowledge vault"
 - Produces:
   `resolve_knowledge_pack(selection: dict, *, sources: KnowledgeSources, root: Path) -> dict`.
 
-- [ ] **Step 1: Write a fixed selector-result fixture and failing pack tests**
+- [x] **Step 1: Write a fixed selector-result fixture and failing pack tests**
 
 The fixture contains five selected IDs in this order:
 
@@ -342,7 +342,7 @@ Add separate mutations for empty selection, eight selected items, on-demand with
 opt-in, blocked selection, provider mismatch, runtime mismatch, and missing card. Each
 must raise `KnowledgeVaultError` with the offending ID or boundary.
 
-- [ ] **Step 2: Run pack tests and witness RED**
+- [x] **Step 2: Run pack tests and witness RED**
 
 ```bash
 .venv/bin/python -m pytest tests/contracts/test_knowledge_vault.py -k "pack" -q
@@ -350,7 +350,7 @@ must raise `KnowledgeVaultError` with the offending ID or boundary.
 
 Expected: FAIL because `resolve_knowledge_pack` is absent.
 
-- [ ] **Step 3: Implement route-safe pack resolution**
+- [x] **Step 3: Implement route-safe pack resolution**
 
 Revalidate selected IDs against registry status, `query.include_on_demand`, provider
 scope, runtime scope, and the three-to-seven size boundary. Resolve technique cards in
@@ -372,11 +372,11 @@ record in `exclusions` with a reason. Return:
 }
 ```
 
-- [ ] **Step 4: Run pack tests and witness GREEN**
+- [x] **Step 4: Run pack tests and witness GREEN**
 
 Run the command from Step 2. Expected: all pack tests pass.
 
-- [ ] **Step 5: Commit pack behavior**
+- [x] **Step 5: Commit pack behavior**
 
 ```bash
 git add lib/knowledge_vault.py tests/contracts/test_knowledge_vault.py tests/fixtures/youtube_factory/technique_selection.valid.json
@@ -400,7 +400,7 @@ git commit -m "feat: resolve route-safe knowledge packs"
 - Produces: `sync`, `audit`, `search`, and `pack` commands plus pipeline metadata that
   points Visual Director at the audited vault.
 
-- [ ] **Step 1: Write failing CLI and pipeline integration tests**
+- [x] **Step 1: Write failing CLI and pipeline integration tests**
 
 Run the real script in a subprocess against the repository:
 
@@ -423,7 +423,7 @@ The pipeline test asserts `metadata.knowledge_vault.root == "knowledge"`, audit 
 selection, pack after selection, and the same seven-item budget. It also confirms all
 existing Human Gates and `topview_integration_mode: manual_ui` remain unchanged.
 
-- [ ] **Step 2: Run CLI/integration tests and witness RED**
+- [x] **Step 2: Run CLI/integration tests and witness RED**
 
 ```bash
 .venv/bin/python -m pytest tests/contracts/test_knowledge_vault.py tests/contracts/test_youtube_factory_pipeline.py -k "cli or knowledge_vault" -q
@@ -431,14 +431,14 @@ existing Human Gates and `topview_integration_mode: manual_ui` remain unchanged.
 
 Expected: FAIL because the CLI and pipeline metadata do not exist.
 
-- [ ] **Step 3: Implement the CLI**
+- [x] **Step 3: Implement the CLI**
 
 Use `argparse`; load sources once per command. `sync` and `audit` emit JSON reports,
 `search` emits a JSON array, and `pack` reads a JSON file then emits or writes the pack.
 Errors print structured JSON to stderr and exit non-zero. The script performs no
 network, tool execution, checkpoint write, or provider call.
 
-- [ ] **Step 4: Wire the pipeline and Visual Director**
+- [x] **Step 4: Wire the pipeline and Visual Director**
 
 Add declarative knowledge-vault metadata to `youtube-factory.yaml`. Update MK Visual
 Director's sequence-first recipe to run vault audit, select three to seven technique
@@ -449,17 +449,17 @@ Because subagent pressure testing is unavailable in this session, validate the e
 director instruction through the executable CLI/pipeline contract and record that
 limitation in the verification report; do not claim an LLM behavior test was run.
 
-- [ ] **Step 5: Document human Obsidian use**
+- [x] **Step 5: Document human Obsidian use**
 
 Add concise instructions to `START-HERE.md`: open the `knowledge/` folder as a vault,
 start at `00-START-HERE.md`, use maps/search, write only inside production-note markers
 or `99-INBOX`, and run audit before production.
 
-- [ ] **Step 6: Run CLI/integration tests and witness GREEN**
+- [x] **Step 6: Run CLI/integration tests and witness GREEN**
 
 Run the command from Step 2. Expected: all selected tests pass.
 
-- [ ] **Step 7: Commit integration**
+- [x] **Step 7: Commit integration**
 
 ```bash
 git add scripts/knowledge-vault.py pipeline_defs/youtube-factory.yaml skills/pipelines/youtube-factory/mk-visual-director.md docs/operations/START-HERE.md tests/contracts/test_knowledge_vault.py tests/contracts/test_youtube_factory_pipeline.py
@@ -478,7 +478,7 @@ git commit -m "feat: connect Visual Director to Obsidian knowledge"
 - Consumes: complete implementation and generated vault.
 - Produces: reproducible verification evidence and updated draft PR.
 
-- [ ] **Step 1: Run the real sync and audit twice**
+- [x] **Step 1: Run the real sync and audit twice**
 
 ```bash
 .venv/bin/python scripts/knowledge-vault.py sync
@@ -488,7 +488,7 @@ git commit -m "feat: connect Visual Director to Obsidian knowledge"
 
 Expected: first audit has zero findings; second sync reports zero created/updated files.
 
-- [ ] **Step 2: Exercise real search and pack scenarios**
+- [x] **Step 2: Exercise real search and pack scenarios**
 
 ```bash
 .venv/bin/python scripts/knowledge-vault.py search photo_to_motion
@@ -500,7 +500,7 @@ Expected: first audit has zero findings; second sync reports zero created/update
 Expected: technique search finds active and dormant knowledge; Reddit search labels
 results anecdotal; pack includes only route-safe bounded records.
 
-- [ ] **Step 3: Run focused regression tests**
+- [x] **Step 3: Run focused regression tests**
 
 ```bash
 .venv/bin/python -m pytest \
@@ -514,7 +514,7 @@ results anecdotal; pack includes only route-safe bounded records.
 
 Expected: zero failures.
 
-- [ ] **Step 4: Verify repository hygiene**
+- [x] **Step 4: Verify repository hygiene**
 
 ```bash
 git diff --check
@@ -524,7 +524,7 @@ git status --short
 Scan changed text for secrets, confirm no Obsidian workspace state or community plugin,
 and verify generated card counts against the canonical source counts.
 
-- [ ] **Step 5: Write the verification report**
+- [x] **Step 5: Write the verification report**
 
 Record exact counts, commands, pass/fail output, sample search/pack results, known
 limitations, and confirmation that no network/provider/Human Gate action occurred.

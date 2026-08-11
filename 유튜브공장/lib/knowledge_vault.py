@@ -26,6 +26,7 @@ _USER_NOTES = re.compile(
 )
 _WIKILINK = re.compile(r"\[\[([^\]]+)\]\]")
 _TOKEN = re.compile(r"[0-9a-z가-힣_]+", re.IGNORECASE)
+_SEARCH_STOPWORDS = {"a", "an", "and", "for", "in", "of", "on", "or", "the", "to", "with"}
 
 
 class KnowledgeVaultError(ValueError):
@@ -1142,7 +1143,7 @@ def _token_list(value: str) -> list[str]:
     tokens: list[str] = []
     for raw in _TOKEN.findall(value.casefold()):
         for token in (raw, *raw.split("_")):
-            if token and token not in tokens:
+            if token and token not in _SEARCH_STOPWORDS and token not in tokens:
                 tokens.append(token)
     return tokens
 
@@ -1227,7 +1228,8 @@ def search_vault(
             score = 100
         else:
             matches = required & body_tokens
-            if not matches:
+            minimum_partial = 1 if len(required) == 1 else 2
+            if len(matches) < minimum_partial:
                 continue
             score = 10 * len(matches)
         matched_terms = [term for term in query_tokens if term in body_tokens]

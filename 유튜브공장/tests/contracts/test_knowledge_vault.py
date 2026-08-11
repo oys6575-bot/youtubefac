@@ -153,6 +153,8 @@ def test_search_exposes_all_statuses_but_labels_reddit_as_anecdotal(
     reddit = _module().search_vault("unlimited plans", root=tmp_path)
 
     assert motion[0]["card_id"] == "camera.material_macro_parallax"
+    assert len(motion) <= 5
+    assert all("to" not in item["matched_terms"] for item in motion)
     assert any(item["evidence_class"] == "ANECDOTAL_SIGNAL" for item in reddit)
 
 
