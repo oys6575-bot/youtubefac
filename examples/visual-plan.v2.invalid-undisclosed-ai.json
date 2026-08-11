@@ -1,0 +1,289 @@
+{
+  "schema_version": "2.0.0",
+  "project_id": "PROJECT_HYATT_PILOT",
+  "plan_id": "PLAN_V2_INVALID_UNDISCLOSED",
+  "status": "drafting",
+  "generated_by": {
+    "adapter": "claude",
+    "model": "design-v2-fixture",
+    "created_at": "2026-08-11T12:00:00+09:00"
+  },
+  "script_ref": "artifacts/script.json",
+  "script_sha256": "0000000000000000000000000000000000000000000000000000000000000001",
+  "evidence_lock": {
+    "registry_version": "1.0.0",
+    "status": "approved"
+  },
+  "global_style": {
+    "aspect_ratio": "16:9",
+    "resolution": "1280x720",
+    "fps": 30
+  },
+  "sequences": [
+    {
+      "sequence_id": "SEQ_V2_OVERLAY",
+      "purpose": "Blocker-closure fixture: Hyatt segments 2, 3, 7 expressed with typed, claim-bound overlay payloads.",
+      "narration_range": {
+        "start_seconds": 0,
+        "end_seconds": 23
+      },
+      "evidence_ids": [
+        "SRC_001",
+        "CLAIM_HYATT_DATE",
+        "CLAIM_HYATT_WALKWAY",
+        "CLAIM_HYATT_LOAD"
+      ],
+      "selected_grammar": "EVIDENCE_TO_RECONSTRUCTION",
+      "pacing_profile": "steady",
+      "entry_transition": {
+        "type": "cut",
+        "duration_seconds": 0.0
+      },
+      "exit_transition": {
+        "type": "none",
+        "duration_seconds": 0.0
+      },
+      "target_duration_seconds": 23,
+      "shots": [
+        {
+          "shot_id": "HY2_SH02",
+          "narrative_function": "context",
+          "representation": "AI_RECONSTRUCTION",
+          "contains_ai": true,
+          "coverage_role": "evidence_insert",
+          "factual_precision": "exact",
+          "evidence_ids": [
+            "SRC_001",
+            "CLAIM_HYATT_DATE"
+          ],
+          "provider_route": {
+            "mode": "TOPVIEW_API",
+            "cost_tier": "standard",
+            "estimated_credits": 8
+          },
+          "prompt_intent": "Date and place typography over the real archive photo. No AI content.",
+          "continuity_bindings": [
+            "walkway_anchor"
+          ],
+          "edit_trigger": "narration_clause",
+          "transition_in": {
+            "type": "cut",
+            "duration_seconds": 0.0
+          },
+          "transition_out": {
+            "type": "cut",
+            "duration_seconds": 0.0
+          },
+          "audio_layers": [
+            {
+              "type": "narration",
+              "intent": "State the verified date.",
+              "sync_event": "BEAT_DATE_CLAUSE"
+            }
+          ],
+          "overlay": {
+            "mode": "COMPOSITED_BY_HYPERFRAMES",
+            "items": [
+              {
+                "overlay_id": "OVL_HYATT_DATE",
+                "module": "TYPOGRAPHY",
+                "claim_id": "CLAIM_HYATT_DATE",
+                "source_id": null,
+                "text_key": "hyatt.collapse_date",
+                "literal": null,
+                "locale": "ko-KR",
+                "position_hint": "upper_left",
+                "safe_area": "title",
+                "exact_text_from_claims": true
+              },
+              {
+                "overlay_id": "OVL_HYATT_SRC_LABEL",
+                "module": "ARCHIVE_FRAME",
+                "claim_id": null,
+                "source_id": "SRC_001",
+                "text_key": "common.source_label",
+                "literal": null,
+                "locale": "ko-KR",
+                "position_hint": "lower_left",
+                "safe_area": "action",
+                "exact_text_from_claims": false
+              }
+            ]
+          },
+          "disclosure": {
+            "required": false,
+            "label": null
+          },
+          "duration_seconds": 6,
+          "fallback": {
+            "mode": "REAL",
+            "description": "Static labeled archive still."
+          },
+          "camera": {
+            "framing": "medium",
+            "angle": "three_quarter",
+            "height": "eye",
+            "lens_intent": "normal",
+            "movement": "slow_push"
+          },
+          "lighting": {
+            "family": "motivated_daylight",
+            "key_direction": "side",
+            "contrast": "medium"
+          }
+        },
+        {
+          "shot_id": "HY2_SH03",
+          "narrative_function": "context",
+          "representation": "HYBRID",
+          "contains_ai": false,
+          "coverage_role": "evidence_insert",
+          "factual_precision": "exact",
+          "evidence_ids": [
+            "SRC_001",
+            "CLAIM_HYATT_WALKWAY"
+          ],
+          "provider_route": {
+            "mode": "HYPERFRAMES",
+            "cost_tier": "zero"
+          },
+          "prompt_intent": "Callout and underline isolating the walkway on the archive photo.",
+          "continuity_bindings": [
+            "walkway_anchor"
+          ],
+          "edit_trigger": "narration_clause",
+          "transition_in": {
+            "type": "cut",
+            "duration_seconds": 0.0
+          },
+          "transition_out": {
+            "type": "cut",
+            "duration_seconds": 0.0
+          },
+          "audio_layers": [
+            {
+              "type": "narration",
+              "intent": "State the verified date.",
+              "sync_event": "BEAT_DATE_CLAUSE"
+            }
+          ],
+          "overlay": {
+            "mode": "COMPOSITED_BY_HYPERFRAMES",
+            "items": [
+              {
+                "overlay_id": "OVL_WALKWAY_CALLOUT",
+                "module": "CALLOUT",
+                "claim_id": "CLAIM_HYATT_WALKWAY",
+                "source_id": null,
+                "text_key": "hyatt.walkway_label",
+                "literal": null,
+                "locale": "ko-KR",
+                "position_hint": "center",
+                "safe_area": "action",
+                "exact_text_from_claims": true
+              },
+              {
+                "overlay_id": "OVL_WALKWAY_UNDERLINE",
+                "module": "UNDERLINE",
+                "claim_id": null,
+                "source_id": null,
+                "text_key": null,
+                "literal": null,
+                "locale": null,
+                "position_hint": "custom",
+                "safe_area": "action",
+                "exact_text_from_claims": false
+              }
+            ]
+          },
+          "disclosure": {
+            "required": true,
+            "label": "실제 자료 + 설명 그래픽"
+          },
+          "duration_seconds": 7,
+          "fallback": {
+            "mode": "REAL",
+            "description": "Static labeled archive still."
+          }
+        },
+        {
+          "shot_id": "HY2_SH07",
+          "narrative_function": "explanation",
+          "representation": "GRAPHIC",
+          "contains_ai": false,
+          "coverage_role": "evidence_insert",
+          "factual_precision": "exact",
+          "evidence_ids": [
+            "CLAIM_HYATT_LOAD"
+          ],
+          "provider_route": {
+            "mode": "HYPERFRAMES",
+            "cost_tier": "zero"
+          },
+          "prompt_intent": "Hanger rod load diagram; numbers and arrows as typed overlay items only.",
+          "continuity_bindings": [
+            "walkway_anchor"
+          ],
+          "edit_trigger": "narration_clause",
+          "transition_in": {
+            "type": "cut",
+            "duration_seconds": 0.0
+          },
+          "transition_out": {
+            "type": "cut",
+            "duration_seconds": 0.0
+          },
+          "audio_layers": [
+            {
+              "type": "narration",
+              "intent": "State the verified date.",
+              "sync_event": "BEAT_DATE_CLAUSE"
+            }
+          ],
+          "overlay": {
+            "mode": "COMPOSITED_BY_HYPERFRAMES",
+            "items": [
+              {
+                "overlay_id": "OVL_LOAD_DIAGRAM",
+                "module": "DIAGRAM",
+                "claim_id": "CLAIM_HYATT_LOAD",
+                "source_id": null,
+                "text_key": "hyatt.load_diagram",
+                "literal": null,
+                "locale": "ko-KR",
+                "position_hint": "center",
+                "safe_area": "action",
+                "exact_text_from_claims": true
+              },
+              {
+                "overlay_id": "OVL_LOAD_NUMBER",
+                "module": "NUMBER",
+                "claim_id": "CLAIM_HYATT_LOAD",
+                "source_id": null,
+                "text_key": "hyatt.load_factor",
+                "literal": null,
+                "locale": "ko-KR",
+                "position_hint": "upper_right",
+                "safe_area": "action",
+                "exact_text_from_claims": true
+              }
+            ]
+          },
+          "disclosure": {
+            "required": false,
+            "label": null
+          },
+          "duration_seconds": 10,
+          "fallback": {
+            "mode": "REAL",
+            "description": "Static labeled archive still."
+          }
+        }
+      ]
+    }
+  ],
+  "gate_ref": {
+    "gate": "GATE_ANIMATIC",
+    "checkpoint_path": "checkpoint_scene_plan.json"
+  }
+}

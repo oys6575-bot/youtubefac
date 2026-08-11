@@ -1,6 +1,9 @@
 grammar_id: HERITAGE_FORGE
-version: 1.0.0
+version: 1.0.1
 status: design_review
+# 1.0.1 (final-consensus CLD-018): fixed broken failure-pattern token,
+# aligned fallback keys 1:1 with failure_patterns, added evidence_insert
+# to required coverage to match sequence_pattern and the Bangjja test.
 purpose: >-
   Heritage, craft, engineering, or material-process sequences that need tactile
   credibility, rhythmic labor, and a restrained cinematic reveal.
@@ -28,6 +31,7 @@ required_inputs:
       - action_medium
       - object_closeup
       - material_macro
+      - evidence_insert
       - hero
   audio_events:
     minimum: 2
@@ -116,12 +120,17 @@ failure_patterns:
   - every_shot_uses_the_same_slow_push
   - title_is_baked_into_generated_video
   - impact_sound_is_visibly_out_of_sync
-  - hero_reveal_has_no narrative_or_evidence_payoff
+  - hero_reveal_has_no_narrative_or_evidence_payoff
+  - queue_or_budget_failure
 
 fallbacks:
   tool_geometry_changes_between_frames: use_real_macro_or_shorter_clip
   artisan_identity_drift: use_hands_only_cutaway_or_stronger_reference
-  generated_text: regenerate_clean_plate
+  metal_surface_looks_like_plastic: fix_image_master_texture_and_highlights
+  every_shot_uses_the_same_slow_push: add_impact_chain_and_coverage_size_variation
+  title_is_baked_into_generated_video: regenerate_clean_plate
+  impact_sound_is_visibly_out_of_sync: resync_or_recut_to_transient
+  hero_reveal_has_no_narrative_or_evidence_payoff: redesign_sequence_purpose_and_evidence_payoff
   queue_or_budget_failure: use_still_2_5d_with_real_foley
 
 acceptance_test: ../../golden-tests/BANGJJA-STYLE-ACCEPTANCE-TEST.md

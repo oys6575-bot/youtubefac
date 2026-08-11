@@ -94,3 +94,11 @@ Visual Director gate 이름은 OpenMontage checkpoint에 mapping한다. checkpoi
 - OpenMontage가 shot-level extension schema 또는 first-class VisualPlan artifact를 채택
 - compiler의 정보 손실이 Golden Test를 반복적으로 실패시킴
 - custom manifest 유지 비용이 upstream 호환성 이익보다 커짐
+
+## Amendments (2026-08-11, cross-review 반영)
+
+`reviews/final-consensus.md` 합의에 따른 수정.
+
+1. **CLD-001 (PARTIAL) — 기준선을 contract lock으로 고정**: 본문이 인용한 로컬 HEAD `a9f1417…`은 upstream에 존재하지 않아 제3자가 재현할 수 없다. 교차검수에서 compiler가 의존하는 세 파일(`scene_plan.schema.json`, `checkpoint.schema.json`, `hybrid.yaml`)이 공개 upstream 커밋 `4eab34c5cfcccaa4f1970554928feccce73ee930`과 blob·SHA-256 동일함을 양측이 검증했다. 기준선은 [`vendor/openmontage/contract-lock.json`](../vendor/openmontage/contract-lock.json)으로 고정한다. "구현 시점에 다시 확인한다"는 절차는 lock 검증 명령 실행으로 대체하며, 불일치 시 변경 파일을 재검토하기 전까지 compiler·gate 작업을 진행하지 않는다. upstream이 AGPL-3.0이므로 전체 사본 vendoring은 오프라인 CI가 실제로 필요해질 때만 한다.
+2. **CLD-004 / CDX-003 — compiler 검증은 loss-accounting**: round-trip이 아니라 필드 단위 배정표로 검증한다. 모든 VisualPlan 필드는 `scene field로 컴파일 | metadata로 이관 | QC가 visual-plan 직접 소비 | 정당화된 drop` 중 하나의 소비처를 가져야 하며, disclosure·evidence·overlay는 drop 금지 집합이다. representation→scene type 매핑은 Design v2 §5.1의 표를 따른다.
+3. **CLD-007 — 편집 이후 권위 순서**: 컷·타이밍·runtime의 최종 권위는 `edit_decisions`다. VisualPlan의 편집 필드는 GATE_ANIMATIC까지의 계획 가설이며, 이후 차이는 자동 역수정 없이 `{planned, actual, reason, actor, decided_at}` divergence report로 기록한다.

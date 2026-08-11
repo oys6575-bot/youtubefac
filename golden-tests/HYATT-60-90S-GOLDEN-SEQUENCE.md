@@ -2,7 +2,9 @@
 
 ## Purpose
 
-실제 자료에서 AI 재현으로 이동하고, 다시 실제 공학 자료로 돌아오는 전체 계약을 60–90초 안에서 검증한다. 이것은 사실 확정본이 아니라 설계 검증용 시퀀스다. 실제 제작 전에는 대상 사건과 공학 주장을 Source Registry에서 별도로 잠가야 한다.
+실제 자료에서 AI 재현으로 이동하고, 다시 실제 공학 자료로 돌아오는 전체 계약을 60–90초 안에서 검증한다.
+
+**이 문서는 synthetic contract fixture다** (final-consensus, CDX-006). 여기 담긴 사건·수치·구간은 계약 형태를 검증하기 위한 자리표시자이며 사실 확정본이 아니다. 실제 제작 전에는 대상 사건과 공학 주장을 Source Registry에서 별도로 잠가야 하고, `GATE_EVIDENCE_LOCK` 승인 없이는 어떤 유료 생성 단계도 시작할 수 없다.
 
 ## Preconditions
 
@@ -47,7 +49,8 @@
 
 ### Contract
 
-- [ ] `visual-plan.json`이 `schemas/visual-plan.schema.json`을 통과한다.
+- [ ] `visual-plan.json`이 `schemas/visual-plan.v2.schema.json`을 통과한다.
+- [ ] 화면에 표시되는 모든 정확한 텍스트·수치는 typed `overlay.items[]`에 있고 claim_id에 바인딩된다 (CLD-002).
 - [ ] 모든 sequence_id, shot_id, source_id, claim_id가 유일하다.
 - [ ] 모든 claim citation에 page·figure·section·timestamp 중 적용 가능한 pinpoint가 있다.
 - [ ] high/exact factual shot에는 evidence_id가 하나 이상 있다.
@@ -88,6 +91,28 @@
 - [ ] 해상도, fps, 길이, 오디오 stream을 검사했다.
 - [ ] 시작·중간·끝 및 모든 전환의 대표 프레임을 육안 검수했다.
 - [ ] 검은 프레임, 의도치 않은 freeze, 손상 파일이 없다.
+
+## Measurement procedures
+
+정량 기준의 측정 절차 (final-consensus, CLD-008). 편집 타이밍의 측정 기준은 VisualPlan이 아니라 실제 `edit_decisions`다 (CLD-007).
+
+### Anchor 3% 검사 (4→5 전환)
+
+1. 두 숏의 `match_anchors[]`에 같은 `name`의 anchor가 정규화 좌표(`x_pct`, `y_pct`)로 기록되어 있어야 한다.
+2. review build에서 컷 직전 프레임과 직후 프레임을 추출한다: `ffmpeg -ss <cut_time> -i review-build.mp4 -frames:v 1 ...`
+3. 추출 프레임에서 anchor 대상의 실제 위치를 측정하고, 두 프레임 간 오차를 계산한다: `error = |x_after − x_before| / frame_width` (y 동일).
+4. 오차가 3% 이하면 통과. 측정 프레임 2장과 측정값을 `qc-report.json`에 기록한다.
+
+### ±2 frames 검사 (이벤트 기반 컷)
+
+1. beat map artifact의 대상 이벤트(`event_id`, `time_seconds`)를 기준으로 한다.
+2. 오디오 transient는 파형에서 onset을 검출하고, 내레이션 clause는 강제 정렬 또는 수동 마킹으로 시각을 확정한다.
+3. `edit_decisions`의 해당 컷 시각과 이벤트 시각의 차를 프레임으로 환산한다: `|cut_time − event_time| × fps ≤ 2`.
+4. 검사한 모든 이벤트의 목표 시각·실제 시각·오차 프레임을 `qc-report.json`에 기록한다.
+
+### 주관 기준의 판정 규약
+
+"REAL과 AI_RECONSTRUCTION의 경계를 보통 시청자가 이해할 수 있다"는 계측이 아니라 판정 항목이다. 두 리뷰어(Claude·Codex)가 독립적으로 판정하고, 불일치하면 사용자가 최종 판정한다. 판정 근거 문장을 review record에 남긴다.
 
 ## Blockers
 

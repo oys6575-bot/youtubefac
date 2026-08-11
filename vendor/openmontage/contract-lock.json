@@ -1,0 +1,33 @@
+{
+  "lock_version": "1.0.0",
+  "purpose": "Reproducible baseline for the OpenMontage contract files that the VisualPlan compiler and Human Gate design depend on (final-consensus.md: CLD-001 resolution). Full copies are intentionally not vendored; upstream is AGPL-3.0 and the pinned immutable commit plus checksums below give third parties the same baseline.",
+  "upstream": {
+    "repository": "https://github.com/calesthio/OpenMontage",
+    "commit": "4eab34c5cfcccaa4f1970554928feccce73ee930",
+    "license": "AGPL-3.0"
+  },
+  "verified_at": "2026-08-11",
+  "verified_by": ["codex (local HEAD a9f1417 vs upstream)", "claude (GitHub API blob + raw sha256 recomputation)"],
+  "files": [
+    {
+      "path": "schemas/artifacts/scene_plan.schema.json",
+      "git_blob": "751665bfe28152207c00ecbd3bcacc51f7d8a6fc",
+      "sha256": "7b833b7643a73921011270189e5baf645ca67d09390a5d143f6a4b55a667d7a9"
+    },
+    {
+      "path": "schemas/checkpoints/checkpoint.schema.json",
+      "git_blob": "1249c8f051520a30977bddc24961ed9c21f9c0c3",
+      "sha256": "39db408cd797cc5902ee55835a1f659ba26ba3d94c218d7111a6ff4df3da0833"
+    },
+    {
+      "path": "pipeline_defs/hybrid.yaml",
+      "git_blob": "b46dd642d9b31ef6ed2d41c5efbc70178963d9e1",
+      "sha256": "e853359af0bea59c53f617ab3101aa26ea66ea519e3a5177e9ae0c9a5578f226"
+    }
+  ],
+  "verification_command": "for p in <files[].path>; do curl -sL https://raw.githubusercontent.com/calesthio/OpenMontage/<upstream.commit>/$p | shasum -a 256; done  # compare against files[].sha256",
+  "policy": {
+    "on_mismatch": "Compiler and gate design must not proceed against an unverified contract. Re-run cross-review of the changed files, then update this lock in a reviewed commit.",
+    "full_vendor_trigger": "Vendor exact copies with LICENSE/NOTICE only if offline or air-gapped CI becomes a real requirement."
+  }
+}

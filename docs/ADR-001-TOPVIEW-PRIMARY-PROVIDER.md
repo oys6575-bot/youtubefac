@@ -35,7 +35,10 @@ TopView를 주력 클라우드 생성 provider로 사용한다.
 
 ~~~text
 topview_canvas
-= 아이디어 탐색, 프리비즈, 후보 비교, 3D blocking
+= 아이디어 탐색, 프리비즈, 후보 비교 (수동 작업 공간; 산출물은 manual ingest)
+
+topview_3d_shot_composer
+= 3D blocking, 멀티앵글 프리비즈
 
 topview_api
 = 승인된 ShotPlan의 자동 생성
@@ -97,6 +100,14 @@ Newtake는 제거하지 않는다. 다음 두 용도로만 유지한다.
 - TopView API의 안정성 또는 비용이 pilot 기준을 지속적으로 초과
 - 로컬 모델이 목표 품질과 처리량을 충족
 - 다른 provider가 동일 계약으로 더 낮은 실패율을 입증
+
+## Amendments (2026-08-11, cross-review 반영)
+
+`reviews/final-consensus.md` 합의에 따른 수정. 결정 자체(TopView 유지)는 양측 리뷰에서 확인되어 변경 없음.
+
+1. **CLD-015**: 3D blocking은 Canvas가 아니라 3D Shot Composer의 기능이다(공식 제품 페이지 대조). Canvas는 수동 탐색 공간이므로 자동 라우팅 대상 provider mode에서 제외하고, Canvas 산출물은 provider provenance metadata를 가진 manual ingest로 취급한다.
+2. **CLD-021 (RESOLVED)**: `GET /user/credit/detail` 경로는 공식 OpenAPI 정의로 확인됐다. 200 응답 필드 검증은 Phase 3 pilot adapter test로 남는다.
+3. **CLD-022 / CDX-005 (NEEDS_EVIDENCE)**: 실패 generation의 과금 여부는 provider 전역 규칙이 없다. pilot에서 선택한 2–3개 endpoint에 대해 submit 전후 balance, 실패 task의 `costCredit`, credit log를 fixture로 실측한다. 그 외 endpoint는 unsupported로 둔다.
 
 ## Sources
 
