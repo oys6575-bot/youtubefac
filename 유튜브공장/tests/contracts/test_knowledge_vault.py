@@ -1,7 +1,11 @@
 from __future__ import annotations
 
+from copy import deepcopy
 import importlib
+import json
 from pathlib import Path
+
+import pytest
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -148,3 +152,97 @@ def test_search_exposes_all_statuses_but_labels_reddit_as_anecdotal(
 
     assert motion[0]["card_id"] == "camera.material_macro_parallax"
     assert any(item["evidence_class"] == "ANECDOTAL_SIGNAL" for item in reddit)
+
+
+def _selection() -> dict:
+    return json.loads(
+        (ROOT / "tests/fixtures/youtube_factory/technique_selection.valid.json")
+        .read_text(encoding="utf-8")
+    )
+
+
+def test_pack_is_bounded_ordered_and_route_safe_for_topview(tmp_path: Path) -> None:
+    sources = _sync_fixture(tmp_path)
+
+    pack = _module().resolve_knowledge_pack(
+        _selection(), sources=sources, root=tmp_path
+    )
+
+    expected = [item["id"] for item in _selection()["selected"]]
+    assert pack["selected_ids"] == expected
+    assert [item["card_id"] for item in pack["technique_cards"]] == expected
+    for family in ("skill_cards", "tool_cards", "source_cards"):
+        assert len(pack[family]) <= 7
+    for card in (
+        pack["technique_cards"]
+        + pack["skill_cards"]
+        + pack["tool_cards"]
+        + pack["source_cards"]
+    ):
+        assert (tmp_path / card["path"]).is_file()
+    serialized = json.dumps(pack, ensure_ascii=False).casefold()
+    assert "higgsfield" not in serialized
+    assert "seedance" not in serialized
+    assert "local_ltx" not in serialized
+    assert "anecdotal_signal" not in serialized
+    assert all(item["status"] != "BLOCKED" for item in pack["technique_cards"])
+    assert pack["load_order"][:5] == [item["path"] for item in pack["technique_cards"]]
+
+
+def test_pack_rejects_selection_outside_three_to_seven_boundary(
+    tmp_path: Path,
+) -> None:
+    sources = _sync_fixture(tmp_path)
+    empty = _selection()
+    empty["selected"] = []
+    too_many = _selection()
+    extra_ids = [
+        "direction.sequence_meaning_first",
+        "direction.shot_motivation",
+        "editing.rhythmic_variation",
+    ]
+    too_many["selected"].extend({"id": item} for item in extra_ids)
+
+    with pytest.raises(_module().KnowledgeVaultError, match="between 3 and 7"):
+        _module().resolve_knowledge_pack(empty, sources=sources, root=tmp_path)
+    with pytest.raises(_module().KnowledgeVaultError, match="between 3 and 7"):
+        _module().resolve_knowledge_pack(too_many, sources=sources, root=tmp_path)
+
+
+@pytest.mark.parametrize(
+    ("replacement", "include_on_demand", "message"),
+    [
+        ("provider.topview.first_last_frame_bridge", False, "explicit opt-in"),
+        ("research.hf.camera_motion_classifier", True, "BLOCKED"),
+        ("provider.higgsfield.camera_preset", True, "provider_scope"),
+        ("runtime.remotion_scene_reuse", True, "render_runtime"),
+        ("not.a.real.technique", True, "not.a.real.technique"),
+    ],
+)
+def test_pack_revalidates_selector_boundaries(
+    tmp_path: Path,
+    replacement: str,
+    include_on_demand: bool,
+    message: str,
+) -> None:
+    sources = _sync_fixture(tmp_path)
+    selection = deepcopy(_selection())
+    selection["selected"][0] = {"id": replacement}
+    selection["query"]["include_on_demand"] = include_on_demand
+
+    with pytest.raises(_module().KnowledgeVaultError, match=message):
+        _module().resolve_knowledge_pack(selection, sources=sources, root=tmp_path)
+
+
+def test_pack_rejects_a_missing_materialized_card(tmp_path: Path) -> None:
+    sources = _sync_fixture(tmp_path)
+    missing_id = "camera.material_macro_parallax"
+    (
+        tmp_path
+        / "knowledge/02-TECHNIQUES/camera/camera.material_macro_parallax.md"
+    ).unlink()
+
+    with pytest.raises(_module().KnowledgeVaultError, match=missing_id):
+        _module().resolve_knowledge_pack(
+            _selection(), sources=sources, root=tmp_path
+        )

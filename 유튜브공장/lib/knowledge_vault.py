@@ -1244,3 +1244,259 @@ def search_vault(
             }
         )
     return sorted(results, key=lambda item: (-int(item["score"]), str(item["card_id"])))
+
+
+def _card_reference(card: _Card) -> dict[str, Any]:
+    return {
+        "card_id": card.card_id,
+        "entity_type": card.entity_type,
+        "title": card.title,
+        "status": card.status,
+        "path": (Path("knowledge") / card.relative_path).as_posix(),
+    }
+
+
+def _dedupe(values: Iterable[str]) -> list[str]:
+    result: list[str] = []
+    for value in values:
+        if value and value not in result:
+            result.append(value)
+    return result
+
+
+def resolve_knowledge_pack(
+    selection: dict[str, Any],
+    *,
+    sources: KnowledgeSources,
+    root: Path | None = None,
+) -> dict[str, Any]:
+    """Resolve an approved selector result into a small route-safe reading pack.
+
+    This function never selects a provider or technique. It revalidates the supplied
+    selection against the canonical registry, then resolves only explicit local
+    relations. Search-only and anecdotal records cannot enter a production pack.
+    """
+
+    if not isinstance(selection, dict):
+        raise KnowledgeVaultError("Technique selection must be an object")
+    query = selection.get("query")
+    selected_records = selection.get("selected")
+    if not isinstance(query, dict) or not isinstance(selected_records, list):
+        raise KnowledgeVaultError("Technique selection requires query and selected")
+    if not 3 <= len(selected_records) <= 7:
+        raise KnowledgeVaultError("Technique selection must contain between 3 and 7 items")
+
+    selected_ids: list[str] = []
+    for record in selected_records:
+        if not isinstance(record, dict) or not isinstance(record.get("id"), str):
+            raise KnowledgeVaultError("Every selected technique requires a string id")
+        selected_ids.append(record["id"])
+    if len(set(selected_ids)) != len(selected_ids):
+        raise KnowledgeVaultError("Technique selection contains duplicate ids")
+
+    provider_scope = str(query.get("provider_scope", "")).upper()
+    render_runtime = str(query.get("render_runtime", "ANY")).upper()
+    phase = str(query.get("phase", ""))
+    include_on_demand = query.get("include_on_demand") is True
+    techniques = {str(item["id"]): item for item in sources.techniques}
+    selected_techniques: list[dict[str, Any]] = []
+    for technique_id in selected_ids:
+        item = techniques.get(technique_id)
+        if item is None:
+            raise KnowledgeVaultError(f"Unknown selected technique: {technique_id}")
+        status = str(item.get("status", "UNKNOWN"))
+        if status in {"BLOCKED", "REFERENCE_ONLY"}:
+            raise KnowledgeVaultError(f"{technique_id}: status {status} cannot enter a pack")
+        if status == "ON_DEMAND" and not include_on_demand:
+            raise KnowledgeVaultError(
+                f"{technique_id}: ON_DEMAND requires explicit opt-in"
+            )
+        if status not in {"ACTIVE", "ON_DEMAND"}:
+            raise KnowledgeVaultError(f"{technique_id}: unsupported status {status}")
+        if not bool(item.get("selectable", False)):
+            raise KnowledgeVaultError(f"{technique_id}: selectable is false")
+        provider_scopes = {str(value).upper() for value in item.get("provider_scopes", [])}
+        if "GENERIC" not in provider_scopes and provider_scope not in provider_scopes:
+            raise KnowledgeVaultError(
+                f"{technique_id}: provider_scope {provider_scope} is not allowed"
+            )
+        runtimes = {str(value).upper() for value in item.get("render_runtimes", [])}
+        if (
+            render_runtime != "ANY"
+            and "ANY" not in runtimes
+            and render_runtime not in runtimes
+        ):
+            raise KnowledgeVaultError(
+                f"{technique_id}: render_runtime {render_runtime} is not allowed"
+            )
+        phases = {str(value) for value in item.get("phases", [])}
+        if phase and "ALL" not in phases and phase not in phases:
+            raise KnowledgeVaultError(f"{technique_id}: phase {phase} is not allowed")
+        selected_techniques.append(item)
+
+    project_root = Path(root).resolve() if root is not None else sources.project_root
+    vault = project_root / "knowledge"
+    cards, _ = _build_cards(sources)
+    card_lookup = {card.card_id: card for card in cards}
+
+    def require_card(card_id: str) -> _Card:
+        card = card_lookup.get(card_id)
+        if card is None:
+            raise KnowledgeVaultError(f"Knowledge card is not indexed: {card_id}")
+        if not (vault / card.relative_path).is_file():
+            raise KnowledgeVaultError(f"Knowledge card is missing: {card_id}")
+        return card
+
+    technique_cards = [_card_reference(require_card(item)) for item in selected_ids]
+    exclusions: list[dict[str, str]] = []
+    for excluded in selection.get("excluded", []):
+        if isinstance(excluded, dict) and excluded.get("id") and excluded.get("reason"):
+            exclusions.append(
+                {"id": str(excluded["id"]), "reason": "selector:" + str(excluded["reason"])}
+            )
+
+    direct_skill_ids: list[str] = []
+    direct_source_ids: list[str] = []
+    source_paths: list[str] = []
+    for item in selected_techniques:
+        source = dict(item.get("source", {}))
+        source_path = str(source.get("path", ""))
+        if source_path:
+            source_paths.append(source_path)
+            skill_name = _source_skill(source_path)
+            if skill_name:
+                direct_skill_ids.append(f"skill.{skill_name}")
+        manifest_id = source.get("manifest_id")
+        if manifest_id:
+            direct_source_ids.append(f"source.{manifest_id}")
+
+    candidate_tools: list[tuple[int, str, dict[str, Any]]] = []
+    direct_skill_names = {item.removeprefix("skill.") for item in direct_skill_ids}
+    runtime_provider = {
+        "HYPERFRAMES": "hyperframes",
+        "REMOTION": "remotion",
+        "FFMPEG": "ffmpeg",
+    }.get(render_runtime)
+    route_provider = {
+        "TOPVIEW_MANUAL": "topview_manual",
+        "HIGGSFIELD_MANUAL": "higgsfield",
+        "SEEDANCE_MANUAL": "seedance",
+        "LOCAL_LTX": "ltx",
+    }.get(provider_scope)
+    for item in sources.tools:
+        tool_name = str(item["name"])
+        agent_skills = {str(value) for value in item.get("agent_skills", [])}
+        provider = str(item.get("provider", ""))
+        priority: int | None = None
+        if direct_skill_names & agent_skills:
+            priority = 0
+        elif route_provider and provider == route_provider:
+            priority = 1
+        elif runtime_provider and provider == runtime_provider:
+            priority = 2
+        if priority is None:
+            continue
+        status = str(item.get("factory_status", "UNKNOWN"))
+        if status in {"DISABLED_BY_DEFAULT", "EXPLICIT_OPT_IN", "HUMAN_GATE_ONLY"}:
+            exclusions.append({"id": f"tool.{tool_name}", "reason": f"status:{status}"})
+            continue
+        if bool(item.get("network_required", False)):
+            exclusions.append({"id": f"tool.{tool_name}", "reason": "network_required"})
+            continue
+        candidate_tools.append((priority, tool_name, item))
+    candidate_tools.sort(key=lambda row: (row[0], row[1]))
+
+    tool_card_ids = [f"tool.{item['name']}" for _, _, item in candidate_tools]
+    toolchain_ids = ["toolchain.openmontage"]
+    if route_provider:
+        route_toolchain = {
+            "topview_manual": "toolchain.topview",
+            "ltx": "toolchain.comfyui",
+        }.get(route_provider)
+        if route_toolchain:
+            toolchain_ids.append(route_toolchain)
+    runtime_toolchain = {
+        "HYPERFRAMES": "toolchain.hyperframes",
+        "REMOTION": "toolchain.remotion",
+        "FFMPEG": "toolchain.ffmpeg",
+    }.get(render_runtime)
+    if runtime_toolchain:
+        toolchain_ids.append(runtime_toolchain)
+    all_tool_ids = _dedupe([*tool_card_ids, *toolchain_ids])
+    if len(all_tool_ids) > 7:
+        for card_id in all_tool_ids[7:]:
+            exclusions.append({"id": card_id, "reason": "tool_card_budget:7"})
+        all_tool_ids = all_tool_ids[:7]
+    tool_cards = [_card_reference(require_card(card_id)) for card_id in all_tool_ids]
+
+    support_skill_ids = list(direct_skill_ids)
+    tools_by_id = {f"tool.{item['name']}": item for item in sources.tools}
+    for tool_id in all_tool_ids:
+        item = tools_by_id.get(tool_id)
+        if item:
+            support_skill_ids.extend(
+                f"skill.{skill}" for skill in item.get("agent_skills", [])
+            )
+    support_skill_ids = _dedupe(support_skill_ids)
+    allowed_skill_ids: list[str] = []
+    for card_id in support_skill_ids:
+        card = card_lookup.get(card_id)
+        if card is None:
+            exclusions.append({"id": card_id, "reason": "skill_not_indexed"})
+            continue
+        if card.status in {"DISABLED_BY_DEFAULT", "REFERENCE_ONLY"}:
+            exclusions.append({"id": card_id, "reason": f"status:{card.status}"})
+            continue
+        allowed_skill_ids.append(card_id)
+    if len(allowed_skill_ids) > 7:
+        for card_id in allowed_skill_ids[7:]:
+            exclusions.append({"id": card_id, "reason": "skill_card_budget:7"})
+        allowed_skill_ids = allowed_skill_ids[:7]
+    skill_cards = [_card_reference(require_card(card_id)) for card_id in allowed_skill_ids]
+
+    source_ids = _dedupe(direct_source_ids)
+    if len(source_ids) > 7:
+        for card_id in source_ids[7:]:
+            exclusions.append({"id": card_id, "reason": "source_card_budget:7"})
+        source_ids = source_ids[:7]
+    source_cards: list[dict[str, Any]] = []
+    for card_id in source_ids:
+        card = require_card(card_id)
+        if card.status in {"BLOCKED", "REFERENCE_ONLY"}:
+            exclusions.append({"id": card_id, "reason": f"status:{card.status}"})
+            continue
+        source_cards.append(_card_reference(card))
+
+    skills_by_id = {f"skill.{item['name']}": item for item in sources.skills}
+    for card_id in allowed_skill_ids:
+        source_path = str(skills_by_id.get(card_id, {}).get("path", ""))
+        if source_path:
+            source_paths.append(source_path)
+    source_paths = _dedupe(source_paths)
+
+    load_order = [
+        item["path"]
+        for family in (technique_cards, skill_cards, tool_cards, source_cards)
+        for item in family
+    ]
+    exclusions = sorted(
+        (dict(item) for item in exclusions),
+        key=lambda item: (item.get("id", ""), item.get("reason", "")),
+    )
+    return {
+        "registry_version": sources.catalog_version,
+        "query": {
+            "phase": phase,
+            "provider_scope": provider_scope,
+            "render_runtime": render_runtime,
+            "include_on_demand": include_on_demand,
+        },
+        "selected_ids": selected_ids,
+        "technique_cards": technique_cards,
+        "skill_cards": skill_cards,
+        "tool_cards": tool_cards,
+        "source_cards": source_cards,
+        "source_paths": source_paths,
+        "load_order": load_order,
+        "exclusions": exclusions,
+    }
