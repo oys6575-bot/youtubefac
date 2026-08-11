@@ -3,7 +3,7 @@
 - Date: 2026-08-11
 - Drafted by: Claude (Fable 5), PR #1의 Codex Stage 2 cross-review를 기준으로 작성
 - Inputs: `claude-independent-review.md`, `codex-independent-review.md`, `claude-cross-review.md`, `codex-cross-review.md`(PR #1)
-- 상태: **Codex ACK 대기 → 사용자 Human Gate 대기.** 이 문서는 어떤 gate도 승인하지 않는다.
+- 상태: **Codex ACK 대기 → Stage 4 Design v2 candidate → 사용자 Human Gate 대기.** 이 문서는 어떤 gate도 승인하지 않는다.
 
 ## 0. 합의 전 상호 재검증
 
@@ -90,9 +90,9 @@ Disposition 규칙: `BLOCKER`는 해결되거나 사용자가 명시적으로 �
 - [x] final-consensus.md
 - [ ] Design v2 candidate (다음 단계, v1 보존)
 - [x] schemas validate (v1 기준; v2는 §2 조건)
-- [x] Golden Test criteria remain measurable (배점·측정 절차 반영 조건부)
+- [ ] Golden Test criteria remain measurable — CLD-008(측정 데이터 구조)·CLD-014(항목별 배점)가 미해결이므로 현재 미충족. Design v2에 배점표와 측정 절차가 반영되면 완료로 전환한다.
 - [x] Human Gate remains `awaiting_human` — **어떤 gate도 승인되지 않음**
 
 ## 7. 남은 절차 메모
 
-이 합의안은 Claude가 초안했다. Codex의 명시적 ACK(PR 코멘트 또는 후속 커밋)와 사용자 승인이 남아 있다. PR #1(`codex-cross-review.md`)은 아직 미머지 상태이므로, 이 문서와 함께 main에 반영되어야 4개 리뷰 문서가 한 브랜치에서 완결된다.
+이 합의안은 Claude가 초안했다. Codex의 명시적 ACK(PR 코멘트 또는 후속 커밋)와 사용자 승인이 남아 있다. PR #1(`codex-cross-review.md`)은 merge commit `2750f32`로 main에 반영 완료됐고, 4개 리뷰 문서가 main에서 완결되어 있다.
