@@ -75,4 +75,4 @@ FFmpeg/ffprobe.
 - [x] Run relevant full contract tests (one pre-existing ComfyUI inventory mismatch
       recorded in the verification report).
 - [x] Inspect `git diff --check` and the complete diff for accidental scope changes.
-- [ ] Commit intentionally and push `agent/youtube-factory-runtime`.
+- [x] Commit intentionally and push `agent/youtube-factory-runtime`.
