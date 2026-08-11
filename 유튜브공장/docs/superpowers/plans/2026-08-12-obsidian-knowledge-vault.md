@@ -529,7 +529,7 @@ and verify generated card counts against the canonical source counts.
 Record exact counts, commands, pass/fail output, sample search/pack results, known
 limitations, and confirmation that no network/provider/Human Gate action occurred.
 
-- [ ] **Step 6: Commit, push, and update Draft PR #3**
+- [x] **Step 6: Commit, push, and update Draft PR #3**
 
 ```bash
 git add docs/verification/2026-08-12-obsidian-knowledge-vault.md docs/superpowers/plans/2026-08-12-obsidian-knowledge-vault.md
