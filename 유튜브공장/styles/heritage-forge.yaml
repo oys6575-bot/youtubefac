@@ -1,0 +1,114 @@
+identity:
+  name: "Heritage Forge"
+  category: cinematic
+  mood: tactile, restrained, warm, evidence-led
+  pace: deliberate
+  best_for: "Craft, material culture, industrial history, architecture, and heritage documentaries"
+
+visual_language:
+  color_palette:
+    primary: ["#181816", "#6E5A3B"]
+    accent: ["#C58A32", "#56736A"]
+    background: "#F2EBDD"
+    text: "#181816"
+    muted: "#6E6A61"
+  composition: "Evidence-first asymmetry, strong negative space, tactile macro detail balanced by geographic process wides"
+  texture: "Fine restrained grain, warm metal and paper tactility; never add texture over text or source evidence"
+
+typography:
+  headings:
+    font: "Noto Serif KR"
+    weight: 700
+    tracking: "-0.02em"
+  body:
+    font: "Noto Sans KR"
+    weight: 500
+    line_height: 1.55
+  code:
+    font: "JetBrains Mono"
+    weight: 500
+  stat_card:
+    font: "Noto Sans KR"
+    weight: 800
+    size_multiplier: 2.7
+  scale_system: major_third
+  weight_matrix:
+    title: 700
+    heading: 700
+    body: 500
+    caption: 500
+
+motion:
+  transitions: [gesture-match, material-match, sound-bridge, evidence-hard-cut, restrained-dissolve]
+  animation_style: "Measured reveals, tactile masks, controlled parallax, no ornamental bounce or unmotivated orbit"
+  pacing_rules:
+    min_scene_hold_seconds: 2.5
+    max_scene_hold_seconds: 14
+    text_card_hold_seconds: 4.0
+    stat_card_hold_seconds: 3.5
+    transition_duration_seconds: 0.45
+  entrance: "Reveal along the direction of the material, tool, or argument"
+  exit: "Carry gesture, sound, shape, light, or causality into the next shot"
+
+audio:
+  voice_style: "Close, calm, observant Korean documentary narration with clear consonants and unhurried factual emphasis"
+  music_mood: "Sparse organic percussion, low strings, air and room tone; never sentimentalize evidence"
+  music_volume: 0.07
+  sfx_style: "Authentic workshop transients, material resonance, subtle tonal bridges"
+  ducking_threshold_db: -4
+  voice_variation_allowed: true
+  hero_moment_voice_shift: "Slow slightly and leave a short silence after the central material or historical reveal"
+  transition_voice_shift: "Use a breath-length pause at major sequence turns"
+
+asset_generation:
+  image_prompt_prefix: "restrained tactile documentary reconstruction, physically plausible material, warm natural light, observational composition, "
+  image_negative_prompt: "readable generated text, fake archive markings, glossy fantasy, excessive particles, oversaturated orange, impossible camera, decorative clutter"
+  diagram_style: "Charcoal measured lines, brass highlight, warm paper field, progressive evidence-led reveal"
+  consistency_anchors:
+    - "Warm ivory, charcoal, aged brass, and muted verdigris palette"
+    - "Real evidence remains sharper and visually primary over reconstruction"
+    - "One material or process fact per macro shot"
+    - "Exact text is authored in HyperFrames or Remotion, never generated in imagery"
+    - "AI reconstruction has a clear plain-language disclosure"
+
+overlays:
+  stat_card:
+    bg: "#F2EBDD"
+    border: "#C58A32"
+    radius: 3
+    shadow: "0 2px 10px rgba(24,24,22,0.12)"
+  key_term:
+    bg: "#E7DDCA"
+    text: "#181816"
+    radius: 2
+  code_block:
+    bg: "#181816"
+    text: "#F2EBDD"
+    highlight: "#C58A32"
+
+quality_rules:
+  - "All factual overlays resolve to a verified evidence claim and exact literal"
+  - "Minimum WCAG 2.1 AA contrast for text"
+  - "Text and source labels remain readable at 1080p and in a 720p review build"
+  - "No more than two informational overlay layers at once"
+  - "Generated imagery never contains required dates, names, quotations, or measurements"
+  - "AI reconstruction is visibly distinguishable and disclosed"
+  - "Every transition carries gesture, shape, material, light, sound, time, or causality"
+  - "Paid or manual TopView shots enter the edit only after asset-selection approval"
+
+chart_palette:
+  - "#C58A32"
+  - "#56736A"
+  - "#8B5E3C"
+  - "#5D6B7A"
+  - "#9D4F3D"
+  - "#766B45"
+
+color_rules:
+  harmony_type: analogous
+  contrast_validation: true
+  colorblind_safe: true
+
+overrides:
+  max_deviation_ratio: 0.2
+  scene_overrides: []

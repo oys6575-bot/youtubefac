@@ -1,0 +1,188 @@
+{
+  "schema_version": "2.1.0",
+  "project_id": "PROJECT_DEMO",
+  "plan_id": "PLAN_DEMO",
+  "status": "drafting",
+  "generated_by": {
+    "adapter": "mk-visual-director",
+    "model": "manual-fixture",
+    "created_at": "2026-08-11T20:10:00+09:00"
+  },
+  "script_ref": "artifacts/script.json",
+  "script_sha256": "0000000000000000000000000000000000000000000000000000000000000001",
+  "evidence_lock": {
+    "registry_version": "EVIDENCE_V1",
+    "status": "approved"
+  },
+  "global_style": {
+    "aspect_ratio": "16:9",
+    "resolution": "1280x720",
+    "fps": 30,
+    "grammar_ids": ["HERITAGE_FORGE"]
+  },
+  "sequences": [
+    {
+      "sequence_id": "SEQ_INTRO",
+      "purpose": "실제 기록에서 AI 재현으로 전환한다.",
+      "narration_range": {
+        "start_seconds": 0,
+        "end_seconds": 7
+      },
+      "evidence_ids": ["SRC_ARCHIVE", "CLAIM_DATE"],
+      "selected_grammar": "HERITAGE_FORGE",
+      "pacing_profile": "steady",
+      "entry_transition": {
+        "type": "cut",
+        "duration_seconds": 0
+      },
+      "exit_transition": {
+        "type": "sound_bridge",
+        "duration_seconds": 0.4
+      },
+      "target_duration_seconds": 7,
+      "shots": [
+        {
+          "shot_id": "SHOT_001",
+          "narrative_function": "evidence",
+          "representation": "HYBRID",
+          "contains_ai": false,
+          "coverage_role": "evidence_insert",
+          "factual_precision": "exact",
+          "evidence_ids": ["SRC_ARCHIVE", "CLAIM_DATE"],
+          "provider_route": {
+            "mode": "HYPERFRAMES",
+            "cost_tier": "zero"
+          },
+          "prompt_intent": "공식 기록 사진 위에 검증된 날짜를 표시한다.",
+          "continuity_bindings": ["DATE_TO_RECONSTRUCTION"],
+          "edit_trigger": "narration_clause",
+          "transition_in": {
+            "type": "cut",
+            "duration_seconds": 0
+          },
+          "transition_out": {
+            "type": "graphic_match",
+            "duration_seconds": 0.3
+          },
+          "audio_layers": [
+            {
+              "type": "narration",
+              "intent": "검증된 날짜를 말한다.",
+              "sync_event": "BEAT_DATE"
+            }
+          ],
+          "overlay": {
+            "mode": "COMPOSITED_BY_HYPERFRAMES",
+            "items": [
+              {
+                "overlay_id": "OVL_DATE",
+                "module": "TYPOGRAPHY",
+                "claim_id": "CLAIM_DATE",
+                "source_id": null,
+                "text_key": "demo.date",
+                "literal": "1991년 7월 17일",
+                "locale": "ko-KR",
+                "position_hint": "upper_left",
+                "safe_area": "title",
+                "exact_text_from_claims": true
+              }
+            ]
+          },
+          "disclosure": {
+            "required": true,
+            "label": "실제 자료 + 설명 그래픽"
+          },
+          "duration_seconds": 3,
+          "fallback": {
+            "mode": "REAL",
+            "description": "정지 기록 사진과 날짜 타이포만 사용한다."
+          }
+        },
+        {
+          "shot_id": "SHOT_002",
+          "narrative_function": "reveal",
+          "representation": "AI_RECONSTRUCTION",
+          "contains_ai": true,
+          "coverage_role": "hero",
+          "factual_precision": "medium",
+          "evidence_ids": ["SRC_ARCHIVE", "CLAIM_DATE"],
+          "provider_route": {
+            "mode": "TOPVIEW_HANDOFF",
+            "model_requirements": ["image-to-video", "reference-consistency"],
+            "cost_tier": "standard",
+            "estimated_credits": 40
+          },
+          "prompt_intent": "기록 사진의 공간 배치를 존중한 절제된 AI 재현 장면.",
+          "generation_brief": {
+            "negative_prompt": "과장된 파괴, 왜곡된 구조, 읽을 수 없는 문자",
+            "reference_paths": [],
+            "model_recommendation": "TopView에서 사용자가 현재 제공 모델을 선택",
+            "operator_notes": "한 번에 세 후보를 비교하고 카메라 이동이 가장 절제된 결과를 선택한다."
+          },
+          "camera": {
+            "framing": "wide",
+            "angle": "three_quarter",
+            "height": "eye",
+            "lens_intent": "environmental",
+            "movement": "slow_push",
+            "direction": "toward"
+          },
+          "lighting": {
+            "family": "natural overcast",
+            "key_direction": "side",
+            "contrast": "medium"
+          },
+          "composition": "실제 기록 사진과 같은 중심축을 유지한다.",
+          "negative_space": "좌측 상단 공개 라벨 영역을 비운다.",
+          "continuity_bindings": ["DATE_TO_RECONSTRUCTION"],
+          "edit_trigger": "sound_bridge",
+          "transition_in": {
+            "type": "graphic_match",
+            "duration_seconds": 0.3
+          },
+          "transition_out": {
+            "type": "cut",
+            "duration_seconds": 0
+          },
+          "audio_layers": [
+            {
+              "type": "ambience",
+              "intent": "절제된 현장 공간감을 만든다.",
+              "sync_event": null
+            }
+          ],
+          "overlay": {
+            "mode": "SEPARATE_OVERLAY",
+            "items": [
+              {
+                "overlay_id": "OVL_AI_LABEL",
+                "module": "RECONSTRUCTION_LABEL",
+                "claim_id": null,
+                "source_id": null,
+                "text_key": "common.ai_reconstruction",
+                "literal": "AI 재현",
+                "locale": "ko-KR",
+                "position_hint": "upper_left",
+                "safe_area": "title",
+                "exact_text_from_claims": false
+              }
+            ]
+          },
+          "disclosure": {
+            "required": true,
+            "label": "AI 재현"
+          },
+          "duration_seconds": 4,
+          "fallback": {
+            "mode": "STILL_2_5D",
+            "description": "기록 사진을 이용한 느린 2.5D 패럴랙스로 대체한다."
+          }
+        }
+      ]
+    }
+  ],
+  "gate_ref": {
+    "gate": "GATE_ANIMATIC",
+    "checkpoint_path": "checkpoints/scene_plan.json"
+  }
+}

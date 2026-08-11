@@ -1,0 +1,559 @@
+schema_version: 1.0.0
+captured_at: '2026-08-11T23:10:00+09:00'
+policy:
+  paid_provider_skills: disabled_by_default
+  topview: manual_ui_only
+  publishing: human_gate
+  optional_skills: invoke_only_from_approved_shot_design
+skills:
+- name: acestep
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: agents
+  status: REFERENCE_ONLY
+  execution: knowledge_only
+  owner: Technical Director
+  reason: Retained as supporting knowledge, not part of the normal documentary route.
+- name: ai-video-gen
+  status: REQUIRED
+  execution: local_or_knowledge
+  owner: MK Visual Director / OpenMontage
+  reason: Active factory capability; invoke only at the matching production stage.
+- name: avatar-video
+  status: DISABLED_BY_DEFAULT
+  execution: provider_api_disabled
+  owner: Human Gate
+  reason: Preserved for future opt-in use; never call or request a key without explicit
+    approval.
+- name: azure-speech-to-text
+  status: DISABLED_BY_DEFAULT
+  execution: provider_api_disabled
+  owner: Human Gate
+  reason: Preserved for future opt-in use; never call or request a key without explicit
+    approval.
+- name: beat-sync-editing
+  status: REQUIRED
+  execution: local_or_knowledge
+  owner: MK Visual Director / OpenMontage
+  reason: Active factory capability; invoke only at the matching production stage.
+- name: beautiful-mermaid
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: bfl-api
+  status: DISABLED_BY_DEFAULT
+  execution: provider_api_disabled
+  owner: Human Gate
+  reason: Preserved for future opt-in use; never call or request a key without explicit
+    approval.
+- name: canvas-procedural-animation
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: character-animation-qa
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: character-rigging
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: color-motion
+  status: REQUIRED
+  execution: local_or_knowledge
+  owner: MK Visual Director / OpenMontage
+  reason: Active factory capability; invoke only at the matching production stage.
+- name: comfyui
+  status: REQUIRED
+  execution: local_or_knowledge
+  owner: MK Visual Director / OpenMontage
+  reason: Active factory capability; invoke only at the matching production stage.
+- name: create-video
+  status: DISABLED_BY_DEFAULT
+  execution: provider_api_disabled
+  owner: Human Gate
+  reason: Preserved for future opt-in use; never call or request a key without explicit
+    approval.
+- name: d3-viz
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: dashscope
+  status: DISABLED_BY_DEFAULT
+  execution: provider_api_disabled
+  owner: Human Gate
+  reason: Preserved for future opt-in use; never call or request a key without explicit
+    approval.
+- name: diagram-animation
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: doubao-tts
+  status: DISABLED_BY_DEFAULT
+  execution: provider_api_disabled
+  owner: Human Gate
+  reason: Preserved for future opt-in use; never call or request a key without explicit
+    approval.
+- name: elevenlabs
+  status: DISABLED_BY_DEFAULT
+  execution: provider_api_disabled
+  owner: Human Gate
+  reason: Preserved for future opt-in use; never call or request a key without explicit
+    approval.
+- name: embedded-captions
+  status: REQUIRED_WITH_RESTRICTION
+  execution: local_or_knowledge
+  owner: MK Visual Director / HyperFrames
+  reason: 'Use the core caption workflow only; exclude PORTING.md and test-set examples
+    while upstream issue #3219 remains open.'
+- name: faceless-explainer
+  status: REQUIRED
+  execution: local_or_knowledge
+  owner: MK Visual Director / OpenMontage
+  reason: Active factory capability; invoke only at the matching production stage.
+- name: faceswap
+  status: DISABLED_BY_DEFAULT
+  execution: provider_api_disabled
+  owner: Human Gate
+  reason: Preserved for future opt-in use; never call or request a key without explicit
+    approval.
+- name: ffmpeg
+  status: REQUIRED
+  execution: local_or_knowledge
+  owner: MK Visual Director / OpenMontage
+  reason: Active factory capability; invoke only at the matching production stage.
+- name: flux-best-practices
+  status: REQUIRED
+  execution: local_or_knowledge
+  owner: MK Visual Director / OpenMontage
+  reason: Active factory capability; invoke only at the matching production stage.
+- name: framer-motion
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: gemini-omni
+  status: DISABLED_BY_DEFAULT
+  execution: provider_api_disabled
+  owner: Human Gate
+  reason: Preserved for future opt-in use; never call or request a key without explicit
+    approval.
+- name: general-video
+  status: REQUIRED
+  execution: local_or_knowledge
+  owner: MK Visual Director / OpenMontage
+  reason: Active factory capability; invoke only at the matching production stage.
+- name: grok-media
+  status: DISABLED_BY_DEFAULT
+  execution: provider_api_disabled
+  owner: Human Gate
+  reason: Preserved for future opt-in use; never call or request a key without explicit
+    approval.
+- name: gsap-core
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: gsap-frameworks
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: gsap-performance
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: gsap-plugins
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: gsap-react
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: gsap-scrolltrigger
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: gsap-timeline
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: gsap-utils
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: heygen
+  status: DISABLED_BY_DEFAULT
+  execution: provider_api_disabled
+  owner: Human Gate
+  reason: Preserved for future opt-in use; never call or request a key without explicit
+    approval.
+- name: hyperframes
+  status: REQUIRED
+  execution: local_or_knowledge
+  owner: MK Visual Director / OpenMontage
+  reason: Active factory capability; invoke only at the matching production stage.
+- name: hyperframes-animation
+  status: REQUIRED
+  execution: local_or_knowledge
+  owner: MK Visual Director / OpenMontage
+  reason: Active factory capability; invoke only at the matching production stage.
+- name: hyperframes-cli
+  status: REQUIRED
+  execution: local_or_knowledge
+  owner: MK Visual Director / OpenMontage
+  reason: Active factory capability; invoke only at the matching production stage.
+- name: hyperframes-core
+  status: REQUIRED
+  execution: local_or_knowledge
+  owner: MK Visual Director / OpenMontage
+  reason: Active factory capability; invoke only at the matching production stage.
+- name: hyperframes-creative
+  status: REQUIRED
+  execution: local_or_knowledge
+  owner: MK Visual Director / OpenMontage
+  reason: Active factory capability; invoke only at the matching production stage.
+- name: hyperframes-keyframes
+  status: REQUIRED
+  execution: local_or_knowledge
+  owner: MK Visual Director / OpenMontage
+  reason: Active factory capability; invoke only at the matching production stage.
+- name: hyperframes-media
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: hyperframes-registry
+  status: REQUIRED
+  execution: local_or_knowledge
+  owner: MK Visual Director / OpenMontage
+  reason: Active factory capability; invoke only at the matching production stage.
+- name: isometric-animation
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: kinetic-typography
+  status: REQUIRED
+  execution: local_or_knowledge
+  owner: MK Visual Director / OpenMontage
+  reason: Active factory capability; invoke only at the matching production stage.
+- name: kling-official
+  status: DISABLED_BY_DEFAULT
+  execution: provider_api_disabled
+  owner: Human Gate
+  reason: Preserved for future opt-in use; never call or request a key without explicit
+    approval.
+- name: lottie-bodymovin
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: ltx2
+  status: REQUIRED
+  execution: local_or_knowledge
+  owner: MK Visual Director / OpenMontage
+  reason: Active factory capability; invoke only at the matching production stage.
+- name: lyria
+  status: DISABLED_BY_DEFAULT
+  execution: provider_api_disabled
+  owner: Human Gate
+  reason: Preserved for future opt-in use; never call or request a key without explicit
+    approval.
+- name: manim-composer
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: manimce-best-practices
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: manimgl-best-practices
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: map-animation
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: media-use
+  status: REQUIRED
+  execution: local_or_knowledge
+  owner: MK Visual Director / OpenMontage
+  reason: Active factory capability; invoke only at the matching production stage.
+- name: motion-art-direction
+  status: REQUIRED
+  execution: local_or_knowledge
+  owner: MK Visual Director / OpenMontage
+  reason: Active factory capability; invoke only at the matching production stage.
+- name: motion-graphics
+  status: REQUIRED
+  execution: local_or_knowledge
+  owner: MK Visual Director / OpenMontage
+  reason: Active factory capability; invoke only at the matching production stage.
+- name: music
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: music-to-video
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: playwright-recording
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: pose-library-design
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: remotion
+  status: REQUIRED
+  execution: local_or_knowledge
+  owner: MK Visual Director / OpenMontage
+  reason: Active factory capability; invoke only at the matching production stage.
+- name: remotion-best-practices
+  status: REQUIRED
+  execution: local_or_knowledge
+  owner: OpenMontage Edit/Compose
+  reason: Current official Remotion production guidance pinned with the 4.0.508 runtime.
+- name: remotion-bits
+  status: REQUIRED
+  execution: local_or_knowledge
+  owner: MK Visual Director / OpenMontage
+  reason: Active factory capability; invoke only at the matching production stage.
+- name: remotion-captions
+  status: REQUIRED
+  execution: local_or_knowledge
+  owner: OpenMontage Edit/Compose
+  reason: Current official Remotion production guidance pinned with the 4.0.508 runtime.
+- name: remotion-create
+  status: REFERENCE_ONLY
+  execution: knowledge_only
+  owner: Technical Director
+  reason: Retained as supporting knowledge, not part of the normal documentary route.
+- name: remotion-docs
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: remotion-interactivity
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: remotion-maps
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: remotion-markup
+  status: REQUIRED
+  execution: local_or_knowledge
+  owner: OpenMontage Edit/Compose
+  reason: Current official Remotion production guidance pinned with the 4.0.508 runtime.
+- name: remotion-multimedia
+  status: REQUIRED
+  execution: local_or_knowledge
+  owner: OpenMontage Edit/Compose
+  reason: Current official Remotion production guidance pinned with the 4.0.508 runtime.
+- name: remotion-render
+  status: REQUIRED
+  execution: local_or_knowledge
+  owner: OpenMontage Edit/Compose
+  reason: Current official Remotion production guidance pinned with the 4.0.508 runtime.
+- name: remotion-saas
+  status: REFERENCE_ONLY
+  execution: knowledge_only
+  owner: Technical Director
+  reason: Retained as supporting knowledge, not part of the normal documentary route.
+- name: remotion-studio
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: remotion-to-hyperframes
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: remotion-upgrade
+  status: REQUIRED
+  execution: local_or_knowledge
+  owner: OpenMontage Edit/Compose
+  reason: Current official Remotion production guidance pinned with the 4.0.508 runtime.
+- name: seedance-2-0
+  status: DISABLED_BY_DEFAULT
+  execution: provider_api_disabled
+  owner: Human Gate
+  reason: Preserved for future opt-in use; never call or request a key without explicit
+    approval.
+- name: setup-api-key
+  status: DISABLED_BY_DEFAULT
+  execution: provider_api_disabled
+  owner: Human Gate
+  reason: Preserved for future opt-in use; never call or request a key without explicit
+    approval.
+- name: shot-composition
+  status: REQUIRED
+  execution: local_or_knowledge
+  owner: MK Visual Director / OpenMontage
+  reason: Active factory capability; invoke only at the matching production stage.
+- name: sound-effects
+  status: REQUIRED
+  execution: local_or_knowledge
+  owner: MK Visual Director / OpenMontage
+  reason: Active factory capability; invoke only at the matching production stage.
+- name: speech-to-text
+  status: REQUIRED
+  execution: local_or_knowledge
+  owner: MK Visual Director / OpenMontage
+  reason: Active factory capability; invoke only at the matching production stage.
+- name: svg-character-animation
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: synthetic-screen-recording
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: tailwind-design-system
+  status: REFERENCE_ONLY
+  execution: knowledge_only
+  owner: Technical Director
+  reason: Retained as supporting knowledge, not part of the normal documentary route.
+- name: text-to-speech
+  status: REQUIRED
+  execution: local_or_knowledge
+  owner: MK Visual Director / OpenMontage
+  reason: Active factory capability; invoke only at the matching production stage.
+- name: threejs-animation
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: threejs-fundamentals
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: threejs-geometry
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: threejs-interaction
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: threejs-lighting
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: threejs-loaders
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: threejs-materials
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: threejs-postprocessing
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: threejs-shaders
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: threejs-textures
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: topview-manual-handoff
+  status: REQUIRED
+  execution: manual_ui_only
+  owner: OpenMontage Asset Director
+  reason: Prepare and recover human-operated TopView candidates without provider automation.
+- name: vercel-composition-patterns
+  status: REFERENCE_ONLY
+  execution: knowledge_only
+  owner: Technical Director
+  reason: Retained as supporting knowledge, not part of the normal documentary route.
+- name: vercel-react-best-practices
+  status: REFERENCE_ONLY
+  execution: knowledge_only
+  owner: Technical Director
+  reason: Retained as supporting knowledge, not part of the normal documentary route.
+- name: video-download
+  status: REQUIRED
+  execution: local_or_knowledge
+  owner: MK Visual Director / OpenMontage
+  reason: Active factory capability; invoke only at the matching production stage.
+- name: video-edit
+  status: REQUIRED
+  execution: local_or_knowledge
+  owner: MK Visual Director / OpenMontage
+  reason: Active factory capability; invoke only at the matching production stage.
+- name: video-toolkit
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: video-translate
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.
+- name: video-understand
+  status: REQUIRED
+  execution: local_or_knowledge
+  owner: MK Visual Director / OpenMontage
+  reason: Active factory capability; invoke only at the matching production stage.
+- name: visual-style
+  status: REQUIRED
+  execution: local_or_knowledge
+  owner: MK Visual Director / OpenMontage
+  reason: Active factory capability; invoke only at the matching production stage.
+- name: web-design-guidelines
+  status: REFERENCE_ONLY
+  execution: knowledge_only
+  owner: Technical Director
+  reason: Retained as supporting knowledge, not part of the normal documentary route.
+- name: website-to-video
+  status: OPTIONAL
+  execution: local_or_knowledge
+  owner: MK Visual Director
+  reason: Use only when the approved shot design explicitly needs this specialty.

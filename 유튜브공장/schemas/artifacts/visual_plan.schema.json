@@ -1,0 +1,516 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openmontage/artifacts/visual_plan",
+  "title": "YouTube Factory MK Visual Director VisualPlan",
+  "description": "Sequence-first visual contract with evidence-bound overlays, AI disclosure invariants, Human Gate references, and four production routes. TopView is a manual UI handoff rather than an API provider.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "project_id",
+    "plan_id",
+    "status",
+    "generated_by",
+    "script_ref",
+    "script_sha256",
+    "evidence_lock",
+    "sequences",
+    "gate_ref"
+  ],
+  "properties": {
+    "schema_version": { "const": "2.1.0" },
+    "project_id": { "$ref": "#/$defs/id" },
+    "plan_id": { "$ref": "#/$defs/id" },
+    "status": {
+      "enum": ["drafting", "awaiting_human", "approved", "rejected", "needs_revision", "superseded"]
+    },
+    "generated_by": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["adapter", "model", "created_at"],
+      "properties": {
+        "adapter": { "type": "string", "minLength": 1 },
+        "model": { "type": "string", "minLength": 1 },
+        "created_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "script_ref": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Path of the approved canonical script artifact this plan was generated from."
+    },
+    "script_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Checksum of the referenced script. A mismatch marks this plan stale (CLD-005)."
+    },
+    "evidence_lock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["registry_version", "status"],
+      "properties": {
+        "registry_version": { "type": "string", "minLength": 1 },
+        "status": { "enum": ["unlocked", "awaiting_human", "approved"] }
+      }
+    },
+    "global_style": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "aspect_ratio": { "enum": ["16:9", "9:16", "1:1", "2.39:1"] },
+        "resolution": { "type": "string", "pattern": "^[0-9]+x[0-9]+$" },
+        "fps": { "type": "number", "exclusiveMinimum": 0 },
+        "grammar_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/id" },
+          "uniqueItems": true
+        }
+      }
+    },
+    "sequences": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/sequence" }
+    },
+    "gate_ref": { "$ref": "#/$defs/gateRef" }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9_-]{2,63}$"
+    },
+    "evidenceId": {
+      "type": "string",
+      "pattern": "^(SRC|CLAIM)_[A-Z0-9_-]{1,58}$"
+    },
+    "claimId": {
+      "type": "string",
+      "pattern": "^CLAIM_[A-Z0-9_-]{1,56}$"
+    },
+    "sourceId": {
+      "type": "string",
+      "pattern": "^SRC_[A-Z0-9_-]{1,58}$"
+    },
+    "seconds": {
+      "type": "number",
+      "minimum": 0
+    },
+    "gateRef": {
+      "type": "object",
+      "description": "Pointer to the single source of approval truth. Approval status, actor, and time live only in the referenced OpenMontage checkpoint (CLD-009/010); this plan never records an approval state of its own.",
+      "additionalProperties": false,
+      "required": ["gate", "checkpoint_path"],
+      "properties": {
+        "gate": {
+          "enum": [
+            "GATE_TOPIC",
+            "GATE_SCRIPT",
+            "GATE_EVIDENCE_LOCK",
+            "GATE_ANIMATIC",
+            "GATE_BUDGET",
+            "GATE_ASSET_SELECTION",
+            "GATE_FINAL_EDIT",
+            "GATE_TITLE_THUMBNAIL",
+            "GATE_PUBLISH"
+          ]
+        },
+        "checkpoint_path": { "type": "string", "minLength": 1 }
+      }
+    },
+    "sequence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sequence_id",
+        "purpose",
+        "narration_range",
+        "evidence_ids",
+        "selected_grammar",
+        "pacing_profile",
+        "entry_transition",
+        "exit_transition",
+        "target_duration_seconds",
+        "shots"
+      ],
+      "properties": {
+        "sequence_id": { "$ref": "#/$defs/id" },
+        "purpose": { "type": "string", "minLength": 1 },
+        "narration_range": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["start_seconds", "end_seconds"],
+          "properties": {
+            "start_seconds": { "$ref": "#/$defs/seconds" },
+            "end_seconds": { "$ref": "#/$defs/seconds" }
+          }
+        },
+        "evidence_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/evidenceId" },
+          "uniqueItems": true
+        },
+        "grammar_candidates": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/id" },
+          "uniqueItems": true
+        },
+        "selected_grammar": { "$ref": "#/$defs/id" },
+        "pacing_profile": { "enum": ["contemplative", "steady", "accelerating", "impact", "release"] },
+        "entry_transition": { "$ref": "#/$defs/transition" },
+        "exit_transition": { "$ref": "#/$defs/transition" },
+        "target_duration_seconds": { "$ref": "#/$defs/seconds" },
+        "motif_bindings": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "shots": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/shot" }
+        }
+      }
+    },
+    "shot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "shot_id",
+        "narrative_function",
+        "representation",
+        "contains_ai",
+        "coverage_role",
+        "factual_precision",
+        "evidence_ids",
+        "provider_route",
+        "prompt_intent",
+        "continuity_bindings",
+        "edit_trigger",
+        "transition_in",
+        "transition_out",
+        "audio_layers",
+        "overlay",
+        "disclosure",
+        "duration_seconds",
+        "fallback"
+      ],
+      "properties": {
+        "shot_id": { "$ref": "#/$defs/id" },
+        "narrative_function": {
+          "enum": ["hook", "context", "evidence", "reveal", "explanation", "tension", "consequence", "reflection"]
+        },
+        "representation": { "enum": ["REAL", "AI_RECONSTRUCTION", "GRAPHIC", "HYBRID"] },
+        "contains_ai": {
+          "type": "boolean",
+          "description": "Whether any generated/reconstructed component appears in this shot. Not free self-declaration: AI_RECONSTRUCTION must be true (schema-enforced); for HYBRID the semantic validator derives it from component provenance (CDX-X-001)."
+        },
+        "coverage_role": {
+          "enum": ["establishing_wide", "spatial_medium", "action_medium", "object_closeup", "material_macro", "face_detail", "evidence_insert", "hero", "transition"]
+        },
+        "factual_precision": { "enum": ["none", "low", "medium", "high", "exact"] },
+        "evidence_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/evidenceId" },
+          "uniqueItems": true
+        },
+        "provider_route": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "cost_tier"],
+          "properties": {
+            "mode": {
+              "enum": ["REAL_INGEST", "TOPVIEW_HANDOFF", "LOCAL_LTX", "HYPERFRAMES"],
+              "description": "TOPVIEW_HANDOFF creates a local job pack for a human-operated TopView web session. It never submits an API request."
+            },
+            "model_requirements": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 },
+              "uniqueItems": true
+            },
+            "cost_tier": { "enum": ["zero", "draft", "standard", "premium"] },
+            "estimated_credits": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Planning estimate feeding GATE_BUDGET. For manual TopView work the operator records observed credits after download."
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": { "cost_tier": { "enum": ["draft", "standard", "premium"] } },
+                "required": ["cost_tier"]
+              },
+              "then": { "required": ["estimated_credits"] }
+            }
+          ]
+        },
+        "prompt_intent": { "type": "string", "minLength": 1 },
+        "generation_brief": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["negative_prompt", "reference_paths", "model_recommendation", "operator_notes"],
+          "properties": {
+            "negative_prompt": { "type": "string" },
+            "reference_paths": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 },
+              "uniqueItems": true
+            },
+            "model_recommendation": { "type": "string", "minLength": 1 },
+            "operator_notes": { "type": "string", "minLength": 1 }
+          }
+        },
+        "camera": { "$ref": "#/$defs/camera" },
+        "lighting": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["family", "key_direction", "contrast"],
+          "properties": {
+            "family": { "type": "string", "minLength": 1 },
+            "key_direction": { "enum": ["front", "side", "back", "top", "motivated_mixed"] },
+            "contrast": { "enum": ["low", "medium", "high"] }
+          }
+        },
+        "composition": { "type": "string" },
+        "negative_space": { "type": "string" },
+        "continuity_bindings": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "match_anchors": {
+          "type": "array",
+          "description": "Normalized anchor coordinates for match-cut continuity measurement (CLD-008). Position error across a match cut is measured against these anchors on exported frames.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "x_pct", "y_pct"],
+            "properties": {
+              "name": { "type": "string", "minLength": 1 },
+              "x_pct": { "type": "number", "minimum": 0, "maximum": 100 },
+              "y_pct": { "type": "number", "minimum": 0, "maximum": 100 }
+            }
+          }
+        },
+        "edit_trigger": {
+          "enum": ["narration_clause", "music_beat", "impact", "motion", "shape", "sound_bridge", "hold", "manual"]
+        },
+        "transition_in": { "$ref": "#/$defs/transition" },
+        "transition_out": { "$ref": "#/$defs/transition" },
+        "audio_layers": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/audioLayer" }
+        },
+        "overlay": { "$ref": "#/$defs/overlay" },
+        "disclosure": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["required", "label"],
+          "properties": {
+            "required": { "type": "boolean" },
+            "label": {
+              "enum": ["AI 재현", "AI 재현 + 설명 그래픽", "실제 자료 + 설명 그래픽", null],
+              "description": "Controlled vocabulary (CLD-006). Free-text labels are not allowed."
+            }
+          }
+        },
+        "duration_seconds": { "$ref": "#/$defs/seconds" },
+        "fallback": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "description"],
+          "properties": {
+            "mode": { "enum": ["REAL", "STILL_2_5D", "LOCAL_LTX", "ALTERNATE_MODEL", "GRAPHIC", "OMIT"] },
+            "description": { "type": "string", "minLength": 1 }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "factual_precision": { "enum": ["high", "exact"] } },
+            "required": ["factual_precision"]
+          },
+          "then": {
+            "properties": {
+              "evidence_ids": { "type": "array", "minItems": 1 }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "representation": { "const": "AI_RECONSTRUCTION" } },
+            "required": ["representation"]
+          },
+          "then": {
+            "properties": { "contains_ai": { "const": true } }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provider_route": {
+                "type": "object",
+                "properties": { "mode": { "enum": ["TOPVIEW_HANDOFF", "LOCAL_LTX"] } },
+                "required": ["mode"]
+              }
+            },
+            "required": ["provider_route"]
+          },
+          "then": {
+            "properties": { "contains_ai": { "const": true } }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provider_route": {
+                "type": "object",
+                "properties": { "mode": { "const": "TOPVIEW_HANDOFF" } },
+                "required": ["mode"]
+              }
+            },
+            "required": ["provider_route"]
+          },
+          "then": { "required": ["generation_brief"] }
+        },
+        {
+          "if": {
+            "properties": { "contains_ai": { "const": true } },
+            "required": ["contains_ai"]
+          },
+          "then": {
+            "properties": {
+              "disclosure": {
+                "type": "object",
+                "properties": {
+                  "required": { "const": true },
+                  "label": { "enum": ["AI 재현", "AI 재현 + 설명 그래픽"] }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provider_route": {
+                "type": "object",
+                "properties": { "mode": { "enum": ["REAL_INGEST", "TOPVIEW_HANDOFF", "LOCAL_LTX"] } },
+                "required": ["mode"]
+              }
+            },
+            "required": ["provider_route"]
+          },
+          "then": { "required": ["camera", "lighting"] }
+        }
+      ]
+    },
+    "camera": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["framing", "angle", "height", "lens_intent", "movement"],
+      "properties": {
+        "framing": { "enum": ["extreme_wide", "wide", "medium", "close", "macro", "insert"] },
+        "angle": { "enum": ["front", "three_quarter", "profile", "overhead", "low", "high", "pov"] },
+        "height": { "enum": ["ground", "waist", "eye", "shoulder", "overhead"] },
+        "lens_intent": { "enum": ["compressed", "normal", "environmental", "macro", "orthographic"] },
+        "movement": { "enum": ["locked", "slow_push", "slow_pull", "pan", "tilt", "track", "orbit", "handheld_subtle", "rack_focus"] },
+        "direction": { "enum": ["none", "left_to_right", "right_to_left", "toward", "away", "clockwise", "counterclockwise"] }
+      }
+    },
+    "transition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "duration_seconds"],
+      "properties": {
+        "type": { "enum": ["cut", "impact_cut", "shape_match", "motion_match", "sound_bridge", "dissolve", "dip_to_black", "graphic_match", "none"] },
+        "duration_seconds": { "$ref": "#/$defs/seconds" }
+      }
+    },
+    "audioLayer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "intent"],
+      "properties": {
+        "type": { "enum": ["narration", "production_sound", "foley", "sfx", "ambience", "music", "silence"] },
+        "intent": { "type": "string", "minLength": 1 },
+        "sync_event": {
+          "type": ["string", "null"],
+          "description": "Event id in the canonical beat_map artifact (CLD-008). Timing values live in the beat map, not here."
+        }
+      }
+    },
+    "overlay": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "items"],
+      "properties": {
+        "mode": { "enum": ["NONE", "SEPARATE_OVERLAY", "COMPOSITED_BY_HYPERFRAMES"] },
+        "items": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/overlayItem" }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "mode": { "const": "NONE" } },
+            "required": ["mode"]
+          },
+          "then": {
+            "properties": { "items": { "type": "array", "maxItems": 0 } }
+          },
+          "else": {
+            "properties": { "items": { "type": "array", "minItems": 1 } }
+          }
+        }
+      ]
+    },
+    "overlayItem": {
+      "type": "object",
+      "description": "Typed overlay payload (CLD-002). Multiple items per shot are allowed (e.g. TYPOGRAPHY + NUMBER). Exact factual text must be claim-bound; the renderer resolves the claim's canonical/localized value, and any co-stored literal must equal it (CDX-X-002, checked by the semantic validator).",
+      "additionalProperties": false,
+      "required": ["overlay_id", "module", "safe_area", "exact_text_from_claims"],
+      "properties": {
+        "overlay_id": { "$ref": "#/$defs/id" },
+        "module": { "enum": ["TYPOGRAPHY", "NUMBER", "UNDERLINE", "CALLOUT", "DIAGRAM", "DOCUMENT", "ARCHIVE_FRAME", "RECONSTRUCTION_LABEL"] },
+        "claim_id": {
+          "anyOf": [{ "$ref": "#/$defs/claimId" }, { "type": "null" }]
+        },
+        "source_id": {
+          "anyOf": [{ "$ref": "#/$defs/sourceId" }, { "type": "null" }]
+        },
+        "text_key": {
+          "type": ["string", "null"],
+          "description": "Localization key resolved by the render runtime; preferred over literal for multilingual output."
+        },
+        "literal": {
+          "type": ["string", "null"],
+          "description": "Unbound literal text. Allowed only for non-factual copy (titles, brand). For exact_text_from_claims items it may co-exist but must equal the claim value (semantic check)."
+        },
+        "locale": {
+          "type": ["string", "null"],
+          "pattern": "^[a-z]{2}(-[A-Z]{2})?$"
+        },
+        "position_hint": {
+          "enum": ["upper_left", "upper_right", "lower_left", "lower_right", "center", "custom", null]
+        },
+        "safe_area": { "enum": ["none", "title", "action", "custom"] },
+        "exact_text_from_claims": { "type": "boolean" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "exact_text_from_claims": { "const": true } },
+            "required": ["exact_text_from_claims"]
+          },
+          "then": {
+            "properties": { "claim_id": { "$ref": "#/$defs/claimId" } },
+            "required": ["claim_id"]
+          }
+        }
+      ]
+    }
+  }
+}

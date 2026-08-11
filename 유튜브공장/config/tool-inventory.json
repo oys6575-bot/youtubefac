@@ -1,0 +1,1816 @@
+{
+  "schema_version": "1.0.0",
+  "captured_at": "2026-08-11T23:10:00+09:00",
+  "captured_environment": {
+    "python": "3.11.15",
+    "node": "26.5.0",
+    "ffmpeg": "8.1.2",
+    "credentials_loaded": false
+  },
+  "policy": {
+    "paid_or_credentialed": "DISABLED_BY_DEFAULT",
+    "publish": "HUMAN_GATE_ONLY",
+    "topview": "MANUAL_BRIDGE",
+    "captured_status_is_not_approval": true
+  },
+  "tool_count": 104,
+  "tools": [
+    {
+      "name": "action_timeline_compiler",
+      "version": "0.1.0",
+      "tier": "core",
+      "capability": "character_animation",
+      "provider": "openmontage",
+      "runtime": "local",
+      "captured_status": "available",
+      "stability": "beta",
+      "dependencies": [],
+      "agent_skills": [
+        "pose-library-design",
+        "svg-character-animation",
+        "gsap-timeline"
+      ],
+      "network_required": false,
+      "factory_status": "ACTIVE_LOCAL"
+    },
+    {
+      "name": "audio_energy",
+      "version": "0.1.0",
+      "tier": "core",
+      "capability": "analysis",
+      "provider": "ffmpeg",
+      "runtime": "local",
+      "captured_status": "available",
+      "stability": "production",
+      "dependencies": [
+        "binary:ffmpeg"
+      ],
+      "agent_skills": [],
+      "network_required": false,
+      "factory_status": "ACTIVE_LOCAL"
+    },
+    {
+      "name": "audio_enhance",
+      "version": "0.1.0",
+      "tier": "core",
+      "capability": "audio_processing",
+      "provider": "ffmpeg",
+      "runtime": "local",
+      "captured_status": "available",
+      "stability": "experimental",
+      "dependencies": [
+        "cmd:ffmpeg"
+      ],
+      "agent_skills": [
+        "ffmpeg",
+        "elevenlabs"
+      ],
+      "network_required": false,
+      "factory_status": "ACTIVE_LOCAL"
+    },
+    {
+      "name": "audio_mixer",
+      "version": "0.1.0",
+      "tier": "core",
+      "capability": "audio_processing",
+      "provider": "ffmpeg",
+      "runtime": "local",
+      "captured_status": "available",
+      "stability": "experimental",
+      "dependencies": [
+        "cmd:ffmpeg"
+      ],
+      "agent_skills": [
+        "ffmpeg",
+        "video-toolkit"
+      ],
+      "network_required": false,
+      "factory_status": "ACTIVE_LOCAL"
+    },
+    {
+      "name": "audio_probe",
+      "version": "0.1.0",
+      "tier": "core",
+      "capability": "analysis",
+      "provider": "ffprobe",
+      "runtime": "local",
+      "captured_status": "available",
+      "stability": "production",
+      "dependencies": [
+        "binary:ffprobe"
+      ],
+      "agent_skills": [],
+      "network_required": false,
+      "factory_status": "ACTIVE_LOCAL"
+    },
+    {
+      "name": "auto_reframe",
+      "version": "0.1.0",
+      "tier": "core",
+      "capability": "video_post",
+      "provider": "ffmpeg",
+      "runtime": "local",
+      "captured_status": "available",
+      "stability": "experimental",
+      "dependencies": [
+        "cmd:ffmpeg"
+      ],
+      "agent_skills": [
+        "ffmpeg"
+      ],
+      "network_required": false,
+      "factory_status": "ACTIVE_LOCAL"
+    },
+    {
+      "name": "azure_stt",
+      "version": "0.1.0",
+      "tier": "core",
+      "capability": "analysis",
+      "provider": "azure",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "beta",
+      "dependencies": [],
+      "agent_skills": [
+        "azure-speech-to-text"
+      ],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "bg_remove",
+      "version": "0.1.0",
+      "tier": "enhance",
+      "capability": "enhancement",
+      "provider": "rembg",
+      "runtime": "hybrid",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [
+        "python:rembg",
+        "python:PIL"
+      ],
+      "agent_skills": [
+        "ffmpeg"
+      ],
+      "network_required": false,
+      "factory_status": "OPTIONAL"
+    },
+    {
+      "name": "cap_recorder",
+      "version": "0.1.0",
+      "tier": "source",
+      "capability": "screen_capture",
+      "provider": "cap",
+      "runtime": "local",
+      "captured_status": "available",
+      "stability": "beta",
+      "dependencies": [],
+      "agent_skills": [],
+      "network_required": false,
+      "factory_status": "ACTIVE_LOCAL"
+    },
+    {
+      "name": "character_animation_reviewer",
+      "version": "0.1.0",
+      "tier": "analyze",
+      "capability": "character_animation",
+      "provider": "openmontage",
+      "runtime": "local",
+      "captured_status": "available",
+      "stability": "beta",
+      "dependencies": [],
+      "agent_skills": [
+        "character-animation-qa"
+      ],
+      "network_required": false,
+      "factory_status": "ACTIVE_LOCAL"
+    },
+    {
+      "name": "character_rig_renderer",
+      "version": "0.1.0",
+      "tier": "core",
+      "capability": "character_animation",
+      "provider": "openmontage",
+      "runtime": "local",
+      "captured_status": "available",
+      "stability": "beta",
+      "dependencies": [],
+      "agent_skills": [
+        "character-rigging",
+        "svg-character-animation",
+        "canvas-procedural-animation",
+        "gsap-core",
+        "gsap-timeline",
+        "remotion-best-practices",
+        "hyperframes"
+      ],
+      "network_required": false,
+      "factory_status": "ACTIVE_LOCAL"
+    },
+    {
+      "name": "character_spec_generator",
+      "version": "0.1.0",
+      "tier": "core",
+      "capability": "character_animation",
+      "provider": "openmontage",
+      "runtime": "local",
+      "captured_status": "available",
+      "stability": "beta",
+      "dependencies": [],
+      "agent_skills": [
+        "character-rigging",
+        "pose-library-design"
+      ],
+      "network_required": false,
+      "factory_status": "ACTIVE_LOCAL"
+    },
+    {
+      "name": "clip_search",
+      "version": "0.1.0",
+      "tier": "analyze",
+      "capability": "clip_retrieval",
+      "provider": "openmontage",
+      "runtime": "local",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [
+        "python:numpy",
+        "python:transformers",
+        "python:torch"
+      ],
+      "agent_skills": [],
+      "network_required": false,
+      "factory_status": "LOCAL_SETUP_REQUIRED"
+    },
+    {
+      "name": "code_snippet",
+      "version": "0.1.0",
+      "tier": "core",
+      "capability": "graphics",
+      "provider": "pygments",
+      "runtime": "local",
+      "captured_status": "available",
+      "stability": "experimental",
+      "dependencies": [
+        "python:pygments",
+        "python:PIL"
+      ],
+      "agent_skills": [],
+      "network_required": false,
+      "factory_status": "ACTIVE_LOCAL"
+    },
+    {
+      "name": "cogvideo_video",
+      "version": "0.1.0",
+      "tier": "generate",
+      "capability": "video_generation",
+      "provider": "cogvideo",
+      "runtime": "local_gpu",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [],
+      "agent_skills": [
+        "ltx2"
+      ],
+      "network_required": false,
+      "factory_status": "OPTIONAL"
+    },
+    {
+      "name": "color_grade",
+      "version": "0.1.0",
+      "tier": "core",
+      "capability": "enhancement",
+      "provider": "ffmpeg",
+      "runtime": "local",
+      "captured_status": "available",
+      "stability": "experimental",
+      "dependencies": [
+        "cmd:ffmpeg"
+      ],
+      "agent_skills": [
+        "ffmpeg"
+      ],
+      "network_required": false,
+      "factory_status": "ACTIVE_LOCAL"
+    },
+    {
+      "name": "comfyui_image",
+      "version": "0.1.0",
+      "tier": "generate",
+      "capability": "image_generation",
+      "provider": "comfyui",
+      "runtime": "local_gpu",
+      "captured_status": "degraded",
+      "stability": "experimental",
+      "dependencies": [],
+      "agent_skills": [
+        "comfyui",
+        "flux-best-practices"
+      ],
+      "network_required": false,
+      "factory_status": "OPTIONAL"
+    },
+    {
+      "name": "comfyui_video",
+      "version": "0.1.0",
+      "tier": "generate",
+      "capability": "video_generation",
+      "provider": "comfyui",
+      "runtime": "local_gpu",
+      "captured_status": "degraded",
+      "stability": "experimental",
+      "dependencies": [],
+      "agent_skills": [
+        "comfyui",
+        "ai-video-gen",
+        "ltx2"
+      ],
+      "network_required": false,
+      "factory_status": "OPTIONAL"
+    },
+    {
+      "name": "composition_validator",
+      "version": "0.1.0",
+      "tier": "core",
+      "capability": "analysis",
+      "provider": "local",
+      "runtime": "local",
+      "captured_status": "available",
+      "stability": "production",
+      "dependencies": [
+        "binary:ffprobe"
+      ],
+      "agent_skills": [],
+      "network_required": false,
+      "factory_status": "ACTIVE_LOCAL"
+    },
+    {
+      "name": "corpus_builder",
+      "version": "0.1.0",
+      "tier": "source",
+      "capability": "corpus_population",
+      "provider": "openmontage",
+      "runtime": "hybrid",
+      "captured_status": "degraded",
+      "stability": "experimental",
+      "dependencies": [
+        "python:cv2",
+        "python:numpy",
+        "python:requests",
+        "python:PIL",
+        "python:transformers",
+        "python:torch"
+      ],
+      "agent_skills": [],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "dashscope_asr",
+      "version": "0.1.0",
+      "tier": "analyze",
+      "capability": "analysis",
+      "provider": "dashscope",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [],
+      "agent_skills": [
+        "dashscope"
+      ],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "dashscope_image",
+      "version": "0.1.0",
+      "tier": "generate",
+      "capability": "image_generation",
+      "provider": "dashscope",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [],
+      "agent_skills": [
+        "dashscope"
+      ],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "dashscope_tts",
+      "version": "0.1.0",
+      "tier": "voice",
+      "capability": "tts",
+      "provider": "dashscope",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [],
+      "agent_skills": [
+        "dashscope"
+      ],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "diagram_gen",
+      "version": "0.1.0",
+      "tier": "core",
+      "capability": "graphics",
+      "provider": "mermaid",
+      "runtime": "local",
+      "captured_status": "available",
+      "stability": "experimental",
+      "dependencies": [],
+      "agent_skills": [
+        "beautiful-mermaid",
+        "d3-viz"
+      ],
+      "network_required": false,
+      "factory_status": "ACTIVE_LOCAL"
+    },
+    {
+      "name": "direct_clip_search",
+      "version": "0.1.0",
+      "tier": "source",
+      "capability": "clip_acquisition",
+      "provider": "openmontage",
+      "runtime": "hybrid",
+      "captured_status": "available",
+      "stability": "beta",
+      "dependencies": [
+        "python:requests"
+      ],
+      "agent_skills": [],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "doubao_tts",
+      "version": "0.1.0",
+      "tier": "voice",
+      "capability": "tts",
+      "provider": "doubao",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [],
+      "agent_skills": [
+        "doubao-tts",
+        "text-to-speech"
+      ],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "elevenlabs_tts",
+      "version": "0.1.0",
+      "tier": "voice",
+      "capability": "tts",
+      "provider": "elevenlabs",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [],
+      "agent_skills": [
+        "elevenlabs",
+        "text-to-speech"
+      ],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "export_bundle",
+      "version": "0.1.0",
+      "tier": "publish",
+      "capability": "publish",
+      "provider": "local",
+      "runtime": "local",
+      "captured_status": "available",
+      "stability": "beta",
+      "dependencies": [],
+      "agent_skills": [],
+      "network_required": false,
+      "factory_status": "HUMAN_GATE_ONLY"
+    },
+    {
+      "name": "eye_enhance",
+      "version": "0.1.0",
+      "tier": "enhance",
+      "capability": "enhancement",
+      "provider": "mediapipe",
+      "runtime": "local",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [
+        "cmd:ffmpeg"
+      ],
+      "agent_skills": [
+        "ffmpeg"
+      ],
+      "network_required": false,
+      "factory_status": "LOCAL_SETUP_REQUIRED"
+    },
+    {
+      "name": "face_enhance",
+      "version": "0.1.0",
+      "tier": "core",
+      "capability": "enhancement",
+      "provider": "ffmpeg",
+      "runtime": "local",
+      "captured_status": "available",
+      "stability": "experimental",
+      "dependencies": [
+        "cmd:ffmpeg"
+      ],
+      "agent_skills": [
+        "ffmpeg"
+      ],
+      "network_required": false,
+      "factory_status": "ACTIVE_LOCAL"
+    },
+    {
+      "name": "face_restore",
+      "version": "0.1.0",
+      "tier": "enhance",
+      "capability": "enhancement",
+      "provider": "codeformer",
+      "runtime": "local_gpu",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [
+        "python:gfpgan",
+        "python:torch"
+      ],
+      "agent_skills": [
+        "ffmpeg"
+      ],
+      "network_required": false,
+      "factory_status": "OPTIONAL"
+    },
+    {
+      "name": "face_tracker",
+      "version": "0.1.0",
+      "tier": "core",
+      "capability": "analysis",
+      "provider": "mediapipe",
+      "runtime": "local",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [
+        "cmd:ffmpeg"
+      ],
+      "agent_skills": [
+        "ffmpeg"
+      ],
+      "network_required": false,
+      "factory_status": "LOCAL_SETUP_REQUIRED"
+    },
+    {
+      "name": "flux_image",
+      "version": "0.1.0",
+      "tier": "generate",
+      "capability": "image_generation",
+      "provider": "flux",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "beta",
+      "dependencies": [],
+      "agent_skills": [
+        "flux-best-practices",
+        "bfl-api"
+      ],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "frame_sampler",
+      "version": "0.1.0",
+      "tier": "core",
+      "capability": "analysis",
+      "provider": "ffmpeg",
+      "runtime": "local",
+      "captured_status": "available",
+      "stability": "experimental",
+      "dependencies": [
+        "cmd:ffmpeg"
+      ],
+      "agent_skills": [
+        "ffmpeg"
+      ],
+      "network_required": false,
+      "factory_status": "ACTIVE_LOCAL"
+    },
+    {
+      "name": "freesound_music",
+      "version": "0.1.0",
+      "tier": "source",
+      "capability": "music_search",
+      "provider": "freesound",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "beta",
+      "dependencies": [],
+      "agent_skills": [
+        "music"
+      ],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "gemini_omni_video",
+      "version": "0.1.0",
+      "tier": "generate",
+      "capability": "video_generation",
+      "provider": "gemini_omni",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [],
+      "agent_skills": [
+        "gemini-omni",
+        "ai-video-gen"
+      ],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "google_imagen",
+      "version": "0.1.0",
+      "tier": "generate",
+      "capability": "image_generation",
+      "provider": "google_imagen",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "beta",
+      "dependencies": [],
+      "agent_skills": [],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "google_music",
+      "version": "0.1.0",
+      "tier": "generate",
+      "capability": "music_generation",
+      "provider": "google",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [],
+      "agent_skills": [
+        "lyria"
+      ],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "google_tts",
+      "version": "0.1.0",
+      "tier": "voice",
+      "capability": "tts",
+      "provider": "google_tts",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "beta",
+      "dependencies": [],
+      "agent_skills": [
+        "text-to-speech"
+      ],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "green_screen_composite",
+      "version": "0.1.0",
+      "tier": "core",
+      "capability": "video_post",
+      "provider": "ffmpeg",
+      "runtime": "local",
+      "captured_status": "available",
+      "stability": "experimental",
+      "dependencies": [
+        "cmd:ffmpeg",
+        "python:numpy",
+        "python:PIL"
+      ],
+      "agent_skills": [
+        "ffmpeg"
+      ],
+      "network_required": false,
+      "factory_status": "ACTIVE_LOCAL"
+    },
+    {
+      "name": "green_screen_processor",
+      "version": "0.1.0",
+      "tier": "core",
+      "capability": "video_post",
+      "provider": "ffmpeg",
+      "runtime": "local",
+      "captured_status": "available",
+      "stability": "experimental",
+      "dependencies": [
+        "cmd:ffmpeg"
+      ],
+      "agent_skills": [
+        "ffmpeg"
+      ],
+      "network_required": false,
+      "factory_status": "ACTIVE_LOCAL"
+    },
+    {
+      "name": "grok_image",
+      "version": "0.1.0",
+      "tier": "generate",
+      "capability": "image_generation",
+      "provider": "grok",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "beta",
+      "dependencies": [],
+      "agent_skills": [
+        "grok-media"
+      ],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "grok_video",
+      "version": "0.1.0",
+      "tier": "generate",
+      "capability": "video_generation",
+      "provider": "grok",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "beta",
+      "dependencies": [],
+      "agent_skills": [
+        "grok-media",
+        "ai-video-gen"
+      ],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "heygen_video",
+      "version": "0.1.0",
+      "tier": "generate",
+      "capability": "video_generation",
+      "provider": "heygen",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [],
+      "agent_skills": [
+        "ai-video-gen",
+        "create-video"
+      ],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "higgsfield_video",
+      "version": "0.1.0",
+      "tier": "generate",
+      "capability": "video_generation",
+      "provider": "higgsfield",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [],
+      "agent_skills": [
+        "seedance-2-0",
+        "ai-video-gen"
+      ],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "hunyuan_video",
+      "version": "0.1.0",
+      "tier": "generate",
+      "capability": "video_generation",
+      "provider": "hunyuan",
+      "runtime": "local_gpu",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [],
+      "agent_skills": [
+        "ltx2"
+      ],
+      "network_required": false,
+      "factory_status": "OPTIONAL"
+    },
+    {
+      "name": "hyperframes_compose",
+      "version": "0.1.1",
+      "tier": "core",
+      "capability": "video_post",
+      "provider": "hyperframes",
+      "runtime": "local",
+      "captured_status": "available",
+      "stability": "beta",
+      "dependencies": [
+        "cmd:npx",
+        "cmd:ffmpeg"
+      ],
+      "agent_skills": [
+        "hyperframes",
+        "hyperframes-cli",
+        "hyperframes-registry",
+        "website-to-hyperframes",
+        "gsap-core",
+        "gsap-timeline"
+      ],
+      "network_required": false,
+      "factory_status": "ACTIVE_LOCAL"
+    },
+    {
+      "name": "image_gen",
+      "version": "0.1.0",
+      "tier": "core",
+      "capability": "image_generation",
+      "provider": "multi",
+      "runtime": "hybrid",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [],
+      "agent_skills": [
+        "flux-best-practices",
+        "bfl-api"
+      ],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "image_selector",
+      "version": "0.2.0",
+      "tier": "generate",
+      "capability": "image_generation",
+      "provider": "selector",
+      "runtime": "hybrid",
+      "captured_status": "unavailable",
+      "stability": "beta",
+      "dependencies": [],
+      "agent_skills": [
+        "flux-best-practices",
+        "bfl-api"
+      ],
+      "network_required": false,
+      "factory_status": "PLANNING_ONLY"
+    },
+    {
+      "name": "jimeng_video",
+      "version": "0.1.0",
+      "tier": "generate",
+      "capability": "video_generation",
+      "provider": "volcengine",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [
+        "env:VOLC_ACCESSKEY",
+        "env:VOLC_SECRETKEY"
+      ],
+      "agent_skills": [
+        "ai-video-gen"
+      ],
+      "network_required": true,
+      "factory_status": "DISABLED_BY_DEFAULT"
+    },
+    {
+      "name": "kling_avatar",
+      "version": "0.1.0",
+      "tier": "generate",
+      "capability": "avatar",
+      "provider": "kling_official",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [
+        "env:KLING_API_KEY"
+      ],
+      "agent_skills": [
+        "kling-official",
+        "avatar-video"
+      ],
+      "network_required": true,
+      "factory_status": "DISABLED_BY_DEFAULT"
+    },
+    {
+      "name": "kling_lip_sync",
+      "version": "0.1.0",
+      "tier": "generate",
+      "capability": "avatar",
+      "provider": "kling_official",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [
+        "env:KLING_API_KEY"
+      ],
+      "agent_skills": [
+        "kling-official",
+        "avatar-video"
+      ],
+      "network_required": true,
+      "factory_status": "DISABLED_BY_DEFAULT"
+    },
+    {
+      "name": "kling_official_image",
+      "version": "0.1.0",
+      "tier": "generate",
+      "capability": "image_generation",
+      "provider": "kling_official",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [
+        "env:KLING_API_KEY"
+      ],
+      "agent_skills": [
+        "kling-official"
+      ],
+      "network_required": true,
+      "factory_status": "DISABLED_BY_DEFAULT"
+    },
+    {
+      "name": "kling_official_video",
+      "version": "0.1.0",
+      "tier": "generate",
+      "capability": "video_generation",
+      "provider": "kling_official",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [
+        "env:KLING_API_KEY"
+      ],
+      "agent_skills": [
+        "ai-video-gen",
+        "kling-official"
+      ],
+      "network_required": true,
+      "factory_status": "DISABLED_BY_DEFAULT"
+    },
+    {
+      "name": "kling_tts",
+      "version": "0.1.0",
+      "tier": "voice",
+      "capability": "tts",
+      "provider": "kling_official",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [
+        "env:KLING_API_KEY"
+      ],
+      "agent_skills": [
+        "kling-official",
+        "text-to-speech"
+      ],
+      "network_required": true,
+      "factory_status": "DISABLED_BY_DEFAULT"
+    },
+    {
+      "name": "kling_video",
+      "version": "0.1.0",
+      "tier": "generate",
+      "capability": "video_generation",
+      "provider": "kling",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [],
+      "agent_skills": [
+        "ai-video-gen"
+      ],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "lip_sync",
+      "version": "0.1.0",
+      "tier": "generate",
+      "capability": "avatar",
+      "provider": "wav2lip",
+      "runtime": "local_gpu",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [
+        "python:torch",
+        "cmd:ffmpeg"
+      ],
+      "agent_skills": [
+        "ffmpeg"
+      ],
+      "network_required": false,
+      "factory_status": "OPTIONAL"
+    },
+    {
+      "name": "local_diffusion",
+      "version": "0.1.0",
+      "tier": "generate",
+      "capability": "image_generation",
+      "provider": "local_diffusion",
+      "runtime": "local_gpu",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [],
+      "agent_skills": [],
+      "network_required": false,
+      "factory_status": "OPTIONAL"
+    },
+    {
+      "name": "ltx_video_local",
+      "version": "0.1.0",
+      "tier": "generate",
+      "capability": "video_generation",
+      "provider": "ltx",
+      "runtime": "local_gpu",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [],
+      "agent_skills": [
+        "ltx2"
+      ],
+      "network_required": false,
+      "factory_status": "OPTIONAL"
+    },
+    {
+      "name": "ltx_video_modal",
+      "version": "0.1.0",
+      "tier": "generate",
+      "capability": "video_generation",
+      "provider": "ltx-modal",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [],
+      "agent_skills": [
+        "ltx2"
+      ],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "math_animate",
+      "version": "0.1.0",
+      "tier": "generate",
+      "capability": "graphics",
+      "provider": "manim",
+      "runtime": "local",
+      "captured_status": "available",
+      "stability": "experimental",
+      "dependencies": [
+        "cmd:manim"
+      ],
+      "agent_skills": [
+        "manimce-best-practices",
+        "manim-composer"
+      ],
+      "network_required": false,
+      "factory_status": "ACTIVE_LOCAL"
+    },
+    {
+      "name": "minimax_video",
+      "version": "0.1.0",
+      "tier": "generate",
+      "capability": "video_generation",
+      "provider": "minimax",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [],
+      "agent_skills": [
+        "ai-video-gen"
+      ],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "music_gen",
+      "version": "0.1.0",
+      "tier": "generate",
+      "capability": "music_generation",
+      "provider": "elevenlabs",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [],
+      "agent_skills": [
+        "music",
+        "sound-effects",
+        "elevenlabs"
+      ],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "music_library",
+      "version": "0.1.0",
+      "tier": "source",
+      "capability": "music_library",
+      "provider": "local",
+      "runtime": "local",
+      "captured_status": "unavailable",
+      "stability": "production",
+      "dependencies": [],
+      "agent_skills": [
+        "music"
+      ],
+      "network_required": false,
+      "factory_status": "LOCAL_SETUP_REQUIRED"
+    },
+    {
+      "name": "openai_image",
+      "version": "0.1.0",
+      "tier": "generate",
+      "capability": "image_generation",
+      "provider": "openai",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "beta",
+      "dependencies": [],
+      "agent_skills": [
+        "flux-best-practices"
+      ],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "openai_tts",
+      "version": "0.1.0",
+      "tier": "voice",
+      "capability": "tts",
+      "provider": "openai",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [],
+      "agent_skills": [
+        "openai-docs"
+      ],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "pexels_image",
+      "version": "0.1.0",
+      "tier": "source",
+      "capability": "image_generation",
+      "provider": "pexels",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "beta",
+      "dependencies": [],
+      "agent_skills": [],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "pexels_video",
+      "version": "0.1.0",
+      "tier": "source",
+      "capability": "video_generation",
+      "provider": "pexels",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "beta",
+      "dependencies": [],
+      "agent_skills": [],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "piper_tts",
+      "version": "0.1.0",
+      "tier": "voice",
+      "capability": "tts",
+      "provider": "piper",
+      "runtime": "local",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [
+        "cmd:piper"
+      ],
+      "agent_skills": [
+        "text-to-speech"
+      ],
+      "network_required": false,
+      "factory_status": "LOCAL_SETUP_REQUIRED"
+    },
+    {
+      "name": "pixabay_image",
+      "version": "0.1.0",
+      "tier": "source",
+      "capability": "image_generation",
+      "provider": "pixabay",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "beta",
+      "dependencies": [],
+      "agent_skills": [],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "pixabay_music",
+      "version": "0.1.0",
+      "tier": "source",
+      "capability": "music_search",
+      "provider": "pixabay_music",
+      "runtime": "api",
+      "captured_status": "available",
+      "stability": "experimental",
+      "dependencies": [],
+      "agent_skills": [
+        "music"
+      ],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "pixabay_video",
+      "version": "0.1.0",
+      "tier": "source",
+      "capability": "video_generation",
+      "provider": "pixabay",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "beta",
+      "dependencies": [],
+      "agent_skills": [],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "pose_library_builder",
+      "version": "0.1.0",
+      "tier": "core",
+      "capability": "character_animation",
+      "provider": "openmontage",
+      "runtime": "local",
+      "captured_status": "available",
+      "stability": "beta",
+      "dependencies": [],
+      "agent_skills": [
+        "pose-library-design",
+        "character-rigging",
+        "svg-character-animation"
+      ],
+      "network_required": false,
+      "factory_status": "ACTIVE_LOCAL"
+    },
+    {
+      "name": "recraft_image",
+      "version": "0.1.0",
+      "tier": "generate",
+      "capability": "image_generation",
+      "provider": "recraft",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [],
+      "agent_skills": [],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "remotion_caption_burn",
+      "version": "0.1.0",
+      "tier": "core",
+      "capability": "subtitle",
+      "provider": "remotion",
+      "runtime": "local",
+      "captured_status": "available",
+      "stability": "experimental",
+      "dependencies": [
+        "cmd:ffmpeg",
+        "cmd:ffprobe"
+      ],
+      "agent_skills": [
+        "remotion-best-practices",
+        "ffmpeg"
+      ],
+      "network_required": false,
+      "factory_status": "ACTIVE_LOCAL"
+    },
+    {
+      "name": "runway_video",
+      "version": "0.2.0",
+      "tier": "generate",
+      "capability": "video_generation",
+      "provider": "runway",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "beta",
+      "dependencies": [],
+      "agent_skills": [
+        "seedance-2-0",
+        "ai-video-gen"
+      ],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "scene_detect",
+      "version": "0.1.0",
+      "tier": "core",
+      "capability": "analysis",
+      "provider": "ffmpeg",
+      "runtime": "local",
+      "captured_status": "available",
+      "stability": "experimental",
+      "dependencies": [
+        "cmd:ffmpeg"
+      ],
+      "agent_skills": [
+        "ffmpeg"
+      ],
+      "network_required": false,
+      "factory_status": "ACTIVE_LOCAL"
+    },
+    {
+      "name": "screen_capture_selector",
+      "version": "0.1.0",
+      "tier": "source",
+      "capability": "screen_capture",
+      "provider": "selector",
+      "runtime": "hybrid",
+      "captured_status": "available",
+      "stability": "beta",
+      "dependencies": [],
+      "agent_skills": [
+        "screen-demo"
+      ],
+      "network_required": false,
+      "factory_status": "PLANNING_ONLY"
+    },
+    {
+      "name": "screen_recorder",
+      "version": "0.1.0",
+      "tier": "source",
+      "capability": "screen_capture",
+      "provider": "ffmpeg",
+      "runtime": "local",
+      "captured_status": "available",
+      "stability": "beta",
+      "dependencies": [
+        "binary:ffmpeg"
+      ],
+      "agent_skills": [],
+      "network_required": false,
+      "factory_status": "ACTIVE_LOCAL"
+    },
+    {
+      "name": "seedance_replicate",
+      "version": "0.1.0",
+      "tier": "generate",
+      "capability": "video_generation",
+      "provider": "seedance",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "beta",
+      "dependencies": [],
+      "agent_skills": [
+        "seedance-2-0",
+        "ai-video-gen"
+      ],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "seedance_video",
+      "version": "0.2.0",
+      "tier": "generate",
+      "capability": "video_generation",
+      "provider": "seedance",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "beta",
+      "dependencies": [],
+      "agent_skills": [
+        "seedance-2-0",
+        "ai-video-gen"
+      ],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "showcase_card",
+      "version": "0.1.0",
+      "tier": "core",
+      "capability": "video_post",
+      "provider": "ffmpeg",
+      "runtime": "local",
+      "captured_status": "available",
+      "stability": "experimental",
+      "dependencies": [
+        "cmd:ffmpeg",
+        "cmd:ffprobe"
+      ],
+      "agent_skills": [
+        "ffmpeg",
+        "video-toolkit"
+      ],
+      "network_required": false,
+      "factory_status": "ACTIVE_LOCAL"
+    },
+    {
+      "name": "silence_cutter",
+      "version": "0.1.0",
+      "tier": "core",
+      "capability": "video_post",
+      "provider": "ffmpeg",
+      "runtime": "local",
+      "captured_status": "available",
+      "stability": "experimental",
+      "dependencies": [
+        "cmd:ffmpeg"
+      ],
+      "agent_skills": [
+        "ffmpeg"
+      ],
+      "network_required": false,
+      "factory_status": "ACTIVE_LOCAL"
+    },
+    {
+      "name": "sora_video",
+      "version": "0.1.0",
+      "tier": "generate",
+      "capability": "video_generation",
+      "provider": "openai",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "beta",
+      "dependencies": [],
+      "agent_skills": [
+        "ai-video-gen"
+      ],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "subtitle_gen",
+      "version": "0.1.0",
+      "tier": "core",
+      "capability": "subtitle",
+      "provider": "openmontage",
+      "runtime": "local",
+      "captured_status": "available",
+      "stability": "experimental",
+      "dependencies": [],
+      "agent_skills": [
+        "remotion-best-practices"
+      ],
+      "network_required": false,
+      "factory_status": "ACTIVE_LOCAL"
+    },
+    {
+      "name": "suno_music",
+      "version": "0.1.0",
+      "tier": "generate",
+      "capability": "music_generation",
+      "provider": "suno",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "beta",
+      "dependencies": [],
+      "agent_skills": [
+        "music"
+      ],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "svg_rig_builder",
+      "version": "0.1.0",
+      "tier": "core",
+      "capability": "character_animation",
+      "provider": "openmontage",
+      "runtime": "local",
+      "captured_status": "available",
+      "stability": "beta",
+      "dependencies": [],
+      "agent_skills": [
+        "character-rigging",
+        "svg-character-animation",
+        "gsap-core",
+        "gsap-timeline"
+      ],
+      "network_required": false,
+      "factory_status": "ACTIVE_LOCAL"
+    },
+    {
+      "name": "talking_head",
+      "version": "0.1.0",
+      "tier": "generate",
+      "capability": "avatar",
+      "provider": "sadtalker",
+      "runtime": "local_gpu",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [],
+      "agent_skills": [
+        "ffmpeg"
+      ],
+      "network_required": false,
+      "factory_status": "OPTIONAL"
+    },
+    {
+      "name": "topview_manual_handoff",
+      "version": "1.1.0",
+      "tier": "generate",
+      "capability": "video_generation",
+      "provider": "topview_manual",
+      "runtime": "local",
+      "captured_status": "available",
+      "stability": "beta",
+      "dependencies": [],
+      "agent_skills": [
+        "topview-manual-handoff"
+      ],
+      "network_required": false,
+      "factory_status": "MANUAL_BRIDGE"
+    },
+    {
+      "name": "topview_manual_ingest",
+      "version": "1.1.0",
+      "tier": "source",
+      "capability": "video_generation",
+      "provider": "topview_manual",
+      "runtime": "local",
+      "captured_status": "available",
+      "stability": "beta",
+      "dependencies": [
+        "cmd:ffprobe"
+      ],
+      "agent_skills": [
+        "topview-manual-handoff",
+        "ffmpeg"
+      ],
+      "network_required": false,
+      "factory_status": "MANUAL_BRIDGE"
+    },
+    {
+      "name": "transcriber",
+      "version": "0.1.0",
+      "tier": "core",
+      "capability": "analysis",
+      "provider": "whisperx",
+      "runtime": "local",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [
+        "python:faster_whisper"
+      ],
+      "agent_skills": [
+        "speech-to-text"
+      ],
+      "network_required": false,
+      "factory_status": "LOCAL_SETUP_REQUIRED"
+    },
+    {
+      "name": "transcript_fetcher",
+      "version": "0.1.0",
+      "tier": "analyze",
+      "capability": "analysis",
+      "provider": "youtube-transcript-api",
+      "runtime": "local",
+      "captured_status": "unavailable",
+      "stability": "production",
+      "dependencies": [
+        "python:youtube_transcript_api"
+      ],
+      "agent_skills": [],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "tts_selector",
+      "version": "0.2.0",
+      "tier": "voice",
+      "capability": "tts",
+      "provider": "selector",
+      "runtime": "hybrid",
+      "captured_status": "unavailable",
+      "stability": "beta",
+      "dependencies": [],
+      "agent_skills": [
+        "text-to-speech",
+        "elevenlabs",
+        "openai-docs"
+      ],
+      "network_required": false,
+      "factory_status": "PLANNING_ONLY"
+    },
+    {
+      "name": "upscale",
+      "version": "0.1.0",
+      "tier": "enhance",
+      "capability": "enhancement",
+      "provider": "realesrgan",
+      "runtime": "local_gpu",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [
+        "python:realesrgan",
+        "python:torch",
+        "cmd:ffmpeg"
+      ],
+      "agent_skills": [
+        "ffmpeg"
+      ],
+      "network_required": false,
+      "factory_status": "OPTIONAL"
+    },
+    {
+      "name": "veo_video",
+      "version": "0.2.0",
+      "tier": "generate",
+      "capability": "video_generation",
+      "provider": "veo",
+      "runtime": "api",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [],
+      "agent_skills": [
+        "ai-video-gen"
+      ],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "video_analyzer",
+      "version": "0.1.0",
+      "tier": "analyze",
+      "capability": "analysis",
+      "provider": "multi",
+      "runtime": "local",
+      "captured_status": "available",
+      "stability": "beta",
+      "dependencies": [
+        "cmd:ffmpeg"
+      ],
+      "agent_skills": [
+        "video-understand",
+        "ffmpeg"
+      ],
+      "network_required": false,
+      "factory_status": "ACTIVE_LOCAL"
+    },
+    {
+      "name": "video_compose",
+      "version": "0.1.0",
+      "tier": "core",
+      "capability": "video_post",
+      "provider": "ffmpeg",
+      "runtime": "local",
+      "captured_status": "available",
+      "stability": "experimental",
+      "dependencies": [
+        "cmd:ffmpeg"
+      ],
+      "agent_skills": [
+        "remotion-best-practices",
+        "remotion",
+        "ffmpeg"
+      ],
+      "network_required": false,
+      "factory_status": "ACTIVE_LOCAL"
+    },
+    {
+      "name": "video_downloader",
+      "version": "0.1.0",
+      "tier": "source",
+      "capability": "source_ingest",
+      "provider": "yt-dlp",
+      "runtime": "local",
+      "captured_status": "unavailable",
+      "stability": "production",
+      "dependencies": [
+        "python:yt_dlp"
+      ],
+      "agent_skills": [
+        "video-download"
+      ],
+      "network_required": true,
+      "factory_status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "name": "video_selector",
+      "version": "0.3.1",
+      "tier": "generate",
+      "capability": "video_generation",
+      "provider": "selector",
+      "runtime": "hybrid",
+      "captured_status": "available",
+      "stability": "beta",
+      "dependencies": [],
+      "agent_skills": [
+        "ai-video-gen",
+        "create-video",
+        "ltx2",
+        "gemini-omni"
+      ],
+      "network_required": false,
+      "factory_status": "PLANNING_ONLY"
+    },
+    {
+      "name": "video_stitch",
+      "version": "0.1.0",
+      "tier": "core",
+      "capability": "video_post",
+      "provider": "ffmpeg",
+      "runtime": "local",
+      "captured_status": "available",
+      "stability": "experimental",
+      "dependencies": [
+        "cmd:ffmpeg",
+        "cmd:ffprobe"
+      ],
+      "agent_skills": [
+        "ffmpeg",
+        "video-toolkit"
+      ],
+      "network_required": false,
+      "factory_status": "ACTIVE_LOCAL"
+    },
+    {
+      "name": "video_trimmer",
+      "version": "0.1.0",
+      "tier": "core",
+      "capability": "video_post",
+      "provider": "ffmpeg",
+      "runtime": "local",
+      "captured_status": "available",
+      "stability": "experimental",
+      "dependencies": [
+        "cmd:ffmpeg"
+      ],
+      "agent_skills": [
+        "ffmpeg",
+        "video-toolkit"
+      ],
+      "network_required": false,
+      "factory_status": "ACTIVE_LOCAL"
+    },
+    {
+      "name": "video_understand",
+      "version": "0.1.0",
+      "tier": "analyze",
+      "capability": "analysis",
+      "provider": "transformers",
+      "runtime": "local_gpu",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [
+        "python:transformers",
+        "python:torch"
+      ],
+      "agent_skills": [
+        "video-understand"
+      ],
+      "network_required": false,
+      "factory_status": "OPTIONAL"
+    },
+    {
+      "name": "visual_qa",
+      "version": "0.1.0",
+      "tier": "core",
+      "capability": "analysis",
+      "provider": "ffmpeg",
+      "runtime": "local",
+      "captured_status": "available",
+      "stability": "experimental",
+      "dependencies": [
+        "cmd:ffmpeg",
+        "cmd:ffprobe"
+      ],
+      "agent_skills": [
+        "ffmpeg"
+      ],
+      "network_required": false,
+      "factory_status": "ACTIVE_LOCAL"
+    },
+    {
+      "name": "wan_video",
+      "version": "0.1.0",
+      "tier": "generate",
+      "capability": "video_generation",
+      "provider": "wan",
+      "runtime": "local_gpu",
+      "captured_status": "unavailable",
+      "stability": "experimental",
+      "dependencies": [],
+      "agent_skills": [
+        "ltx2"
+      ],
+      "network_required": false,
+      "factory_status": "OPTIONAL"
+    }
+  ]
+}

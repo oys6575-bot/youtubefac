@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openmontage/artifacts/asset_manifest",
+  "title": "Asset Manifest",
+  "description": "Inventory of generated/sourced assets produced by the Asset Generator.",
+  "type": "object",
+  "required": ["version", "assets"],
+  "properties": {
+    "version": { "type": "string", "const": "1.0" },
+    "assets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "type", "path", "source_tool", "scene_id"],
+        "properties": {
+          "id": { "type": "string" },
+          "type": {
+            "type": "string",
+            "enum": ["image", "video", "audio", "narration", "music", "sfx", "diagram", "animation", "code_snippet", "subtitle", "font", "lut"]
+          },
+          "path": { "type": "string", "description": "Relative path within the pipeline project directory" },
+          "source_tool": { "type": "string" },
+          "scene_id": { "type": "string" },
+          "prompt": { "type": "string", "description": "Generation prompt if AI-generated" },
+          "seed": { "type": "integer", "description": "Seed if applicable" },
+          "model": { "type": "string", "description": "Model used for generation" },
+          "cost_usd": { "type": "number", "minimum": 0 },
+          "duration_seconds": { "type": "number", "minimum": 0 },
+          "resolution": { "type": "string" },
+          "format": { "type": "string" },
+          "quality_score": { "type": "number", "minimum": 0, "maximum": 1 },
+          "subtype": { "type": "string", "description": "Sub-classification (e.g. 'background', 'stock', 'generated')" },
+          "generation_summary": { "type": "string", "description": "Brief summary of how the asset was generated or sourced" },
+          "provider": { "type": "string", "description": "Provider name (e.g. pixabay, google_imagen)" },
+          "license": { "type": "string", "description": "License type (e.g. Pixabay License, CC0)" },
+          "original_url": { "type": "string", "description": "Source URL if downloaded from a stock service" },
+          "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "selection_status": {
+            "type": "string",
+            "enum": ["candidate", "selected", "rejected"],
+            "description": "Candidate does not enter edit/compose until GATE_ASSET_SELECTION is approved."
+          },
+          "provenance": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "provider",
+              "acquisition_mode",
+              "batch_id",
+              "source_filename",
+              "actual_ui_workspace",
+              "actual_tool_label",
+              "actual_model_display_name",
+              "queue_mode",
+              "plan_tier",
+              "credits_estimated_before_submit",
+              "credits_charged",
+              "budget_within_limit",
+              "attempt_number",
+              "submitted_at",
+              "completed_at",
+              "provider_project_reference",
+              "settings_capture",
+              "generation_notes",
+              "recorded_at",
+              "job_pack_path"
+            ],
+            "properties": {
+              "provider": { "type": "string", "minLength": 1 },
+              "acquisition_mode": { "enum": ["manual_ui", "local", "api", "stock", "provided"] },
+              "batch_id": { "type": "string", "minLength": 1 },
+              "source_filename": { "type": "string", "minLength": 1 },
+              "actual_ui_workspace": { "type": "string", "minLength": 1 },
+              "actual_tool_label": { "type": "string", "minLength": 1 },
+              "actual_model_display_name": { "type": "string", "minLength": 1 },
+              "queue_mode": { "type": "string", "minLength": 1 },
+              "plan_tier": { "type": "string", "minLength": 1 },
+              "credits_estimated_before_submit": { "type": ["number", "null"], "minimum": 0 },
+              "credits_charged": { "type": ["number", "null"], "minimum": 0 },
+              "budget_within_limit": { "type": ["boolean", "null"] },
+              "attempt_number": { "type": "integer", "minimum": 1 },
+              "submitted_at": { "type": "string", "format": "date-time" },
+              "completed_at": { "type": "string", "format": "date-time" },
+              "provider_project_reference": { "type": ["string", "null"] },
+              "settings_capture": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["path", "sha256"],
+                "properties": {
+                  "path": { "type": "string", "minLength": 1 },
+                  "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+                }
+              },
+              "generation_notes": { "type": "string" },
+              "recorded_at": { "type": "string", "format": "date-time" },
+              "job_pack_path": { "type": "string", "minLength": 1 }
+            }
+          },
+          "voice_performance": {
+            "type": "object",
+            "description": "Applied voice-performance contract for narration assets.",
+            "properties": {
+              "source_section_id": { "type": "string" },
+              "delivery_cues_applied": { "type": "boolean" },
+              "provider_text_used": { "type": "boolean" },
+              "provider_settings": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "sample_approved": { "type": "boolean" },
+              "sample_path": { "type": "string" },
+              "review_notes": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": { "required": ["selection_status"] },
+            "then": { "required": ["sha256", "provenance"] }
+          }
+        ]
+      }
+    },
+    "total_cost_usd": { "type": "number", "minimum": 0 },
+    "metadata": { "type": "object" }
+  },
+  "additionalProperties": false
+}

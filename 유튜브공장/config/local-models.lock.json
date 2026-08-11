@@ -1,0 +1,80 @@
+{
+  "schema_version": "1.0.0",
+  "captured_at": "2026-08-11T23:10:00+09:00",
+  "download_policy": {
+    "weights_bundled_in_git": false,
+    "exact_revision_required": true,
+    "project_local_model_root": ".runtime/models/comfyui",
+    "license_acceptance_is_human_gate": true,
+    "download_is_explicit": true
+  },
+  "models": [
+    {
+      "id": "Lightricks/LTX-2.3",
+      "revision": "6f3520585aa27248020550da2f453aa0c572398c",
+      "hub": "https://huggingface.co/Lightricks/LTX-2.3",
+      "pipeline": "image-to-video plus joint audio-video modes",
+      "license": "LTX-2 Community License Agreement",
+      "license_review_required": true,
+      "default_route": "LOCAL_LTX",
+      "factory_status": "PRIMARY_LOCAL_PILOT",
+      "mac_policy": "Use verified MPS workflow; reject FP8 paths unless independently proven on this machine"
+    },
+    {
+      "id": "Wan-AI/Wan2.2-I2V-A14B",
+      "revision": "206a9ee1b7bfaaf8f7e4d81335650533490646a3",
+      "hub": "https://huggingface.co/Wan-AI/Wan2.2-I2V-A14B",
+      "pipeline": "image-to-video",
+      "license": "Apache-2.0",
+      "license_review_required": false,
+      "default_route": "LOCAL_LTX",
+      "factory_status": "OPTIONAL_LOCAL",
+      "mac_policy": "FP16 or verified quantization only; low-resolution pilot before production"
+    },
+    {
+      "id": "Wan-AI/Wan2.2-TI2V-5B",
+      "revision": "921dbaf3f1674a56f47e83fb80a34bac8a8f203e",
+      "hub": "https://huggingface.co/Wan-AI/Wan2.2-TI2V-5B",
+      "pipeline": "text-and-image-to-video",
+      "license": "Apache-2.0",
+      "license_review_required": false,
+      "default_route": "LOCAL_LTX",
+      "factory_status": "OPTIONAL_LOCAL",
+      "mac_policy": "Treat 720p claim as NVIDIA reference; benchmark MPS separately"
+    },
+    {
+      "id": "black-forest-labs/FLUX.2-klein-4B",
+      "revision": "e7b7dc27f91deacad38e78976d1f2b499d76a294",
+      "hub": "https://huggingface.co/black-forest-labs/FLUX.2-klein-4B",
+      "pipeline": "text-to-image and multi-reference image editing",
+      "license": "Apache-2.0",
+      "license_review_required": false,
+      "default_route": "LOCAL_IMAGE",
+      "factory_status": "PRIMARY_LOCAL_IMAGE",
+      "mac_policy": "Benchmark the actual ComfyUI MPS graph; vendor claims are GPU-generic"
+    },
+    {
+      "id": "black-forest-labs/FLUX.1-Kontext-dev",
+      "revision": "24e9dedc4ef646698dc8eb4e18ae2cec3c9fea0d",
+      "hub": "https://huggingface.co/black-forest-labs/FLUX.1-Kontext-dev",
+      "pipeline": "image editing",
+      "license": "Other; gated automatic access",
+      "license_review_required": true,
+      "default_route": "LOCAL_IMAGE",
+      "factory_status": "CONDITIONAL",
+      "mac_policy": "Do not download until license and workflow are approved"
+    },
+    {
+      "id": "tencent/HunyuanVideo-1.5",
+      "revision": "9b49404b3f5df2a8f0b31df27a0c7ab872e7b038",
+      "hub": "https://huggingface.co/tencent/HunyuanVideo-1.5",
+      "pipeline": "video generation",
+      "license": "Other",
+      "license_review_required": true,
+      "default_route": "LOCAL_LTX",
+      "factory_status": "NOT_DEFAULT",
+      "mac_policy": "Retain as research candidate only"
+    }
+  ],
+  "topview_note": "No official TopView generation model or Space was found on Hugging Face. TopView is treated as a hosted multi-model workspace, not an open-weight local model."
+}

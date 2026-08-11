@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openmontage/artifacts/animatic_review",
+  "title": "YouTube Factory Animatic Review Packet",
+  "description": "Review material prepared for GATE_ANIMATIC. Approval remains in the referenced OpenMontage checkpoint.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "project_id", "plan_id", "state", "animatic", "findings", "gate_ref"],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "project_id": { "$ref": "#/$defs/id" },
+    "plan_id": { "$ref": "#/$defs/id" },
+    "state": { "enum": ["draft", "ready_for_gate", "needs_revision"] },
+    "animatic": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "duration_seconds"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "duration_seconds": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["finding_id", "severity", "note"],
+        "properties": {
+          "finding_id": { "$ref": "#/$defs/id" },
+          "severity": { "enum": ["note", "minor", "major", "blocker"] },
+          "shot_id": { "anyOf": [{ "$ref": "#/$defs/id" }, { "type": "null" }] },
+          "note": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "gate_ref": { "$ref": "#/$defs/gateRef" }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[A-Z][A-Z0-9_-]{2,63}$" },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "gateRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gate", "checkpoint_path"],
+      "properties": {
+        "gate": { "const": "GATE_ANIMATIC" },
+        "checkpoint_path": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openmontage/artifacts/budget_approval",
+  "title": "YouTube Factory Budget Gate Packet",
+  "description": "Cost and manual-credit estimate prepared for GATE_BUDGET without recording approval itself.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "project_id", "plan_id", "state", "currency", "estimated_cost", "route_estimates", "gate_ref"],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "project_id": { "$ref": "#/$defs/id" },
+    "plan_id": { "$ref": "#/$defs/id" },
+    "state": { "enum": ["draft", "ready_for_gate", "needs_revision"] },
+    "currency": { "enum": ["USD", "KRW"] },
+    "estimated_cost": { "type": "number", "minimum": 0 },
+    "route_estimates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["route", "shot_count", "estimated_cost", "note"],
+        "properties": {
+          "route": { "enum": ["REAL_INGEST", "TOPVIEW_HANDOFF", "LOCAL_LTX", "HYPERFRAMES"] },
+          "shot_count": { "type": "integer", "minimum": 0 },
+          "estimated_credits": { "type": "number", "minimum": 0 },
+          "estimated_cost": { "type": "number", "minimum": 0 },
+          "note": { "type": "string" }
+        }
+      }
+    },
+    "gate_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gate", "checkpoint_path"],
+      "properties": {
+        "gate": { "const": "GATE_BUDGET" },
+        "checkpoint_path": { "type": "string", "minLength": 1 }
+      }
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[A-Z][A-Z0-9_-]{2,63}$" }
+  }
+}

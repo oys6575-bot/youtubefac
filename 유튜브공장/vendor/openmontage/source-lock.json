@@ -1,0 +1,33 @@
+{
+  "repository": "https://github.com/calesthio/OpenMontage.git",
+  "commit": "4eab34c5cfcccaa4f1970554928feccce73ee930",
+  "commit_timestamp": "2026-08-03T14:49:08+05:30",
+  "imported_at": "2026-08-11T22:29:03+09:00",
+  "import_method": "git archive",
+  "archive_sha256": "da2ee7e66f8e47f2164998b4237c5911ab163e4386e6575fd68d20643351bcee",
+  "tracked_file_count": 2038,
+  "license": "AGPL-3.0",
+  "local_source_used_only_as_object_store": "/Users/mk-macbook/Desktop/openmontage",
+  "applied_local_patches": [
+    {
+      "source_commit": "6fa66e1f3a4658a93a4bf1ce85ceb7e1435618a2",
+      "subject": "allow approval_policy decision category",
+      "files": [
+        "schemas/artifacts/decision_log.schema.json",
+        "tests/contracts/test_approval_policy_contract.py"
+      ]
+    }
+  ],
+  "excluded_paths": [
+    ".git",
+    ".env",
+    ".venv",
+    "node_modules",
+    "projects",
+    ".cache",
+    ".remotion",
+    ".pytest_cache",
+    "tmp",
+    "downloaded media"
+  ]
+}
