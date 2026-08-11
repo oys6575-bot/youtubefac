@@ -23,6 +23,13 @@ def _module():
     return importlib.import_module("lib.knowledge_vault")
 
 
+def _sync_fixture(tmp_path: Path):
+    module = _module()
+    sources = module.load_knowledge_sources(root=ROOT)
+    module.sync_vault(sources, root=tmp_path)
+    return sources
+
+
 def test_loads_every_audited_knowledge_source() -> None:
     sources = _module().load_knowledge_sources(root=ROOT)
 
@@ -91,3 +98,53 @@ def test_sync_is_idempotent_and_preserves_production_notes(tmp_path: Path) -> No
     assert second.created == 0
     assert second.updated == 0
     assert second.unchanged > 380
+
+
+def test_audit_accepts_a_clean_vault(tmp_path: Path) -> None:
+    sources = _sync_fixture(tmp_path)
+
+    assert _module().audit_vault(sources, root=tmp_path) == []
+
+
+def test_audit_detects_policy_drift_orphan_and_broken_link(tmp_path: Path) -> None:
+    sources = _sync_fixture(tmp_path)
+    card = (
+        tmp_path
+        / "knowledge/02-TECHNIQUES/camera/camera.variable_velocity_push.md"
+    )
+    card.write_text(
+        card.read_text(encoding="utf-8")
+        .replace("status: ACTIVE", "status: BLOCKED", 1)
+        .replace(
+            "<!-- USER-NOTES:BEGIN -->",
+            "[[02-TECHNIQUES/camera/does-not-exist]]\n<!-- USER-NOTES:BEGIN -->",
+        ),
+        encoding="utf-8",
+    )
+    orphan = tmp_path / "knowledge/02-TECHNIQUES/camera/orphan.md"
+    orphan.write_text(
+        "---\ntype: visual-technique\ntechnique_id: orphan\n---\n",
+        encoding="utf-8",
+    )
+
+    findings = _module().audit_vault(sources, root=tmp_path)
+
+    assert any(
+        "camera.variable_velocity_push" in item and "status" in item
+        for item in findings
+    )
+    assert any("orphan.md" in item and "orphan" in item for item in findings)
+    assert any("does-not-exist" in item and "broken wikilink" in item for item in findings)
+    assert orphan.exists()
+
+
+def test_search_exposes_all_statuses_but_labels_reddit_as_anecdotal(
+    tmp_path: Path,
+) -> None:
+    _sync_fixture(tmp_path)
+
+    motion = _module().search_vault("photo_to_motion", root=tmp_path)
+    reddit = _module().search_vault("unlimited plans", root=tmp_path)
+
+    assert motion[0]["card_id"] == "camera.material_macro_parallax"
+    assert any(item["evidence_class"] == "ANECDOTAL_SIGNAL" for item in reddit)

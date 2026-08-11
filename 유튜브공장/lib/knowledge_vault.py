@@ -24,6 +24,8 @@ _MARKDOWN_LINK = re.compile(r"\[([^\]]+)\]\((https?://[^)]+)\)")
 _USER_NOTES = re.compile(
     r"<!-- USER-NOTES:BEGIN -->(.*?)<!-- USER-NOTES:END -->", re.DOTALL
 )
+_WIKILINK = re.compile(r"\[\[([^\]]+)\]\]")
+_TOKEN = re.compile(r"[0-9a-z가-힣_]+", re.IGNORECASE)
 
 
 class KnowledgeVaultError(ValueError):
@@ -988,3 +990,257 @@ def sync_vault(
         entity_counts=counts,
         orphans=tuple(path.as_posix() for path in orphans),
     )
+
+
+def _parse_frontmatter(text: str, *, path: Path) -> dict[str, Any]:
+    if not text.startswith("---\n"):
+        raise KnowledgeVaultError(f"Missing YAML frontmatter: {path}")
+    marker = text.find("\n---\n", 4)
+    if marker < 0:
+        raise KnowledgeVaultError(f"Unterminated YAML frontmatter: {path}")
+    try:
+        payload = yaml.safe_load(text[4:marker])
+    except yaml.YAMLError as exc:
+        raise KnowledgeVaultError(f"Invalid YAML frontmatter {path}: {exc}") from exc
+    if not isinstance(payload, dict):
+        raise KnowledgeVaultError(f"Frontmatter must be an object: {path}")
+    return payload
+
+
+def _managed_entity_paths(vault: Path) -> set[Path]:
+    paths: set[Path] = set()
+    for folder in (
+        "02-TECHNIQUES",
+        "04-PROVIDERS/topview-capabilities",
+        "04-PROVIDERS/topview-models",
+        "06-SOURCES/github",
+        "06-SOURCES/hugging-face",
+        "06-SOURCES/official-sites",
+        "06-SOURCES/reddit-signals",
+        "07-SKILLS",
+        "08-TOOLS",
+        "09-MODELS",
+    ):
+        base = vault / folder
+        if base.exists():
+            paths.update(path.relative_to(vault) for path in base.rglob("*.md"))
+    return paths
+
+
+def audit_vault(
+    sources: KnowledgeSources, *, root: Path | None = None
+) -> list[str]:
+    """Return deterministic drift and integrity findings without changing the vault."""
+
+    project_root = Path(root).resolve() if root is not None else sources.project_root
+    vault = project_root / "knowledge"
+    findings: list[str] = []
+    if not vault.is_dir():
+        return [f"missing vault: {vault}"]
+
+    cards, _ = _build_cards(sources)
+    lookup = {card.card_id: card for card in cards}
+    expected_paths = {card.relative_path for card in cards}
+    actual_paths = _managed_entity_paths(vault)
+
+    for relative_path in sorted(expected_paths - actual_paths, key=lambda path: path.as_posix()):
+        card = next(item for item in cards if item.relative_path == relative_path)
+        findings.append(f"missing card {card.card_id}: {relative_path.as_posix()}")
+    for relative_path in sorted(actual_paths - expected_paths, key=lambda path: path.as_posix()):
+        findings.append(f"orphan card: {relative_path.as_posix()}")
+
+    seen_ids: dict[str, Path] = {}
+    for card in sorted(cards, key=lambda item: item.card_id):
+        path = vault / card.relative_path
+        if not path.is_file():
+            continue
+        text = path.read_text(encoding="utf-8")
+        try:
+            actual_frontmatter = _parse_frontmatter(text, path=path)
+        except KnowledgeVaultError as exc:
+            findings.append(str(exc))
+            continue
+        actual_id = str(actual_frontmatter.get("card_id", ""))
+        if actual_id and actual_id in seen_ids:
+            findings.append(
+                "duplicate card_id " + actual_id + ": "
+                + seen_ids[actual_id].relative_to(vault).as_posix()
+                + ", " + card.relative_path.as_posix()
+            )
+        elif actual_id:
+            seen_ids[actual_id] = path
+        for key, expected_value in card.frontmatter.items():
+            actual_value = actual_frontmatter.get(key)
+            if actual_value != expected_value:
+                findings.append(
+                    f"drift {card.card_id}: {key} expected={expected_value!r} "
+                    f"actual={actual_value!r}"
+                )
+        expected_text = _render_card(card, lookup, text)
+        if text != expected_text and not any(
+            item.startswith(f"drift {card.card_id}:") for item in findings
+        ):
+            findings.append(f"generated content drift: {card.card_id}")
+
+        source_path = actual_frontmatter.get("source_path")
+        if isinstance(source_path, str) and source_path and not source_path.startswith(
+            ("http://", "https://")
+        ):
+            source_target = sources.project_root / source_path
+            if not source_target.exists():
+                findings.append(
+                    f"missing local source_path {card.card_id}: {source_path}"
+                )
+
+    for relative_path in sorted(actual_paths - expected_paths, key=lambda path: path.as_posix()):
+        path = vault / relative_path
+        try:
+            frontmatter = _parse_frontmatter(path.read_text(encoding="utf-8"), path=path)
+        except KnowledgeVaultError:
+            continue
+        card_id = frontmatter.get("card_id")
+        if card_id and str(card_id) in seen_ids:
+            findings.append(
+                f"duplicate card_id {card_id}: {relative_path.as_posix()}"
+            )
+
+    static_files = _static_vault_files(cards, sources.catalog_version)
+    for relative_path, expected in sorted(
+        static_files.items(), key=lambda item: item[0].as_posix()
+    ):
+        path = vault / relative_path
+        if not path.is_file():
+            findings.append(f"missing generated vault file: {relative_path.as_posix()}")
+        elif path.read_text(encoding="utf-8") != expected:
+            findings.append(f"generated vault file drift: {relative_path.as_posix()}")
+
+    if (vault / ".obsidian/community-plugins.json").exists():
+        findings.append("prohibited Obsidian community-plugin state")
+    for path in sorted((vault / ".obsidian").glob("workspace*")):
+        findings.append(f"prohibited Obsidian workspace state: {path.name}")
+
+    markdown_paths = sorted(vault.rglob("*.md"))
+    for path in markdown_paths:
+        text = path.read_text(encoding="utf-8")
+        for raw_target in _WIKILINK.findall(text):
+            target = raw_target.split("|", 1)[0].split("#", 1)[0].strip()
+            if not target or "://" in target:
+                continue
+            target_path = vault / target
+            if not target.lower().endswith(".md"):
+                target_path = Path(str(target_path) + ".md")
+            if not target_path.is_file():
+                findings.append(
+                    "broken wikilink " + path.relative_to(vault).as_posix()
+                    + f": {target}"
+                )
+
+    return sorted(dict.fromkeys(findings))
+
+
+def _token_list(value: str) -> list[str]:
+    tokens: list[str] = []
+    for raw in _TOKEN.findall(value.casefold()):
+        for token in (raw, *raw.split("_")):
+            if token and token not in tokens:
+                tokens.append(token)
+    return tokens
+
+
+def _flatten_search_values(value: Any) -> list[str]:
+    if isinstance(value, str):
+        return [value]
+    if isinstance(value, Mapping):
+        flattened: list[str] = []
+        for item in value.values():
+            flattened.extend(_flatten_search_values(item))
+        return flattened
+    if isinstance(value, Iterable) and not isinstance(value, (bytes, bytearray)):
+        flattened = []
+        for item in value:
+            flattened.extend(_flatten_search_values(item))
+        return flattened
+    return [str(value)] if value is not None else []
+
+
+def search_vault(
+    query: str,
+    *,
+    entity_types: tuple[str, ...] | None = None,
+    root: Path = FACTORY_ROOT,
+) -> list[dict[str, Any]]:
+    """Search every indexed status using deterministic structured-first ranking."""
+
+    query_phrase = query.strip().casefold()
+    query_tokens = _token_list(query)
+    if not query_tokens:
+        raise KnowledgeVaultError("Search query must contain at least one token")
+    vault = Path(root).resolve() / "knowledge"
+    catalog_path = vault / ".factory-catalog.json"
+    try:
+        catalog = json.loads(catalog_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise KnowledgeVaultError(f"Cannot load vault catalog {catalog_path}: {exc}") from exc
+    records = catalog.get("cards", [])
+    if not isinstance(records, list):
+        raise KnowledgeVaultError("Vault catalog cards must be a list")
+
+    allowed_types = set(entity_types) if entity_types is not None else None
+    results: list[dict[str, Any]] = []
+    structured_keys = {
+        "card_id", "technique_id", "intents", "tags", "skill_name", "tool_name",
+        "source_id", "model_id", "capability_id", "model_family", "default_route",
+        "provider_scopes", "render_runtimes", "capability", "provider", "runtime",
+    }
+    for record in records:
+        entity_type = str(record.get("entity_type", ""))
+        if allowed_types is not None and entity_type not in allowed_types:
+            continue
+        relative_path = Path(str(record.get("path", "")))
+        path = vault / relative_path
+        if not path.is_file():
+            continue
+        body = path.read_text(encoding="utf-8")
+        try:
+            frontmatter = _parse_frontmatter(body, path=path)
+        except KnowledgeVaultError:
+            continue
+        structured_values = _flatten_search_values(
+            {key: frontmatter[key] for key in structured_keys if key in frontmatter}
+        )
+        structured_exact = {item.casefold() for item in structured_values}
+        structured_tokens = set(_token_list(" ".join(structured_values)))
+        title = str(frontmatter.get("title", record.get("card_id", "")))
+        title_tokens = set(_token_list(title))
+        body_tokens = set(_token_list(body))
+        required = set(query_tokens)
+
+        if query_phrase in structured_exact:
+            score = 400
+        elif required.issubset(structured_tokens):
+            score = 300
+        elif query_phrase and query_phrase in title.casefold():
+            score = 250
+        elif required.issubset(title_tokens):
+            score = 200
+        elif required.issubset(body_tokens):
+            score = 100
+        else:
+            matches = required & body_tokens
+            if not matches:
+                continue
+            score = 10 * len(matches)
+        matched_terms = [term for term in query_tokens if term in body_tokens]
+        results.append(
+            {
+                "card_id": str(record.get("card_id", "")),
+                "entity_type": entity_type,
+                "title": title,
+                "status": str(frontmatter.get("status", record.get("status", ""))),
+                "evidence_class": frontmatter.get("evidence_class"),
+                "path": (Path("knowledge") / relative_path).as_posix(),
+                "score": score,
+                "matched_terms": matched_terms,
+            }
+        )
+    return sorted(results, key=lambda item: (-int(item["score"]), str(item["card_id"])))
