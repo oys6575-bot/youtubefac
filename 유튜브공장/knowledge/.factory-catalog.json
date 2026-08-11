@@ -1,0 +1,2287 @@
+{
+  "cards": [
+    {
+      "card_id": "camera.material_macro_parallax",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/camera/camera.material_macro_parallax.md",
+      "status": "ACTIVE"
+    },
+    {
+      "card_id": "camera.rack_focus",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/camera/camera.rack_focus.md",
+      "status": "ON_DEMAND"
+    },
+    {
+      "card_id": "camera.slow_observational_push",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/camera/camera.slow_observational_push.md",
+      "status": "ACTIVE"
+    },
+    {
+      "card_id": "camera.static_evidence_hold",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/camera/camera.static_evidence_hold.md",
+      "status": "ACTIVE"
+    },
+    {
+      "card_id": "camera.variable_velocity_push",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/camera/camera.variable_velocity_push.md",
+      "status": "ACTIVE"
+    },
+    {
+      "card_id": "continuity.process_geography",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/continuity/continuity.process_geography.md",
+      "status": "ACTIVE"
+    },
+    {
+      "card_id": "continuity.screen_direction",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/continuity/continuity.screen_direction.md",
+      "status": "ACTIVE"
+    },
+    {
+      "card_id": "direction.sequence_meaning_first",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/direction/direction.sequence_meaning_first.md",
+      "status": "ACTIVE"
+    },
+    {
+      "card_id": "direction.shot_motivation",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/direction/direction.shot_motivation.md",
+      "status": "ACTIVE"
+    },
+    {
+      "card_id": "editing.radio_paper_cut",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/editing/editing.radio_paper_cut.md",
+      "status": "ACTIVE"
+    },
+    {
+      "card_id": "editing.rhythmic_variation",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/editing/editing.rhythmic_variation.md",
+      "status": "ACTIVE"
+    },
+    {
+      "card_id": "editing.tension_release_pacing",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/editing/editing.tension_release_pacing.md",
+      "status": "ACTIVE"
+    },
+    {
+      "card_id": "graphics.data_relationship_motion",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/graphics/graphics.data_relationship_motion.md",
+      "status": "ACTIVE"
+    },
+    {
+      "card_id": "graphics.map_spatial_context",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/graphics/graphics.map_spatial_context.md",
+      "status": "ACTIVE"
+    },
+    {
+      "card_id": "graphics.progressive_diagram_reveal",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/graphics/graphics.progressive_diagram_reveal.md",
+      "status": "ACTIVE"
+    },
+    {
+      "card_id": "library.directorskills.film_language",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/library/library.directorskills.film_language.md",
+      "status": "REFERENCE_ONLY"
+    },
+    {
+      "card_id": "library.nolanx.long_form_continuity",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/library/library.nolanx.long_form_continuity.md",
+      "status": "ON_DEMAND"
+    },
+    {
+      "card_id": "library.remotion_scenes.patterns",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/library/library.remotion_scenes.patterns.md",
+      "status": "ON_DEMAND"
+    },
+    {
+      "card_id": "library.x_cut.recipe_retrieval",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/library/library.x_cut.recipe_retrieval.md",
+      "status": "REFERENCE_ONLY"
+    },
+    {
+      "card_id": "model.Lightricks/LTX-2.3",
+      "entity_type": "model",
+      "path": "09-MODELS/Lightricks-LTX-2.3.md",
+      "status": "PRIMARY_LOCAL_PILOT"
+    },
+    {
+      "card_id": "model.Wan-AI/Wan2.2-I2V-A14B",
+      "entity_type": "model",
+      "path": "09-MODELS/Wan-AI-Wan2.2-I2V-A14B.md",
+      "status": "OPTIONAL_LOCAL"
+    },
+    {
+      "card_id": "model.Wan-AI/Wan2.2-TI2V-5B",
+      "entity_type": "model",
+      "path": "09-MODELS/Wan-AI-Wan2.2-TI2V-5B.md",
+      "status": "OPTIONAL_LOCAL"
+    },
+    {
+      "card_id": "model.black-forest-labs/FLUX.1-Kontext-dev",
+      "entity_type": "model",
+      "path": "09-MODELS/black-forest-labs-FLUX.1-Kontext-dev.md",
+      "status": "CONDITIONAL"
+    },
+    {
+      "card_id": "model.black-forest-labs/FLUX.2-klein-4B",
+      "entity_type": "model",
+      "path": "09-MODELS/black-forest-labs-FLUX.2-klein-4B.md",
+      "status": "PRIMARY_LOCAL_IMAGE"
+    },
+    {
+      "card_id": "model.tencent/HunyuanVideo-1.5",
+      "entity_type": "model",
+      "path": "09-MODELS/tencent-HunyuanVideo-1.5.md",
+      "status": "NOT_DEFAULT"
+    },
+    {
+      "card_id": "provider.higgsfield.camera_preset",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/provider/provider.higgsfield.camera_preset.md",
+      "status": "ON_DEMAND"
+    },
+    {
+      "card_id": "provider.local_ltx.motion_pilot",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/provider/provider.local_ltx.motion_pilot.md",
+      "status": "ACTIVE"
+    },
+    {
+      "card_id": "provider.seedance.multishot_continuity",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/provider/provider.seedance.multishot_continuity.md",
+      "status": "ON_DEMAND"
+    },
+    {
+      "card_id": "provider.topview.first_last_frame_bridge",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/provider/provider.topview.first_last_frame_bridge.md",
+      "status": "ON_DEMAND"
+    },
+    {
+      "card_id": "provider.topview.multi_reference_continuity",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/provider/provider.topview.multi_reference_continuity.md",
+      "status": "ON_DEMAND"
+    },
+    {
+      "card_id": "research-url.02ae3bc47301",
+      "entity_type": "research_url",
+      "path": "06-SOURCES/github/02ae3bc47301-공식-라이선스.md",
+      "status": "CITED_REFERENCE"
+    },
+    {
+      "card_id": "research-url.08bff5f45c55",
+      "entity_type": "research_url",
+      "path": "06-SOURCES/official-sites/08bff5f45c55-Board-공식-가이드.md",
+      "status": "CITED_REFERENCE"
+    },
+    {
+      "card_id": "research-url.0a09b687d088",
+      "entity_type": "research_url",
+      "path": "06-SOURCES/github/0a09b687d088-공식-Remotion-스킬-저장소.md",
+      "status": "CITED_REFERENCE"
+    },
+    {
+      "card_id": "research-url.2062eee96756",
+      "entity_type": "research_url",
+      "path": "06-SOURCES/reddit-signals/2062eee96756-무제한-플랜-토론.md",
+      "status": "ANECDOTAL_SIGNAL"
+    },
+    {
+      "card_id": "research-url.2a556bc316ab",
+      "entity_type": "research_url",
+      "path": "06-SOURCES/github/2a556bc316ab-12202.md",
+      "status": "CITED_REFERENCE"
+    },
+    {
+      "card_id": "research-url.2c360bcb6539",
+      "entity_type": "research_url",
+      "path": "06-SOURCES/github/2c360bcb6539-14837.md",
+      "status": "CITED_REFERENCE"
+    },
+    {
+      "card_id": "research-url.3950304d85bb",
+      "entity_type": "research_url",
+      "path": "06-SOURCES/hugging-face/3950304d85bb-FLUX.2-klein-4B.md",
+      "status": "CITED_REFERENCE"
+    },
+    {
+      "card_id": "research-url.46866dddddab",
+      "entity_type": "research_url",
+      "path": "06-SOURCES/reddit-signals/46866dddddab-Remotion-FFmpeg-비교-경험담.md",
+      "status": "ANECDOTAL_SIGNAL"
+    },
+    {
+      "card_id": "research-url.4bb7928cc752",
+      "entity_type": "research_url",
+      "path": "06-SOURCES/hugging-face/4bb7928cc752-Lightricks-LTX-2.3.md",
+      "status": "CITED_REFERENCE"
+    },
+    {
+      "card_id": "research-url.552316f6ab66",
+      "entity_type": "research_url",
+      "path": "06-SOURCES/reddit-signals/552316f6ab66-Seedance-단편-제작-사례.md",
+      "status": "ANECDOTAL_SIGNAL"
+    },
+    {
+      "card_id": "research-url.5da041d3cc72",
+      "entity_type": "research_url",
+      "path": "06-SOURCES/github/5da041d3cc72-ComfyUI-v0.31.0.md",
+      "status": "CITED_REFERENCE"
+    },
+    {
+      "card_id": "research-url.623afc87e188",
+      "entity_type": "research_url",
+      "path": "06-SOURCES/github/623afc87e188-15010.md",
+      "status": "CITED_REFERENCE"
+    },
+    {
+      "card_id": "research-url.65f22b35a5a4",
+      "entity_type": "research_url",
+      "path": "06-SOURCES/reddit-signals/65f22b35a5a4-TopView-사용자-의견-모음.md",
+      "status": "ANECDOTAL_SIGNAL"
+    },
+    {
+      "card_id": "research-url.6bea5436eef2",
+      "entity_type": "research_url",
+      "path": "06-SOURCES/official-sites/6bea5436eef2-공식-종합-가이드.md",
+      "status": "CITED_REFERENCE"
+    },
+    {
+      "card_id": "research-url.6fb0a36dc719",
+      "entity_type": "research_url",
+      "path": "06-SOURCES/hugging-face/6fb0a36dc719-Wan2.2-TI2V-5B.md",
+      "status": "CITED_REFERENCE"
+    },
+    {
+      "card_id": "research-url.76b85989fd05",
+      "entity_type": "research_url",
+      "path": "06-SOURCES/reddit-signals/76b85989fd05-M5-Max-LTX-2.3-속도-경험.md",
+      "status": "ANECDOTAL_SIGNAL"
+    },
+    {
+      "card_id": "research-url.9e87a12a3e41",
+      "entity_type": "research_url",
+      "path": "06-SOURCES/github/9e87a12a3e41-공식-agent-skill-저장소.md",
+      "status": "CITED_REFERENCE"
+    },
+    {
+      "card_id": "research-url.b46cc7586030",
+      "entity_type": "research_url",
+      "path": "06-SOURCES/official-sites/b46cc7586030-공식-모델-페이지.md",
+      "status": "CITED_REFERENCE"
+    },
+    {
+      "card_id": "research-url.c23203a356e9",
+      "entity_type": "research_url",
+      "path": "06-SOURCES/github/c23203a356e9-이슈-1047.md",
+      "status": "CITED_REFERENCE"
+    },
+    {
+      "card_id": "research-url.c49513d66408",
+      "entity_type": "research_url",
+      "path": "06-SOURCES/github/c49513d66408-v0.7.106-공식-릴리스.md",
+      "status": "CITED_REFERENCE"
+    },
+    {
+      "card_id": "research-url.c6d5be7868e1",
+      "entity_type": "research_url",
+      "path": "06-SOURCES/github/c6d5be7868e1-공식-이슈-3219.md",
+      "status": "CITED_REFERENCE"
+    },
+    {
+      "card_id": "research-url.cb2515e698f2",
+      "entity_type": "research_url",
+      "path": "06-SOURCES/reddit-signals/cb2515e698f2-M4-Pro-검은-프레임-사례.md",
+      "status": "ANECDOTAL_SIGNAL"
+    },
+    {
+      "card_id": "research-url.d4725c0e95a8",
+      "entity_type": "research_url",
+      "path": "06-SOURCES/hugging-face/d4725c0e95a8-Wan2.2-I2V-A14B.md",
+      "status": "CITED_REFERENCE"
+    },
+    {
+      "card_id": "research.hf.av_skills",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/research/research.hf.av_skills.md",
+      "status": "BLOCKED"
+    },
+    {
+      "card_id": "research.hf.camera_motion_classifier",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/research/research.hf.camera_motion_classifier.md",
+      "status": "BLOCKED"
+    },
+    {
+      "card_id": "research.hf.edit_intent_timeline",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/research/research.hf.edit_intent_timeline.md",
+      "status": "REFERENCE_ONLY"
+    },
+    {
+      "card_id": "research.hf.film_eval",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/research/research.hf.film_eval.md",
+      "status": "BLOCKED"
+    },
+    {
+      "card_id": "research.hf.premiere_trajectories",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/research/research.hf.premiere_trajectories.md",
+      "status": "REFERENCE_ONLY"
+    },
+    {
+      "card_id": "research.hf.seedance_prompt_scrape",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/research/research.hf.seedance_prompt_scrape.md",
+      "status": "BLOCKED"
+    },
+    {
+      "card_id": "research.hf.shotplan",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/research/research.hf.shotplan.md",
+      "status": "BLOCKED"
+    },
+    {
+      "card_id": "research.hf.vera_layered_video",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/research/research.hf.vera_layered_video.md",
+      "status": "REFERENCE_ONLY"
+    },
+    {
+      "card_id": "runtime.hyperframes_seek_safe",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/runtime/runtime.hyperframes_seek_safe.md",
+      "status": "ACTIVE"
+    },
+    {
+      "card_id": "runtime.remotion_scene_reuse",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/runtime/runtime.remotion_scene_reuse.md",
+      "status": "ON_DEMAND"
+    },
+    {
+      "card_id": "skill.acestep",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/acestep.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.agents",
+      "entity_type": "skill",
+      "path": "07-SKILLS/reference-only/agents.md",
+      "status": "REFERENCE_ONLY"
+    },
+    {
+      "card_id": "skill.ai-video-gen",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required/ai-video-gen.md",
+      "status": "REQUIRED"
+    },
+    {
+      "card_id": "skill.avatar-video",
+      "entity_type": "skill",
+      "path": "07-SKILLS/disabled-by-default/avatar-video.md",
+      "status": "DISABLED_BY_DEFAULT"
+    },
+    {
+      "card_id": "skill.azure-speech-to-text",
+      "entity_type": "skill",
+      "path": "07-SKILLS/disabled-by-default/azure-speech-to-text.md",
+      "status": "DISABLED_BY_DEFAULT"
+    },
+    {
+      "card_id": "skill.beat-sync-editing",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required/beat-sync-editing.md",
+      "status": "REQUIRED"
+    },
+    {
+      "card_id": "skill.beautiful-mermaid",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/beautiful-mermaid.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.bfl-api",
+      "entity_type": "skill",
+      "path": "07-SKILLS/disabled-by-default/bfl-api.md",
+      "status": "DISABLED_BY_DEFAULT"
+    },
+    {
+      "card_id": "skill.canvas-procedural-animation",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/canvas-procedural-animation.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.character-animation-qa",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/character-animation-qa.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.character-rigging",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/character-rigging.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.color-motion",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required/color-motion.md",
+      "status": "REQUIRED"
+    },
+    {
+      "card_id": "skill.comfyui",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required/comfyui.md",
+      "status": "REQUIRED"
+    },
+    {
+      "card_id": "skill.create-video",
+      "entity_type": "skill",
+      "path": "07-SKILLS/disabled-by-default/create-video.md",
+      "status": "DISABLED_BY_DEFAULT"
+    },
+    {
+      "card_id": "skill.d3-viz",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/d3-viz.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.dashscope",
+      "entity_type": "skill",
+      "path": "07-SKILLS/disabled-by-default/dashscope.md",
+      "status": "DISABLED_BY_DEFAULT"
+    },
+    {
+      "card_id": "skill.diagram-animation",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/diagram-animation.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.doubao-tts",
+      "entity_type": "skill",
+      "path": "07-SKILLS/disabled-by-default/doubao-tts.md",
+      "status": "DISABLED_BY_DEFAULT"
+    },
+    {
+      "card_id": "skill.elevenlabs",
+      "entity_type": "skill",
+      "path": "07-SKILLS/disabled-by-default/elevenlabs.md",
+      "status": "DISABLED_BY_DEFAULT"
+    },
+    {
+      "card_id": "skill.embedded-captions",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required-with-restriction/embedded-captions.md",
+      "status": "REQUIRED_WITH_RESTRICTION"
+    },
+    {
+      "card_id": "skill.faceless-explainer",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required/faceless-explainer.md",
+      "status": "REQUIRED"
+    },
+    {
+      "card_id": "skill.faceswap",
+      "entity_type": "skill",
+      "path": "07-SKILLS/disabled-by-default/faceswap.md",
+      "status": "DISABLED_BY_DEFAULT"
+    },
+    {
+      "card_id": "skill.ffmpeg",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required/ffmpeg.md",
+      "status": "REQUIRED"
+    },
+    {
+      "card_id": "skill.flux-best-practices",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required/flux-best-practices.md",
+      "status": "REQUIRED"
+    },
+    {
+      "card_id": "skill.framer-motion",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/framer-motion.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.gemini-omni",
+      "entity_type": "skill",
+      "path": "07-SKILLS/disabled-by-default/gemini-omni.md",
+      "status": "DISABLED_BY_DEFAULT"
+    },
+    {
+      "card_id": "skill.general-video",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required/general-video.md",
+      "status": "REQUIRED"
+    },
+    {
+      "card_id": "skill.grok-media",
+      "entity_type": "skill",
+      "path": "07-SKILLS/disabled-by-default/grok-media.md",
+      "status": "DISABLED_BY_DEFAULT"
+    },
+    {
+      "card_id": "skill.gsap-core",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/gsap-core.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.gsap-frameworks",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/gsap-frameworks.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.gsap-performance",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/gsap-performance.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.gsap-plugins",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/gsap-plugins.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.gsap-react",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/gsap-react.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.gsap-scrolltrigger",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/gsap-scrolltrigger.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.gsap-timeline",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/gsap-timeline.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.gsap-utils",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/gsap-utils.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.heygen",
+      "entity_type": "skill",
+      "path": "07-SKILLS/disabled-by-default/heygen.md",
+      "status": "DISABLED_BY_DEFAULT"
+    },
+    {
+      "card_id": "skill.hyperframes",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required/hyperframes.md",
+      "status": "REQUIRED"
+    },
+    {
+      "card_id": "skill.hyperframes-animation",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required/hyperframes-animation.md",
+      "status": "REQUIRED"
+    },
+    {
+      "card_id": "skill.hyperframes-cli",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required/hyperframes-cli.md",
+      "status": "REQUIRED"
+    },
+    {
+      "card_id": "skill.hyperframes-core",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required/hyperframes-core.md",
+      "status": "REQUIRED"
+    },
+    {
+      "card_id": "skill.hyperframes-creative",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required/hyperframes-creative.md",
+      "status": "REQUIRED"
+    },
+    {
+      "card_id": "skill.hyperframes-keyframes",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required/hyperframes-keyframes.md",
+      "status": "REQUIRED"
+    },
+    {
+      "card_id": "skill.hyperframes-media",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/hyperframes-media.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.hyperframes-registry",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required/hyperframes-registry.md",
+      "status": "REQUIRED"
+    },
+    {
+      "card_id": "skill.isometric-animation",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/isometric-animation.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.kinetic-typography",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required/kinetic-typography.md",
+      "status": "REQUIRED"
+    },
+    {
+      "card_id": "skill.kling-official",
+      "entity_type": "skill",
+      "path": "07-SKILLS/disabled-by-default/kling-official.md",
+      "status": "DISABLED_BY_DEFAULT"
+    },
+    {
+      "card_id": "skill.lottie-bodymovin",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/lottie-bodymovin.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.ltx2",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required/ltx2.md",
+      "status": "REQUIRED"
+    },
+    {
+      "card_id": "skill.lyria",
+      "entity_type": "skill",
+      "path": "07-SKILLS/disabled-by-default/lyria.md",
+      "status": "DISABLED_BY_DEFAULT"
+    },
+    {
+      "card_id": "skill.manim-composer",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/manim-composer.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.manimce-best-practices",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/manimce-best-practices.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.manimgl-best-practices",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/manimgl-best-practices.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.map-animation",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/map-animation.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.media-use",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required/media-use.md",
+      "status": "REQUIRED"
+    },
+    {
+      "card_id": "skill.motion-art-direction",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required/motion-art-direction.md",
+      "status": "REQUIRED"
+    },
+    {
+      "card_id": "skill.motion-graphics",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required/motion-graphics.md",
+      "status": "REQUIRED"
+    },
+    {
+      "card_id": "skill.music",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/music.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.music-to-video",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/music-to-video.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.playwright-recording",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/playwright-recording.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.pose-library-design",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/pose-library-design.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.remotion",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required/remotion.md",
+      "status": "REQUIRED"
+    },
+    {
+      "card_id": "skill.remotion-best-practices",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required/remotion-best-practices.md",
+      "status": "REQUIRED"
+    },
+    {
+      "card_id": "skill.remotion-bits",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required/remotion-bits.md",
+      "status": "REQUIRED"
+    },
+    {
+      "card_id": "skill.remotion-captions",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required/remotion-captions.md",
+      "status": "REQUIRED"
+    },
+    {
+      "card_id": "skill.remotion-create",
+      "entity_type": "skill",
+      "path": "07-SKILLS/reference-only/remotion-create.md",
+      "status": "REFERENCE_ONLY"
+    },
+    {
+      "card_id": "skill.remotion-docs",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/remotion-docs.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.remotion-interactivity",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/remotion-interactivity.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.remotion-maps",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/remotion-maps.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.remotion-markup",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required/remotion-markup.md",
+      "status": "REQUIRED"
+    },
+    {
+      "card_id": "skill.remotion-multimedia",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required/remotion-multimedia.md",
+      "status": "REQUIRED"
+    },
+    {
+      "card_id": "skill.remotion-render",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required/remotion-render.md",
+      "status": "REQUIRED"
+    },
+    {
+      "card_id": "skill.remotion-saas",
+      "entity_type": "skill",
+      "path": "07-SKILLS/reference-only/remotion-saas.md",
+      "status": "REFERENCE_ONLY"
+    },
+    {
+      "card_id": "skill.remotion-studio",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/remotion-studio.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.remotion-to-hyperframes",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/remotion-to-hyperframes.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.remotion-upgrade",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required/remotion-upgrade.md",
+      "status": "REQUIRED"
+    },
+    {
+      "card_id": "skill.seedance-2-0",
+      "entity_type": "skill",
+      "path": "07-SKILLS/disabled-by-default/seedance-2-0.md",
+      "status": "DISABLED_BY_DEFAULT"
+    },
+    {
+      "card_id": "skill.setup-api-key",
+      "entity_type": "skill",
+      "path": "07-SKILLS/disabled-by-default/setup-api-key.md",
+      "status": "DISABLED_BY_DEFAULT"
+    },
+    {
+      "card_id": "skill.shot-composition",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required/shot-composition.md",
+      "status": "REQUIRED"
+    },
+    {
+      "card_id": "skill.sound-effects",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required/sound-effects.md",
+      "status": "REQUIRED"
+    },
+    {
+      "card_id": "skill.speech-to-text",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required/speech-to-text.md",
+      "status": "REQUIRED"
+    },
+    {
+      "card_id": "skill.svg-character-animation",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/svg-character-animation.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.synthetic-screen-recording",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/synthetic-screen-recording.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.tailwind-design-system",
+      "entity_type": "skill",
+      "path": "07-SKILLS/reference-only/tailwind-design-system.md",
+      "status": "REFERENCE_ONLY"
+    },
+    {
+      "card_id": "skill.text-to-speech",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required/text-to-speech.md",
+      "status": "REQUIRED"
+    },
+    {
+      "card_id": "skill.threejs-animation",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/threejs-animation.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.threejs-fundamentals",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/threejs-fundamentals.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.threejs-geometry",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/threejs-geometry.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.threejs-interaction",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/threejs-interaction.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.threejs-lighting",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/threejs-lighting.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.threejs-loaders",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/threejs-loaders.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.threejs-materials",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/threejs-materials.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.threejs-postprocessing",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/threejs-postprocessing.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.threejs-shaders",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/threejs-shaders.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.threejs-textures",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/threejs-textures.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.topview-manual-handoff",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required/topview-manual-handoff.md",
+      "status": "REQUIRED"
+    },
+    {
+      "card_id": "skill.vercel-composition-patterns",
+      "entity_type": "skill",
+      "path": "07-SKILLS/reference-only/vercel-composition-patterns.md",
+      "status": "REFERENCE_ONLY"
+    },
+    {
+      "card_id": "skill.vercel-react-best-practices",
+      "entity_type": "skill",
+      "path": "07-SKILLS/reference-only/vercel-react-best-practices.md",
+      "status": "REFERENCE_ONLY"
+    },
+    {
+      "card_id": "skill.video-download",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required/video-download.md",
+      "status": "REQUIRED"
+    },
+    {
+      "card_id": "skill.video-edit",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required/video-edit.md",
+      "status": "REQUIRED"
+    },
+    {
+      "card_id": "skill.video-toolkit",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/video-toolkit.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.video-translate",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/video-translate.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "skill.video-understand",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required/video-understand.md",
+      "status": "REQUIRED"
+    },
+    {
+      "card_id": "skill.visual-style",
+      "entity_type": "skill",
+      "path": "07-SKILLS/required/visual-style.md",
+      "status": "REQUIRED"
+    },
+    {
+      "card_id": "skill.web-design-guidelines",
+      "entity_type": "skill",
+      "path": "07-SKILLS/reference-only/web-design-guidelines.md",
+      "status": "REFERENCE_ONLY"
+    },
+    {
+      "card_id": "skill.website-to-video",
+      "entity_type": "skill",
+      "path": "07-SKILLS/optional/website-to-video.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "sound.j_l_cut",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/sound/sound.j_l_cut.md",
+      "status": "ACTIVE"
+    },
+    {
+      "card_id": "sound.material_motif",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/sound/sound.material_motif.md",
+      "status": "ACTIVE"
+    },
+    {
+      "card_id": "source.github.directorskills",
+      "entity_type": "creative_source",
+      "path": "06-SOURCES/github/github.directorskills.md",
+      "status": "REFERENCE_ONLY"
+    },
+    {
+      "card_id": "source.github.higgsfield_prompt_skill",
+      "entity_type": "creative_source",
+      "path": "06-SOURCES/github/github.higgsfield_prompt_skill.md",
+      "status": "ON_DEMAND"
+    },
+    {
+      "card_id": "source.github.nolanx",
+      "entity_type": "creative_source",
+      "path": "06-SOURCES/github/github.nolanx.md",
+      "status": "ON_DEMAND"
+    },
+    {
+      "card_id": "source.github.remotion_scenes",
+      "entity_type": "creative_source",
+      "path": "06-SOURCES/github/github.remotion_scenes.md",
+      "status": "ON_DEMAND"
+    },
+    {
+      "card_id": "source.github.seedance_prompt_skill",
+      "entity_type": "creative_source",
+      "path": "06-SOURCES/github/github.seedance_prompt_skill.md",
+      "status": "ON_DEMAND"
+    },
+    {
+      "card_id": "source.github.topview_official_skill",
+      "entity_type": "creative_source",
+      "path": "06-SOURCES/github/github.topview_official_skill.md",
+      "status": "REFERENCE_ONLY"
+    },
+    {
+      "card_id": "source.github.x_cut",
+      "entity_type": "creative_source",
+      "path": "06-SOURCES/github/github.x_cut.md",
+      "status": "REFERENCE_ONLY"
+    },
+    {
+      "card_id": "source.hf.av_skills",
+      "entity_type": "creative_source",
+      "path": "06-SOURCES/hugging-face/hf.av_skills.md",
+      "status": "BLOCKED"
+    },
+    {
+      "card_id": "source.hf.camera_motion_classifier",
+      "entity_type": "creative_source",
+      "path": "06-SOURCES/hugging-face/hf.camera_motion_classifier.md",
+      "status": "BLOCKED"
+    },
+    {
+      "card_id": "source.hf.descript_editing_trajectories",
+      "entity_type": "creative_source",
+      "path": "06-SOURCES/hugging-face/hf.descript_editing_trajectories.md",
+      "status": "REFERENCE_ONLY"
+    },
+    {
+      "card_id": "source.hf.film_eval",
+      "entity_type": "creative_source",
+      "path": "06-SOURCES/hugging-face/hf.film_eval.md",
+      "status": "BLOCKED"
+    },
+    {
+      "card_id": "source.hf.premiere_editing_trajectories",
+      "entity_type": "creative_source",
+      "path": "06-SOURCES/hugging-face/hf.premiere_editing_trajectories.md",
+      "status": "REFERENCE_ONLY"
+    },
+    {
+      "card_id": "source.hf.reolyy_edit_intent",
+      "entity_type": "creative_source",
+      "path": "06-SOURCES/hugging-face/hf.reolyy_edit_intent.md",
+      "status": "ON_DEMAND"
+    },
+    {
+      "card_id": "source.hf.seedance_prompt_scrape",
+      "entity_type": "creative_source",
+      "path": "06-SOURCES/hugging-face/hf.seedance_prompt_scrape.md",
+      "status": "BLOCKED"
+    },
+    {
+      "card_id": "source.hf.shotplan",
+      "entity_type": "creative_source",
+      "path": "06-SOURCES/hugging-face/hf.shotplan.md",
+      "status": "BLOCKED"
+    },
+    {
+      "card_id": "source.hf.vera_layered_video",
+      "entity_type": "creative_source",
+      "path": "06-SOURCES/hugging-face/hf.vera_layered_video.md",
+      "status": "REFERENCE_ONLY"
+    },
+    {
+      "card_id": "tool.action_timeline_compiler",
+      "entity_type": "tool",
+      "path": "08-TOOLS/character_animation/action_timeline_compiler.md",
+      "status": "ACTIVE_LOCAL"
+    },
+    {
+      "card_id": "tool.audio_energy",
+      "entity_type": "tool",
+      "path": "08-TOOLS/analysis/audio_energy.md",
+      "status": "ACTIVE_LOCAL"
+    },
+    {
+      "card_id": "tool.audio_enhance",
+      "entity_type": "tool",
+      "path": "08-TOOLS/audio_processing/audio_enhance.md",
+      "status": "ACTIVE_LOCAL"
+    },
+    {
+      "card_id": "tool.audio_mixer",
+      "entity_type": "tool",
+      "path": "08-TOOLS/audio_processing/audio_mixer.md",
+      "status": "ACTIVE_LOCAL"
+    },
+    {
+      "card_id": "tool.audio_probe",
+      "entity_type": "tool",
+      "path": "08-TOOLS/analysis/audio_probe.md",
+      "status": "ACTIVE_LOCAL"
+    },
+    {
+      "card_id": "tool.auto_reframe",
+      "entity_type": "tool",
+      "path": "08-TOOLS/video_post/auto_reframe.md",
+      "status": "ACTIVE_LOCAL"
+    },
+    {
+      "card_id": "tool.azure_stt",
+      "entity_type": "tool",
+      "path": "08-TOOLS/analysis/azure_stt.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.bg_remove",
+      "entity_type": "tool",
+      "path": "08-TOOLS/enhancement/bg_remove.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "tool.cap_recorder",
+      "entity_type": "tool",
+      "path": "08-TOOLS/screen_capture/cap_recorder.md",
+      "status": "ACTIVE_LOCAL"
+    },
+    {
+      "card_id": "tool.character_animation_reviewer",
+      "entity_type": "tool",
+      "path": "08-TOOLS/character_animation/character_animation_reviewer.md",
+      "status": "ACTIVE_LOCAL"
+    },
+    {
+      "card_id": "tool.character_rig_renderer",
+      "entity_type": "tool",
+      "path": "08-TOOLS/character_animation/character_rig_renderer.md",
+      "status": "ACTIVE_LOCAL"
+    },
+    {
+      "card_id": "tool.character_spec_generator",
+      "entity_type": "tool",
+      "path": "08-TOOLS/character_animation/character_spec_generator.md",
+      "status": "ACTIVE_LOCAL"
+    },
+    {
+      "card_id": "tool.clip_search",
+      "entity_type": "tool",
+      "path": "08-TOOLS/clip_retrieval/clip_search.md",
+      "status": "LOCAL_SETUP_REQUIRED"
+    },
+    {
+      "card_id": "tool.code_snippet",
+      "entity_type": "tool",
+      "path": "08-TOOLS/graphics/code_snippet.md",
+      "status": "ACTIVE_LOCAL"
+    },
+    {
+      "card_id": "tool.cogvideo_video",
+      "entity_type": "tool",
+      "path": "08-TOOLS/video_generation/cogvideo_video.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "tool.color_grade",
+      "entity_type": "tool",
+      "path": "08-TOOLS/enhancement/color_grade.md",
+      "status": "ACTIVE_LOCAL"
+    },
+    {
+      "card_id": "tool.comfyui_image",
+      "entity_type": "tool",
+      "path": "08-TOOLS/image_generation/comfyui_image.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "tool.comfyui_video",
+      "entity_type": "tool",
+      "path": "08-TOOLS/video_generation/comfyui_video.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "tool.composition_validator",
+      "entity_type": "tool",
+      "path": "08-TOOLS/analysis/composition_validator.md",
+      "status": "ACTIVE_LOCAL"
+    },
+    {
+      "card_id": "tool.corpus_builder",
+      "entity_type": "tool",
+      "path": "08-TOOLS/corpus_population/corpus_builder.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.dashscope_asr",
+      "entity_type": "tool",
+      "path": "08-TOOLS/analysis/dashscope_asr.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.dashscope_image",
+      "entity_type": "tool",
+      "path": "08-TOOLS/image_generation/dashscope_image.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.dashscope_tts",
+      "entity_type": "tool",
+      "path": "08-TOOLS/tts/dashscope_tts.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.diagram_gen",
+      "entity_type": "tool",
+      "path": "08-TOOLS/graphics/diagram_gen.md",
+      "status": "ACTIVE_LOCAL"
+    },
+    {
+      "card_id": "tool.direct_clip_search",
+      "entity_type": "tool",
+      "path": "08-TOOLS/clip_acquisition/direct_clip_search.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.doubao_tts",
+      "entity_type": "tool",
+      "path": "08-TOOLS/tts/doubao_tts.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.elevenlabs_tts",
+      "entity_type": "tool",
+      "path": "08-TOOLS/tts/elevenlabs_tts.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.export_bundle",
+      "entity_type": "tool",
+      "path": "08-TOOLS/publish/export_bundle.md",
+      "status": "HUMAN_GATE_ONLY"
+    },
+    {
+      "card_id": "tool.eye_enhance",
+      "entity_type": "tool",
+      "path": "08-TOOLS/enhancement/eye_enhance.md",
+      "status": "LOCAL_SETUP_REQUIRED"
+    },
+    {
+      "card_id": "tool.face_enhance",
+      "entity_type": "tool",
+      "path": "08-TOOLS/enhancement/face_enhance.md",
+      "status": "ACTIVE_LOCAL"
+    },
+    {
+      "card_id": "tool.face_restore",
+      "entity_type": "tool",
+      "path": "08-TOOLS/enhancement/face_restore.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "tool.face_tracker",
+      "entity_type": "tool",
+      "path": "08-TOOLS/analysis/face_tracker.md",
+      "status": "LOCAL_SETUP_REQUIRED"
+    },
+    {
+      "card_id": "tool.flux_image",
+      "entity_type": "tool",
+      "path": "08-TOOLS/image_generation/flux_image.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.frame_sampler",
+      "entity_type": "tool",
+      "path": "08-TOOLS/analysis/frame_sampler.md",
+      "status": "ACTIVE_LOCAL"
+    },
+    {
+      "card_id": "tool.freesound_music",
+      "entity_type": "tool",
+      "path": "08-TOOLS/music_search/freesound_music.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.gemini_omni_video",
+      "entity_type": "tool",
+      "path": "08-TOOLS/video_generation/gemini_omni_video.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.google_imagen",
+      "entity_type": "tool",
+      "path": "08-TOOLS/image_generation/google_imagen.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.google_music",
+      "entity_type": "tool",
+      "path": "08-TOOLS/music_generation/google_music.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.google_tts",
+      "entity_type": "tool",
+      "path": "08-TOOLS/tts/google_tts.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.green_screen_composite",
+      "entity_type": "tool",
+      "path": "08-TOOLS/video_post/green_screen_composite.md",
+      "status": "ACTIVE_LOCAL"
+    },
+    {
+      "card_id": "tool.green_screen_processor",
+      "entity_type": "tool",
+      "path": "08-TOOLS/video_post/green_screen_processor.md",
+      "status": "ACTIVE_LOCAL"
+    },
+    {
+      "card_id": "tool.grok_image",
+      "entity_type": "tool",
+      "path": "08-TOOLS/image_generation/grok_image.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.grok_video",
+      "entity_type": "tool",
+      "path": "08-TOOLS/video_generation/grok_video.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.heygen_video",
+      "entity_type": "tool",
+      "path": "08-TOOLS/video_generation/heygen_video.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.higgsfield_video",
+      "entity_type": "tool",
+      "path": "08-TOOLS/video_generation/higgsfield_video.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.hunyuan_video",
+      "entity_type": "tool",
+      "path": "08-TOOLS/video_generation/hunyuan_video.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "tool.hyperframes_compose",
+      "entity_type": "tool",
+      "path": "08-TOOLS/video_post/hyperframes_compose.md",
+      "status": "ACTIVE_LOCAL"
+    },
+    {
+      "card_id": "tool.image_gen",
+      "entity_type": "tool",
+      "path": "08-TOOLS/image_generation/image_gen.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.image_selector",
+      "entity_type": "tool",
+      "path": "08-TOOLS/image_generation/image_selector.md",
+      "status": "PLANNING_ONLY"
+    },
+    {
+      "card_id": "tool.jimeng_video",
+      "entity_type": "tool",
+      "path": "08-TOOLS/video_generation/jimeng_video.md",
+      "status": "DISABLED_BY_DEFAULT"
+    },
+    {
+      "card_id": "tool.kling_avatar",
+      "entity_type": "tool",
+      "path": "08-TOOLS/avatar/kling_avatar.md",
+      "status": "DISABLED_BY_DEFAULT"
+    },
+    {
+      "card_id": "tool.kling_lip_sync",
+      "entity_type": "tool",
+      "path": "08-TOOLS/avatar/kling_lip_sync.md",
+      "status": "DISABLED_BY_DEFAULT"
+    },
+    {
+      "card_id": "tool.kling_official_image",
+      "entity_type": "tool",
+      "path": "08-TOOLS/image_generation/kling_official_image.md",
+      "status": "DISABLED_BY_DEFAULT"
+    },
+    {
+      "card_id": "tool.kling_official_video",
+      "entity_type": "tool",
+      "path": "08-TOOLS/video_generation/kling_official_video.md",
+      "status": "DISABLED_BY_DEFAULT"
+    },
+    {
+      "card_id": "tool.kling_tts",
+      "entity_type": "tool",
+      "path": "08-TOOLS/tts/kling_tts.md",
+      "status": "DISABLED_BY_DEFAULT"
+    },
+    {
+      "card_id": "tool.kling_video",
+      "entity_type": "tool",
+      "path": "08-TOOLS/video_generation/kling_video.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.lip_sync",
+      "entity_type": "tool",
+      "path": "08-TOOLS/avatar/lip_sync.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "tool.local_diffusion",
+      "entity_type": "tool",
+      "path": "08-TOOLS/image_generation/local_diffusion.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "tool.ltx_video_local",
+      "entity_type": "tool",
+      "path": "08-TOOLS/video_generation/ltx_video_local.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "tool.ltx_video_modal",
+      "entity_type": "tool",
+      "path": "08-TOOLS/video_generation/ltx_video_modal.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.math_animate",
+      "entity_type": "tool",
+      "path": "08-TOOLS/graphics/math_animate.md",
+      "status": "ACTIVE_LOCAL"
+    },
+    {
+      "card_id": "tool.minimax_video",
+      "entity_type": "tool",
+      "path": "08-TOOLS/video_generation/minimax_video.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.music_gen",
+      "entity_type": "tool",
+      "path": "08-TOOLS/music_generation/music_gen.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.music_library",
+      "entity_type": "tool",
+      "path": "08-TOOLS/music_library/music_library.md",
+      "status": "LOCAL_SETUP_REQUIRED"
+    },
+    {
+      "card_id": "tool.openai_image",
+      "entity_type": "tool",
+      "path": "08-TOOLS/image_generation/openai_image.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.openai_tts",
+      "entity_type": "tool",
+      "path": "08-TOOLS/tts/openai_tts.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.pexels_image",
+      "entity_type": "tool",
+      "path": "08-TOOLS/image_generation/pexels_image.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.pexels_video",
+      "entity_type": "tool",
+      "path": "08-TOOLS/video_generation/pexels_video.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.piper_tts",
+      "entity_type": "tool",
+      "path": "08-TOOLS/tts/piper_tts.md",
+      "status": "LOCAL_SETUP_REQUIRED"
+    },
+    {
+      "card_id": "tool.pixabay_image",
+      "entity_type": "tool",
+      "path": "08-TOOLS/image_generation/pixabay_image.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.pixabay_music",
+      "entity_type": "tool",
+      "path": "08-TOOLS/music_search/pixabay_music.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.pixabay_video",
+      "entity_type": "tool",
+      "path": "08-TOOLS/video_generation/pixabay_video.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.pose_library_builder",
+      "entity_type": "tool",
+      "path": "08-TOOLS/character_animation/pose_library_builder.md",
+      "status": "ACTIVE_LOCAL"
+    },
+    {
+      "card_id": "tool.recraft_image",
+      "entity_type": "tool",
+      "path": "08-TOOLS/image_generation/recraft_image.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.remotion_caption_burn",
+      "entity_type": "tool",
+      "path": "08-TOOLS/subtitle/remotion_caption_burn.md",
+      "status": "ACTIVE_LOCAL"
+    },
+    {
+      "card_id": "tool.runway_video",
+      "entity_type": "tool",
+      "path": "08-TOOLS/video_generation/runway_video.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.scene_detect",
+      "entity_type": "tool",
+      "path": "08-TOOLS/analysis/scene_detect.md",
+      "status": "ACTIVE_LOCAL"
+    },
+    {
+      "card_id": "tool.screen_capture_selector",
+      "entity_type": "tool",
+      "path": "08-TOOLS/screen_capture/screen_capture_selector.md",
+      "status": "PLANNING_ONLY"
+    },
+    {
+      "card_id": "tool.screen_recorder",
+      "entity_type": "tool",
+      "path": "08-TOOLS/screen_capture/screen_recorder.md",
+      "status": "ACTIVE_LOCAL"
+    },
+    {
+      "card_id": "tool.seedance_replicate",
+      "entity_type": "tool",
+      "path": "08-TOOLS/video_generation/seedance_replicate.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.seedance_video",
+      "entity_type": "tool",
+      "path": "08-TOOLS/video_generation/seedance_video.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.showcase_card",
+      "entity_type": "tool",
+      "path": "08-TOOLS/video_post/showcase_card.md",
+      "status": "ACTIVE_LOCAL"
+    },
+    {
+      "card_id": "tool.silence_cutter",
+      "entity_type": "tool",
+      "path": "08-TOOLS/video_post/silence_cutter.md",
+      "status": "ACTIVE_LOCAL"
+    },
+    {
+      "card_id": "tool.sora_video",
+      "entity_type": "tool",
+      "path": "08-TOOLS/video_generation/sora_video.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.subtitle_gen",
+      "entity_type": "tool",
+      "path": "08-TOOLS/subtitle/subtitle_gen.md",
+      "status": "ACTIVE_LOCAL"
+    },
+    {
+      "card_id": "tool.suno_music",
+      "entity_type": "tool",
+      "path": "08-TOOLS/music_generation/suno_music.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.svg_rig_builder",
+      "entity_type": "tool",
+      "path": "08-TOOLS/character_animation/svg_rig_builder.md",
+      "status": "ACTIVE_LOCAL"
+    },
+    {
+      "card_id": "tool.talking_head",
+      "entity_type": "tool",
+      "path": "08-TOOLS/avatar/talking_head.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "tool.topview_manual_handoff",
+      "entity_type": "tool",
+      "path": "08-TOOLS/video_generation/topview_manual_handoff.md",
+      "status": "MANUAL_BRIDGE"
+    },
+    {
+      "card_id": "tool.topview_manual_ingest",
+      "entity_type": "tool",
+      "path": "08-TOOLS/video_generation/topview_manual_ingest.md",
+      "status": "MANUAL_BRIDGE"
+    },
+    {
+      "card_id": "tool.transcriber",
+      "entity_type": "tool",
+      "path": "08-TOOLS/analysis/transcriber.md",
+      "status": "LOCAL_SETUP_REQUIRED"
+    },
+    {
+      "card_id": "tool.transcript_fetcher",
+      "entity_type": "tool",
+      "path": "08-TOOLS/analysis/transcript_fetcher.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.tts_selector",
+      "entity_type": "tool",
+      "path": "08-TOOLS/tts/tts_selector.md",
+      "status": "PLANNING_ONLY"
+    },
+    {
+      "card_id": "tool.upscale",
+      "entity_type": "tool",
+      "path": "08-TOOLS/enhancement/upscale.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "tool.veo_video",
+      "entity_type": "tool",
+      "path": "08-TOOLS/video_generation/veo_video.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.video_analyzer",
+      "entity_type": "tool",
+      "path": "08-TOOLS/analysis/video_analyzer.md",
+      "status": "ACTIVE_LOCAL"
+    },
+    {
+      "card_id": "tool.video_compose",
+      "entity_type": "tool",
+      "path": "08-TOOLS/video_post/video_compose.md",
+      "status": "ACTIVE_LOCAL"
+    },
+    {
+      "card_id": "tool.video_downloader",
+      "entity_type": "tool",
+      "path": "08-TOOLS/source_ingest/video_downloader.md",
+      "status": "EXPLICIT_OPT_IN"
+    },
+    {
+      "card_id": "tool.video_selector",
+      "entity_type": "tool",
+      "path": "08-TOOLS/video_generation/video_selector.md",
+      "status": "PLANNING_ONLY"
+    },
+    {
+      "card_id": "tool.video_stitch",
+      "entity_type": "tool",
+      "path": "08-TOOLS/video_post/video_stitch.md",
+      "status": "ACTIVE_LOCAL"
+    },
+    {
+      "card_id": "tool.video_trimmer",
+      "entity_type": "tool",
+      "path": "08-TOOLS/video_post/video_trimmer.md",
+      "status": "ACTIVE_LOCAL"
+    },
+    {
+      "card_id": "tool.video_understand",
+      "entity_type": "tool",
+      "path": "08-TOOLS/analysis/video_understand.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "tool.visual_qa",
+      "entity_type": "tool",
+      "path": "08-TOOLS/analysis/visual_qa.md",
+      "status": "ACTIVE_LOCAL"
+    },
+    {
+      "card_id": "tool.wan_video",
+      "entity_type": "tool",
+      "path": "08-TOOLS/video_generation/wan_video.md",
+      "status": "OPTIONAL"
+    },
+    {
+      "card_id": "toolchain.comfyui",
+      "entity_type": "toolchain",
+      "path": "08-TOOLS/toolchain/toolchain.comfyui.md",
+      "status": "PINNED"
+    },
+    {
+      "card_id": "toolchain.ffmpeg",
+      "entity_type": "toolchain",
+      "path": "08-TOOLS/toolchain/toolchain.ffmpeg.md",
+      "status": "PINNED"
+    },
+    {
+      "card_id": "toolchain.hyperframes",
+      "entity_type": "toolchain",
+      "path": "08-TOOLS/toolchain/toolchain.hyperframes.md",
+      "status": "PINNED"
+    },
+    {
+      "card_id": "toolchain.node",
+      "entity_type": "toolchain",
+      "path": "08-TOOLS/toolchain/toolchain.node.md",
+      "status": "PINNED"
+    },
+    {
+      "card_id": "toolchain.npm",
+      "entity_type": "toolchain",
+      "path": "08-TOOLS/toolchain/toolchain.npm.md",
+      "status": "PINNED"
+    },
+    {
+      "card_id": "toolchain.openmontage",
+      "entity_type": "toolchain",
+      "path": "08-TOOLS/toolchain/toolchain.openmontage.md",
+      "status": "PINNED"
+    },
+    {
+      "card_id": "toolchain.python",
+      "entity_type": "toolchain",
+      "path": "08-TOOLS/toolchain/toolchain.python.md",
+      "status": "PINNED"
+    },
+    {
+      "card_id": "toolchain.remotion",
+      "entity_type": "toolchain",
+      "path": "08-TOOLS/toolchain/toolchain.remotion.md",
+      "status": "PINNED"
+    },
+    {
+      "card_id": "toolchain.topview",
+      "entity_type": "toolchain",
+      "path": "08-TOOLS/toolchain/toolchain.topview.md",
+      "status": "PINNED"
+    },
+    {
+      "card_id": "toolchain.yt-dlp",
+      "entity_type": "toolchain",
+      "path": "08-TOOLS/toolchain/toolchain.yt-dlp.md",
+      "status": "PINNED"
+    },
+    {
+      "card_id": "topview-capability.audio.music",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/audio/music.md",
+      "status": "OPTIONAL_MANUAL"
+    },
+    {
+      "card_id": "topview-capability.audio.seed_audio",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/audio/seed_audio.md",
+      "status": "EXPERIMENTAL_MANUAL"
+    },
+    {
+      "card_id": "topview-capability.audio.voice_clone",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/audio/voice_clone.md",
+      "status": "CONSENT_REQUIRED"
+    },
+    {
+      "card_id": "topview-capability.audio.voiceover",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/audio/voiceover.md",
+      "status": "OPTIONAL_MANUAL"
+    },
+    {
+      "card_id": "topview-capability.automation_surfaces.topview_api",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/automation_surfaces/topview_api.md",
+      "status": "PROHIBITED"
+    },
+    {
+      "card_id": "topview-capability.automation_surfaces.topview_codex_plugin",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/automation_surfaces/topview_codex_plugin.md",
+      "status": "PROHIBITED"
+    },
+    {
+      "card_id": "topview-capability.automation_surfaces.topview_mcp",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/automation_surfaces/topview_mcp.md",
+      "status": "PROHIBITED"
+    },
+    {
+      "card_id": "topview-capability.automation_surfaces.topview_official_skill",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/automation_surfaces/topview_official_skill.md",
+      "status": "REFERENCE_ONLY"
+    },
+    {
+      "card_id": "topview-capability.avatar.avatar_4",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/avatar/avatar_4.md",
+      "status": "NOT_DEFAULT"
+    },
+    {
+      "card_id": "topview-capability.avatar.design_my_avatar",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/avatar/design_my_avatar.md",
+      "status": "NOT_DEFAULT"
+    },
+    {
+      "card_id": "topview-capability.avatar.product_avatar",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/avatar/product_avatar.md",
+      "status": "NOT_DEFAULT"
+    },
+    {
+      "card_id": "topview-capability.avatar.video_lip_sync",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/avatar/video_lip_sync.md",
+      "status": "OPTIONAL_MANUAL"
+    },
+    {
+      "card_id": "topview-capability.collaboration.board_share",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/collaboration/board_share.md",
+      "status": "OPTIONAL_MANUAL"
+    },
+    {
+      "card_id": "topview-capability.collaboration.comments_and_todos",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/collaboration/comments_and_todos.md",
+      "status": "OPTIONAL_MANUAL"
+    },
+    {
+      "card_id": "topview-capability.collaboration.filters_and_batch",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/collaboration/filters_and_batch.md",
+      "status": "USE_MANUALLY"
+    },
+    {
+      "card_id": "topview-capability.collaboration.ratings_and_pin",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/collaboration/ratings_and_pin.md",
+      "status": "PRIMARY_MANUAL"
+    },
+    {
+      "card_id": "topview-capability.collaboration.realtime_multiplayer",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/collaboration/realtime_multiplayer.md",
+      "status": "OPTIONAL_MANUAL"
+    },
+    {
+      "card_id": "topview-capability.collaboration.version_history",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/collaboration/version_history.md",
+      "status": "OPTIONAL_MANUAL"
+    },
+    {
+      "card_id": "topview-capability.image.background_removal",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/image/background_removal.md",
+      "status": "OPTIONAL_MANUAL"
+    },
+    {
+      "card_id": "topview-capability.image.character_swap",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/image/character_swap.md",
+      "status": "CONDITIONAL_MANUAL"
+    },
+    {
+      "card_id": "topview-capability.image.color_palette",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/image/color_palette.md",
+      "status": "OPTIONAL_MANUAL"
+    },
+    {
+      "card_id": "topview-capability.image.face_swap",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/image/face_swap.md",
+      "status": "RIGHTS_REVIEW_REQUIRED"
+    },
+    {
+      "card_id": "topview-capability.image.image_edit",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/image/image_edit.md",
+      "status": "USE_MANUALLY"
+    },
+    {
+      "card_id": "topview-capability.image.image_inpaint",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/image/image_inpaint.md",
+      "status": "USE_MANUALLY"
+    },
+    {
+      "card_id": "topview-capability.image.image_to_prompt",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/image/image_to_prompt.md",
+      "status": "OPTIONAL_MANUAL"
+    },
+    {
+      "card_id": "topview-capability.image.image_upscale",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/image/image_upscale.md",
+      "status": "USE_MANUALLY"
+    },
+    {
+      "card_id": "topview-capability.image.photo_angle_editor",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/image/photo_angle_editor.md",
+      "status": "PRIMARY_MANUAL"
+    },
+    {
+      "card_id": "topview-capability.image.product_photography",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/image/product_photography.md",
+      "status": "NOT_DEFAULT"
+    },
+    {
+      "card_id": "topview-capability.image.text_to_image",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/image/text_to_image.md",
+      "status": "USE_MANUALLY"
+    },
+    {
+      "card_id": "topview-capability.image.virtual_try_on",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/image/virtual_try_on.md",
+      "status": "NOT_DEFAULT"
+    },
+    {
+      "card_id": "topview-capability.marketing.localization",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/marketing/localization.md",
+      "status": "OPTIONAL_MANUAL"
+    },
+    {
+      "card_id": "topview-capability.marketing.reference_style_recreation",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/marketing/reference_style_recreation.md",
+      "status": "RIGHTS_REVIEW_REQUIRED"
+    },
+    {
+      "card_id": "topview-capability.marketing.ugc_ads",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/marketing/ugc_ads.md",
+      "status": "NOT_DEFAULT"
+    },
+    {
+      "card_id": "topview-capability.marketing.url_to_video",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/marketing/url_to_video.md",
+      "status": "NOT_DEFAULT"
+    },
+    {
+      "card_id": "topview-capability.marketing.video_agent",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/marketing/video_agent.md",
+      "status": "NOT_DEFAULT"
+    },
+    {
+      "card_id": "topview-capability.three_d.gaussian_splat",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/three_d/gaussian_splat.md",
+      "status": "EXPERIMENTAL_MANUAL"
+    },
+    {
+      "card_id": "topview-capability.three_d.image_to_3d",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/three_d/image_to_3d.md",
+      "status": "EXPERIMENTAL_MANUAL"
+    },
+    {
+      "card_id": "topview-capability.three_d.world_generator",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/three_d/world_generator.md",
+      "status": "EXPERIMENTAL_MANUAL"
+    },
+    {
+      "card_id": "topview-capability.video.expression_control",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/video/expression_control.md",
+      "status": "NOT_DEFAULT"
+    },
+    {
+      "card_id": "topview-capability.video.first_last_frame",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/video/first_last_frame.md",
+      "status": "USE_MANUALLY"
+    },
+    {
+      "card_id": "topview-capability.video.image_to_video",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/video/image_to_video.md",
+      "status": "PRIMARY_MANUAL"
+    },
+    {
+      "card_id": "topview-capability.video.motion_control",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/video/motion_control.md",
+      "status": "OPTIONAL_MANUAL"
+    },
+    {
+      "card_id": "topview-capability.video.multi_shot",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/video/multi_shot.md",
+      "status": "CONDITIONAL_MANUAL"
+    },
+    {
+      "card_id": "topview-capability.video.native_audio",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/video/native_audio.md",
+      "status": "CONDITIONAL_MANUAL"
+    },
+    {
+      "card_id": "topview-capability.video.omni_reference",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/video/omni_reference.md",
+      "status": "PRIMARY_MANUAL"
+    },
+    {
+      "card_id": "topview-capability.video.relighting",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/video/relighting.md",
+      "status": "OPTIONAL_MANUAL"
+    },
+    {
+      "card_id": "topview-capability.video.subtitle_removal",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/video/subtitle_removal.md",
+      "status": "NOT_DEFAULT"
+    },
+    {
+      "card_id": "topview-capability.video.text_to_video",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/video/text_to_video.md",
+      "status": "USE_MANUALLY"
+    },
+    {
+      "card_id": "topview-capability.video.video_character_swap",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/video/video_character_swap.md",
+      "status": "NOT_DEFAULT"
+    },
+    {
+      "card_id": "topview-capability.video.video_edit",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/video/video_edit.md",
+      "status": "OPTIONAL_MANUAL"
+    },
+    {
+      "card_id": "topview-capability.video.video_inpaint",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/video/video_inpaint.md",
+      "status": "OPTIONAL_MANUAL"
+    },
+    {
+      "card_id": "topview-capability.video.video_repair",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/video/video_repair.md",
+      "status": "OPTIONAL_MANUAL"
+    },
+    {
+      "card_id": "topview-capability.video.video_upscale",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/video/video_upscale.md",
+      "status": "OPTIONAL_MANUAL"
+    },
+    {
+      "card_id": "topview-capability.video.watermark_removal",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/video/watermark_removal.md",
+      "status": "RIGHTS_REVIEW_REQUIRED"
+    },
+    {
+      "card_id": "topview-capability.workspaces.board",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/workspaces/board.md",
+      "status": "PRIMARY_MANUAL"
+    },
+    {
+      "card_id": "topview-capability.workspaces.canvas",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/workspaces/canvas.md",
+      "status": "OPTIONAL_MANUAL"
+    },
+    {
+      "card_id": "topview-capability.workspaces.drama_studio",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/workspaces/drama_studio.md",
+      "status": "NOT_DEFAULT"
+    },
+    {
+      "card_id": "topview-capability.workspaces.film_studio_storyboard",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/workspaces/film_studio_storyboard.md",
+      "status": "OPTIONAL_MANUAL"
+    },
+    {
+      "card_id": "topview-capability.workspaces.shot_composer_3d",
+      "entity_type": "topview_capability",
+      "path": "04-PROVIDERS/topview-capabilities/workspaces/shot_composer_3d.md",
+      "status": "OPTIONAL_MANUAL"
+    },
+    {
+      "card_id": "topview-model.image.GPT_Image",
+      "entity_type": "topview_model",
+      "path": "04-PROVIDERS/topview-models/image/GPT_Image.md",
+      "status": "MANUAL_SELECTION"
+    },
+    {
+      "card_id": "topview-model.image.Kontext",
+      "entity_type": "topview_model",
+      "path": "04-PROVIDERS/topview-models/image/Kontext.md",
+      "status": "MANUAL_SELECTION"
+    },
+    {
+      "card_id": "topview-model.image.Nano_Banana",
+      "entity_type": "topview_model",
+      "path": "04-PROVIDERS/topview-models/image/Nano_Banana.md",
+      "status": "MANUAL_SELECTION"
+    },
+    {
+      "card_id": "topview-model.image.Seedream",
+      "entity_type": "topview_model",
+      "path": "04-PROVIDERS/topview-models/image/Seedream.md",
+      "status": "MANUAL_SELECTION"
+    },
+    {
+      "card_id": "topview-model.video.Hailuo_MiniMax",
+      "entity_type": "topview_model",
+      "path": "04-PROVIDERS/topview-models/video/Hailuo_MiniMax.md",
+      "status": "MANUAL_SELECTION"
+    },
+    {
+      "card_id": "topview-model.video.Kling",
+      "entity_type": "topview_model",
+      "path": "04-PROVIDERS/topview-models/video/Kling.md",
+      "status": "MANUAL_SELECTION"
+    },
+    {
+      "card_id": "topview-model.video.Runway",
+      "entity_type": "topview_model",
+      "path": "04-PROVIDERS/topview-models/video/Runway.md",
+      "status": "MANUAL_SELECTION"
+    },
+    {
+      "card_id": "topview-model.video.Seedance",
+      "entity_type": "topview_model",
+      "path": "04-PROVIDERS/topview-models/video/Seedance.md",
+      "status": "MANUAL_SELECTION"
+    },
+    {
+      "card_id": "topview-model.video.Sora",
+      "entity_type": "topview_model",
+      "path": "04-PROVIDERS/topview-models/video/Sora.md",
+      "status": "MANUAL_SELECTION"
+    },
+    {
+      "card_id": "topview-model.video.Veo",
+      "entity_type": "topview_model",
+      "path": "04-PROVIDERS/topview-models/video/Veo.md",
+      "status": "MANUAL_SELECTION"
+    },
+    {
+      "card_id": "topview-model.video.Vidu",
+      "entity_type": "topview_model",
+      "path": "04-PROVIDERS/topview-models/video/Vidu.md",
+      "status": "MANUAL_SELECTION"
+    },
+    {
+      "card_id": "topview-model.video.Wan",
+      "entity_type": "topview_model",
+      "path": "04-PROVIDERS/topview-models/video/Wan.md",
+      "status": "MANUAL_SELECTION"
+    },
+    {
+      "card_id": "transition.causal_hard_cut",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/transition/transition.causal_hard_cut.md",
+      "status": "ACTIVE"
+    },
+    {
+      "card_id": "transition.material_state_dissolve",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/transition/transition.material_state_dissolve.md",
+      "status": "ACTIVE"
+    },
+    {
+      "card_id": "transition.semantic_match_cut",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/transition/transition.semantic_match_cut.md",
+      "status": "ACTIVE"
+    },
+    {
+      "card_id": "transition.sound_bridge",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/transition/transition.sound_bridge.md",
+      "status": "ACTIVE"
+    },
+    {
+      "card_id": "transition.velocity_matched",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/transition/transition.velocity_matched.md",
+      "status": "ACTIVE"
+    },
+    {
+      "card_id": "typography.exact_fact_overlay",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/typography/typography.exact_fact_overlay.md",
+      "status": "ACTIVE"
+    },
+    {
+      "card_id": "typography.kinetic_emphasis",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/typography/typography.kinetic_emphasis.md",
+      "status": "ACTIVE"
+    }
+  ],
+  "entity_count": 380,
+  "knowledge_schema": "1.0",
+  "visual_technique_catalog_version": "2026-08-12"
+}
