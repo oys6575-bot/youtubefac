@@ -1,0 +1,120 @@
+{
+  "schema_version": "1.0.0",
+  "project_id": "PROJECT_HYATT_PILOT",
+  "plan_id": "PLAN_001",
+  "status": "awaiting_human",
+  "generated_by": {
+    "adapter": "claude",
+    "model": "review-placeholder",
+    "created_at": "2026-08-11T12:00:00+09:00"
+  },
+  "evidence_lock": {
+    "registry_version": "1.0.0",
+    "status": "approved"
+  },
+  "global_style": {
+    "aspect_ratio": "16:9",
+    "resolution": "1280x720",
+    "fps": 30,
+    "grammar_ids": ["EVIDENCE_TO_RECONSTRUCTION"]
+  },
+  "sequences": [
+    {
+      "sequence_id": "SEQ_001",
+      "purpose": "Move from a sourced archive image into a disclosed reconstruction.",
+      "narration_range": {
+        "start_seconds": 0,
+        "end_seconds": 8
+      },
+      "evidence_ids": ["SRC_001", "CLAIM_001"],
+      "grammar_candidates": ["ARCHIVE_TO_REALITY", "EVIDENCE_TO_RECONSTRUCTION"],
+      "selected_grammar": "EVIDENCE_TO_RECONSTRUCTION",
+      "pacing_profile": "steady",
+      "entry_transition": {
+        "type": "cut",
+        "duration_seconds": 0
+      },
+      "exit_transition": {
+        "type": "graphic_match",
+        "duration_seconds": 0.4
+      },
+      "target_duration_seconds": 8,
+      "motif_bindings": ["walkway_anchor"],
+      "shots": [
+        {
+          "shot_id": "SEQ01_SH01",
+          "narrative_function": "evidence",
+          "representation": "HYBRID",
+          "coverage_role": "evidence_insert",
+          "factual_precision": "exact",
+          "evidence_ids": ["SRC_001", "CLAIM_001"],
+          "provider_route": {
+            "mode": "HYPERFRAMES",
+            "model_requirements": ["deterministic overlay"],
+            "cost_tier": "zero"
+          },
+          "prompt_intent": "Preserve the archive image and add an exact sourced date label.",
+          "camera": {
+            "framing": "wide",
+            "angle": "front",
+            "height": "eye",
+            "lens_intent": "normal",
+            "movement": "slow_push",
+            "direction": "toward"
+          },
+          "lighting": {
+            "family": "source_preserved",
+            "key_direction": "motivated_mixed",
+            "contrast": "medium"
+          },
+          "composition": "Keep the walkway anchor unobstructed.",
+          "negative_space": "Upper-left date safe area.",
+          "continuity_bindings": ["walkway_anchor"],
+          "edit_trigger": "narration_clause",
+          "transition_in": {
+            "type": "cut",
+            "duration_seconds": 0
+          },
+          "transition_out": {
+            "type": "graphic_match",
+            "duration_seconds": 0.4
+          },
+          "audio_layers": [
+            {
+              "type": "narration",
+              "intent": "State only the verified date and location.",
+              "sync_event": "date_clause"
+            },
+            {
+              "type": "ambience",
+              "intent": "Low-level hotel interior room tone.",
+              "sync_event": null
+            }
+          ],
+          "overlay": {
+            "mode": "COMPOSITED_BY_HYPERFRAMES",
+            "module": "ARCHIVE_FRAME",
+            "safe_area": "title",
+            "exact_text_from_claims": true
+          },
+          "disclosure": {
+            "required": true,
+            "label": "실제 자료 + 설명 그래픽"
+          },
+          "duration_seconds": 8,
+          "fallback": {
+            "mode": "REAL",
+            "description": "Use the unanimated archive image with a static sourced label."
+          }
+        }
+      ]
+    }
+  ],
+  "approval": {
+    "gate": "GATE_ANIMATIC",
+    "status": "awaiting_human",
+    "approved_by": null,
+    "approved_at": null,
+    "notes": "Example only; no approval is implied."
+  }
+}

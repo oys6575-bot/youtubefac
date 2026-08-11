@@ -1,0 +1,127 @@
+grammar_id: HERITAGE_FORGE
+version: 1.0.0
+status: design_review
+purpose: >-
+  Heritage, craft, engineering, or material-process sequences that need tactile
+  credibility, rhythmic labor, and a restrained cinematic reveal.
+
+use_when:
+  - the subject has a repeated physical motif or material transformation
+  - the process can be covered with wide, medium, close, and macro shots
+  - impact, friction, heat, or tool sounds can motivate edits
+  - the sequence ends with a product, artifact, drawing, or evidence reveal
+
+avoid_when:
+  - exact chronology is more important than material experience
+  - the source has no evidence for the depicted process
+  - the sequence depends on readable generated text
+  - rapid cutting would hide factual distinctions
+
+required_inputs:
+  evidence_ids:
+    minimum: 1
+  motif_bindings:
+    minimum: 1
+  coverage:
+    required:
+      - establishing_wide
+      - action_medium
+      - object_closeup
+      - material_macro
+      - hero
+  audio_events:
+    minimum: 2
+
+sequence_pattern:
+  - beat: establish
+    coverage: establishing_wide
+    duration_seconds: [2.0, 5.0]
+  - beat: enter_process
+    coverage: action_medium
+    duration_seconds: [1.5, 4.0]
+  - beat: material_detail
+    coverage: material_macro
+    duration_seconds: [0.8, 2.5]
+  - beat: impact_chain
+    coverage: object_closeup
+    duration_seconds: [0.6, 2.0]
+  - beat: evidence_or_transformation
+    coverage: evidence_insert
+    duration_seconds: [1.5, 4.0]
+  - beat: hero_reveal
+    coverage: hero
+    duration_seconds: [3.0, 7.0]
+
+visual_rules:
+  motif_repetition:
+    minimum_occurrences: 3
+    preferred_shapes: [circle, arc, radial_texture]
+  lighting:
+    key_family: warm_practical
+    shadow_family: cool_neutral
+    separation: rim_or_backlight
+  camera:
+    shot_motion: restrained
+    preferred_moves: [locked, slow_push, slow_pull, rack_focus]
+    directional_continuity: required_for_motion_match
+  focus:
+    shallow_depth_allowed: true
+    keep_subject_plane_readable: true
+
+edit_rules:
+  preferred:
+    - impact_cut
+    - shape_match
+    - motion_match
+    - sound_bridge
+  impact_sync_tolerance_frames: 2
+  minimum_distinct_coverage_roles: 4
+  identical_camera_pattern_max_consecutive: 2
+  title_recall:
+    required: true
+    generated_text_allowed: false
+
+overlay_rules:
+  plate_policy: clean_plate
+  exact_text_owner: HyperFrames
+  reconstruction_label_required: true
+  keep_title_inside_generated_video: false
+
+audio_rules:
+  preserve_transients: true
+  require_room_or_process_ambience: true
+  music_should_not_mask_impacts: true
+  sound_bridge_allowed: true
+
+continuity_requirements:
+  bind:
+    - artisan_identity
+    - wardrobe
+    - primary_tool
+    - workpiece_stage
+    - screen_direction
+  allow_cutaway_repair: true
+
+compatible_routes:
+  - REAL_INGEST
+  - TOPVIEW_CANVAS
+  - TOPVIEW_API
+  - LOCAL_LTX
+  - HYPERFRAMES
+
+failure_patterns:
+  - tool_geometry_changes_between_frames
+  - artisan_identity_drift
+  - metal_surface_looks_like_plastic
+  - every_shot_uses_the_same_slow_push
+  - title_is_baked_into_generated_video
+  - impact_sound_is_visibly_out_of_sync
+  - hero_reveal_has_no narrative_or_evidence_payoff
+
+fallbacks:
+  tool_geometry_changes_between_frames: use_real_macro_or_shorter_clip
+  artisan_identity_drift: use_hands_only_cutaway_or_stronger_reference
+  generated_text: regenerate_clean_plate
+  queue_or_budget_failure: use_still_2_5d_with_real_foley
+
+acceptance_test: ../../golden-tests/BANGJJA-STYLE-ACCEPTANCE-TEST.md

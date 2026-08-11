@@ -1,0 +1,97 @@
+{
+  "schema_version": "1.0.0",
+  "project_id": "PROJECT_INVALID_AI",
+  "plan_id": "PLAN_INVALID_AI",
+  "status": "awaiting_human",
+  "generated_by": {
+    "adapter": "test",
+    "model": "negative-example",
+    "created_at": "2026-08-11T12:00:00+09:00"
+  },
+  "evidence_lock": {
+    "registry_version": "1.0.0",
+    "status": "approved"
+  },
+  "sequences": [
+    {
+      "sequence_id": "SEQ_001",
+      "purpose": "Negative test for undisclosed AI reconstruction.",
+      "narration_range": {
+        "start_seconds": 0,
+        "end_seconds": 2
+      },
+      "evidence_ids": [],
+      "selected_grammar": "TEST_GRAMMAR",
+      "pacing_profile": "steady",
+      "entry_transition": {
+        "type": "cut",
+        "duration_seconds": 0
+      },
+      "exit_transition": {
+        "type": "cut",
+        "duration_seconds": 0
+      },
+      "target_duration_seconds": 2,
+      "shots": [
+        {
+          "shot_id": "SEQ01_SH01",
+          "narrative_function": "explanation",
+          "representation": "AI_RECONSTRUCTION",
+          "coverage_role": "spatial_medium",
+          "factual_precision": "high",
+          "evidence_ids": [],
+          "provider_route": {
+            "mode": "TOPVIEW_API",
+            "cost_tier": "standard"
+          },
+          "prompt_intent": "This must fail because it has no evidence or disclosure.",
+          "camera": {
+            "framing": "medium",
+            "angle": "three_quarter",
+            "height": "eye",
+            "lens_intent": "normal",
+            "movement": "slow_push"
+          },
+          "lighting": {
+            "family": "motivated_daylight",
+            "key_direction": "side",
+            "contrast": "medium"
+          },
+          "continuity_bindings": [],
+          "edit_trigger": "narration_clause",
+          "transition_in": {
+            "type": "cut",
+            "duration_seconds": 0
+          },
+          "transition_out": {
+            "type": "cut",
+            "duration_seconds": 0
+          },
+          "audio_layers": [],
+          "overlay": {
+            "mode": "NONE",
+            "module": "NONE",
+            "safe_area": "none",
+            "exact_text_from_claims": false
+          },
+          "disclosure": {
+            "required": false,
+            "label": null
+          },
+          "duration_seconds": 2,
+          "fallback": {
+            "mode": "GRAPHIC",
+            "description": "Use a sourced explanatory diagram."
+          }
+        }
+      ]
+    }
+  ],
+  "approval": {
+    "gate": "GATE_ANIMATIC",
+    "status": "awaiting_human",
+    "approved_by": null,
+    "approved_at": null,
+    "notes": "Negative disclosure and evidence example."
+  }
+}

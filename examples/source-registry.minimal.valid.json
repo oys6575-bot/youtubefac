@@ -1,0 +1,49 @@
+{
+  "schema_version": "1.0.0",
+  "registry_version": "1.0.0",
+  "project_id": "PROJECT_HYATT_PILOT",
+  "sources": [
+    {
+      "source_id": "SRC_001",
+      "title": "Placeholder official engineering record",
+      "publisher": "Placeholder official archive",
+      "publication_date": null,
+      "capture_date": null,
+      "source_type": "official_record",
+      "locator": "https://example.invalid/replace-before-production",
+      "retrieved_at": "2026-08-11T12:00:00+09:00",
+      "rights": {
+        "status": "unknown",
+        "license": null,
+        "allowed_uses": ["research", "reference_only"],
+        "attribution_required": true,
+        "notes": "Schema example only. Replace and verify before production."
+      },
+      "credibility_tier": 1,
+      "local_copy": {
+        "path": null,
+        "sha256": null
+      },
+      "notes": "This record proves schema shape, not a historical claim."
+    }
+  ],
+  "claims": [
+    {
+      "claim_id": "CLAIM_001",
+      "text": "Placeholder claim that must be replaced before a real pilot.",
+      "citations": [
+        {
+          "source_id": "SRC_001",
+          "pinpoint": "Placeholder section; replace before production",
+          "relationship": "context_only",
+          "support_note": "This is a schema example and does not verify the placeholder claim.",
+          "excerpt_sha256": null
+        }
+      ],
+      "confidence": "low",
+      "status": "needs_evidence",
+      "visualizable": true,
+      "uncertainty_note": "No production use permitted."
+    }
+  ]
+}
