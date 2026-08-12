@@ -47,6 +47,18 @@ Mac 또는 Tailscale 연결이 끊기면 승인 버튼이 꺼집니다. 오프�
 .venv/bin/python scripts/install-mobile-dashboard-services.py --install
 ```
 
+이 명령은 세 개의 독립 서비스를 설치합니다.
+
+- `com.mk.youtube-factory.dashboard`: 휴대폰 대시보드
+- `com.mk.youtube-factory.tailscale`: 비공개 Tailscale Serve
+- `com.mk.youtube-factory.coordinator`: 승인된 주제의 자료조사 → 독립 검증 → 기획안 자동 실행
+
+주제 승인 뒤 휴대폰을 닫아도 Coordinator는 계속 실행됩니다. 자동 범위는
+`research`, `evidence_lock`, `proposal`뿐이며, 기획안은 반드시
+`awaiting_human`에서 멈춥니다. 유료 호출, TopView, 에셋, 대본, 렌더, 게시를
+자동 실행하지 않습니다. 실패 작업의 `다시 실행`은 기존 기록을 수정하지 않고
+새 영수증과 새 작업을 만듭니다.
+
 - `com.mk.youtube-factory.dashboard`: 127.0.0.1 Gateway
 - `com.mk.youtube-factory.tailscale`: 유튜브공장 전용 Tailscale daemon
 
