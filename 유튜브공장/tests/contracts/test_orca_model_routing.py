@@ -65,7 +65,7 @@ def test_safe_auto_dispatch_is_exact_and_topview_remains_manual() -> None:
     assert routing["auto_dispatch"] == {
         "enabled": True,
         "trigger_action": "approve_topic",
-        "stages": ["research", "evidence_lock", "proposal"],
+        "stages": ["research", "media_collection", "evidence_lock", "proposal"],
         "max_retries": 1,
         "stop_gate": "proposal",
     }

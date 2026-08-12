@@ -36,8 +36,8 @@
     "state": {
       "enum": ["queued", "running", "retrying", "awaiting_human", "failed", "completed"]
     },
-    "current_stage": {"enum": ["research", "evidence_lock", "proposal"]},
-    "stages": {"const": ["research", "evidence_lock", "proposal"]},
+    "current_stage": {"enum": ["research", "media_collection", "evidence_lock", "proposal"]},
+    "stages": {"const": ["research", "media_collection", "evidence_lock", "proposal"]},
     "attempt": {"type": "integer", "minimum": 0, "maximum": 1},
     "max_retries": {"const": 1},
     "created_at": {"type": "string", "format": "date-time"},
@@ -62,7 +62,7 @@
     },
     "stage_results": {
       "type": "array",
-      "maxItems": 3,
+      "maxItems": 4,
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -79,7 +79,7 @@
           "settled_at"
         ],
         "properties": {
-          "stage": {"enum": ["research", "evidence_lock", "proposal"]},
+          "stage": {"enum": ["research", "media_collection", "evidence_lock", "proposal"]},
           "outcome": {"const": "success"},
           "artifact_paths": {
             "type": "array",
@@ -112,7 +112,7 @@
           "additionalProperties": false,
           "required": ["stage", "class", "message", "timestamp"],
           "properties": {
-            "stage": {"enum": ["research", "evidence_lock", "proposal"]},
+            "stage": {"enum": ["research", "media_collection", "evidence_lock", "proposal"]},
             "class": {"enum": ["ordinary", "policy", "integrity", "configuration"]},
             "message": {"type": "string", "minLength": 1, "maxLength": 2000},
             "timestamp": {"type": "string", "format": "date-time"}

@@ -22,7 +22,10 @@ def test_approval_runs_to_proposal_human_gate_without_later_work(
     project, candidate, expected = build_topic_gate(tmp_path)
 
     execute_action(tmp_path, payload(candidate, expected), ACTOR)
-    Coordinator(project.parent, FakeRunner(["success", "success", "success"])).process_next()
+    Coordinator(
+        project.parent,
+        FakeRunner(["success", "success", "success", "success"]),
+    ).process_next()
 
     state = build_mobile_state(project)
     assert state["automation"]["state"] == "awaiting_human"
@@ -41,7 +44,7 @@ def test_failed_chain_retries_from_last_hash_bound_stage_without_rewriting_histo
     execute_action(tmp_path, payload(candidate, expected), ACTOR)
     Coordinator(
         project.parent,
-        FakeRunner(["success", policy_failure("evidence_lock")]),
+        FakeRunner(["success", "success", policy_failure("evidence_lock")]),
     ).process_next()
     original_path = next((project / "automation/jobs").glob("*.json"))
     original = load_job(original_path)
@@ -74,6 +77,7 @@ def test_failed_chain_retries_from_last_hash_bound_stage_without_rewriting_histo
     assert retry["state"] == "awaiting_human"
     assert [item["stage"] for item in retry["stage_results"]] == [
         "research",
+        "media_collection",
         "evidence_lock",
         "proposal",
     ]

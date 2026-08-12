@@ -201,6 +201,7 @@ class OrcaRunner:
     ) -> str:
         role = {
             "research": "research",
+            "media_collection": "production",
             "evidence_lock": "verification",
             "proposal": "story_visual",
         }[stage]
@@ -213,6 +214,16 @@ class OrcaRunner:
                     "checkpoint_research.json",
                 ],
                 "artifacts": ["research_brief", "evidence_registry"],
+                "status": "completed",
+                "approval_required": "false",
+                "verdict": "NOT_APPLICABLE",
+            },
+            "media_collection": {
+                "paths": [
+                    "artifacts/media_collection_manifest.json",
+                    "checkpoint_media_collection.json",
+                ],
+                "artifacts": ["media_collection_manifest"],
                 "status": "completed",
                 "approval_required": "false",
                 "verdict": "NOT_APPLICABLE",
@@ -243,6 +254,11 @@ class OrcaRunner:
         contract = stage_contracts[stage]
         output_paths = "\n".join(f"- {path}" for path in contract["paths"])
         artifact_names = ", ".join(contract["artifacts"])
+        collection_rules = ""
+        if stage == "media_collection":
+            collection_rules = """
+Read skills/pipelines/youtube-factory/media-collection-director.md before collecting. Use the rights_cleared_media_collection tool and only the configured Pexels, Pixabay, Unsplash, explicit public-domain, CC0, CC BY, or CC BY-SA paths. Use no Gemini. Reject permission-required, purchase-only, restricted/editorial-only, unknown-rights, watermarked, preview-only, or inaccessible-original candidates before download. Frozen accepted bytes may additionally be written only under assets/source/**. Those media byte paths are bound inside media_collection_manifest.json and must not be added to the stage result artifact_paths list. Do not perform creative shot selection at this stage.
+"""
         return f"""You are the {role} worker for the YouTube Factory canonical project.
 
 PROJECT: {project}
@@ -255,6 +271,7 @@ MODEL CONTRACT: runtime={configured['runtime']} model={configured['model']} effo
 Read AGENT_GUIDE.md, config/orca-model-routing.yaml, pipeline_defs/youtube-factory.yaml, and the relevant director skill before acting. Work only on STAGE in the canonical ignored project directory. Use official/primary evidence first. Validate all produced artifacts against local JSON Schemas and write the canonical checkpoint.
 
 Hard boundaries: no paid API, no TopView dispatch, no asset generation, no script, no visual plan, no render, no upload, no publish, no provider/model fallback, and no fabricated Human Gate approval. Evidence lock must independently verify exact research bytes and return PASS or fail. Proposal must end with checkpoint_proposal.json status awaiting_human, human_approval_required true, human_approved false.
+{collection_rules}
 
 The complete allowed output path set for this stage is exactly:
 {output_paths}
@@ -300,7 +317,12 @@ After validating every artifact with schemas.artifacts.validate_artifact and the
             "evidence_lock": "verification",
             "proposal": "story_visual",
         }.get(stage)
-        if stage == "research":
+        hermes_stage = {
+            "research": ("research", "ytf-research"),
+            "media_collection": ("production", "ytf-production"),
+        }.get(stage)
+        if hermes_stage is not None:
+            role_label, profile = hermes_stage
             terminal = self._run_json(
                 [
                     self.orca_cli,
@@ -309,11 +331,11 @@ After validating every artifact with schemas.artifacts.validate_artifact and the
                     "--worktree",
                     f"path:{self.repo_root}",
                     "--title",
-                    f"YTF research {task_id}",
+                    f"YTF {role_label} {task_id}",
                     "--command",
                     (
                         f"cd {shlex.quote(str(self.factory_root))} && "
-                        "exec ytf-research --no-restore-cwd"
+                        f"exec {profile} --no-restore-cwd"
                     ),
                     "--json",
                 ]

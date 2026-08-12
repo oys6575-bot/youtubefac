@@ -24,12 +24,16 @@ from schemas.artifacts import validate_artifact
 
 ROOT = Path(__file__).resolve().parents[1]
 RECEIPT_SCHEMA = ROOT / "schemas/mobile-dashboard/approval-receipt.schema.json"
-STAGES = ["research", "evidence_lock", "proposal"]
+STAGES = ["research", "media_collection", "evidence_lock", "proposal"]
 STAGE_FILES = {
     "research": {
         "artifacts/research_brief.json": "research_brief",
         "artifacts/evidence_registry.json": "evidence_registry",
         "checkpoint_research.json": None,
+    },
+    "media_collection": {
+        "artifacts/media_collection_manifest.json": "media_collection_manifest",
+        "checkpoint_media_collection.json": None,
     },
     "evidence_lock": {
         "artifacts/evidence_registry.json": "evidence_registry",
@@ -209,6 +213,42 @@ class Coordinator:
                 path = _safe_path(project, relative)
                 if not path.is_file() or _sha256(path) != result["artifact_sha256"][relative]:
                     raise JobValidationError("settled artifact hash mismatch")
+            if result["stage"] == "media_collection":
+                manifest_path = next(
+                    (
+                        _safe_path(project, relative)
+                        for relative in result["artifact_paths"]
+                        if relative.endswith("/artifacts/media_collection_manifest.json")
+                    ),
+                    None,
+                )
+                if manifest_path is None:
+                    raise JobValidationError("settled media manifest is missing")
+                self._validate_media_collection_assets(project, _json(manifest_path))
+
+    @staticmethod
+    def _validate_media_collection_assets(
+        project: Path, manifest: dict[str, Any]
+    ) -> None:
+        source_root = (project / "assets/source").resolve()
+        seen: set[str] = set()
+        for item in manifest.get("items", []):
+            relative = item.get("local_path")
+            if not isinstance(relative, str) or relative in seen:
+                raise JobValidationError("source media path is invalid or duplicated")
+            seen.add(relative)
+            path = _safe_path(project, relative)
+            try:
+                path.relative_to(source_root)
+            except ValueError as exc:
+                raise JobValidationError("source media escaped assets/source") from exc
+            if not path.is_file():
+                raise JobValidationError("source media file is missing")
+            if _sha256(path) != item.get("sha256"):
+                raise JobValidationError("source media hash mismatch")
+            technical = item.get("technical")
+            if not isinstance(technical, dict) or technical.get("size_bytes") != path.stat().st_size:
+                raise JobValidationError("source media size mismatch")
 
     def _validate_success(
         self, project: Path, stage: str, result: StageResult
@@ -237,6 +277,10 @@ class Coordinator:
                 value = _json(path)
                 validate_artifact(artifact_name, value)
                 loaded_artifacts[artifact_name] = value
+        if stage == "media_collection":
+            self._validate_media_collection_assets(
+                project, loaded_artifacts["media_collection_manifest"]
+            )
         checkpoint = _json(project / f"checkpoint_{stage}.json")
         validate_checkpoint(checkpoint)
         expected_status = "awaiting_human" if stage == "proposal" else "completed"

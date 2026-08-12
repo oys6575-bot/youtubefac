@@ -14,7 +14,7 @@ import jsonschema
 
 ROOT = Path(__file__).resolve().parents[1]
 JOB_SCHEMA = ROOT / "schemas/mobile-dashboard/auto-dispatch-job.schema.json"
-AUTO_STAGES = ["research", "evidence_lock", "proposal"]
+AUTO_STAGES = ["research", "media_collection", "evidence_lock", "proposal"]
 MUTABLE_FIELDS = frozenset(
     {
         "state",

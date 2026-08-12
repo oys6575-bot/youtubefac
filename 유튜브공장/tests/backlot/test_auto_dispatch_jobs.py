@@ -33,6 +33,12 @@ def test_topic_approval_atomically_creates_one_queued_job(tmp_path: Path) -> Non
     assert job["selected_candidate_id"] == candidate_id
     assert job["state"] == "queued"
     assert job["current_stage"] == "research"
+    assert job["stages"] == [
+        "research",
+        "media_collection",
+        "evidence_lock",
+        "proposal",
+    ]
     assert job["attempt"] == 0
     assert job["max_retries"] == 1
     assert job["stage_results"] == []

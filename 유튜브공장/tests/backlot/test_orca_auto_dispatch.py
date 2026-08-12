@@ -148,6 +148,35 @@ def test_research_prompt_spells_out_canonical_checkpoint_contract(tmp_path: Path
     assert "verdict='NOT_APPLICABLE'" in prompt
 
 
+def test_collection_prompt_uses_production_role_and_forbids_gemini(tmp_path: Path) -> None:
+    runner = OrcaRunner.__new__(OrcaRunner)
+    runner.factory_root = tmp_path
+    runner.routing = {
+        "roles": {
+            "production": {
+                "runtime": "hermes",
+                "model": "local",
+                "effort": None,
+                "profile": "ytf-production",
+            }
+        }
+    }
+    project = tmp_path / "projects/P1"
+
+    prompt = runner._task_prompt(
+        project,
+        {"job_id": "job-1", "selected_candidate_id": "rana-plaza"},
+        "media_collection",
+        project / "automation/stage-results/job-1/media-collection-attempt-0.json",
+    )
+
+    assert "media-collection-director.md" in prompt
+    assert "artifacts/media_collection_manifest.json" in prompt
+    assert "checkpoint_media_collection.json" in prompt
+    assert "assets/source/**" in prompt
+    assert "no Gemini" in prompt
+
+
 def test_transport_provenance_is_bound_by_coordinator(tmp_path: Path) -> None:
     path = tmp_path / "result.json"
     path.write_text(

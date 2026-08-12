@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from backlot.auto_dispatch import load_job
+from backlot.auto_dispatch import JobValidationError, load_job
 from backlot.auto_dispatch_worker import Coordinator
 from backlot.mobile_actions import Actor, execute_action
 from backlot.orca_auto_dispatch import StageResult
@@ -61,6 +61,61 @@ def _write_stage_outputs(project: Path, stage: str) -> list[str]:
             "evidence_registry": registry,
         }
         checkpoint = _checkpoint(project, stage, "completed", checkpoint_artifacts)
+    elif stage == "media_collection":
+        source_file = project / "assets/source/images/pexels_1001.jpg"
+        source_file.parent.mkdir(parents=True, exist_ok=True)
+        source_file.write_bytes(b"rights-cleared-test-media" * 256)
+        manifest = {
+            "schema_version": "1.0.0",
+            "project_id": project.name,
+            "collection_status": "completed",
+            "generated_at": "2026-08-12T00:00:00+00:00",
+            "queries": [],
+            "source_summary": {
+                "attempted": ["pexels"],
+                "completed": ["pexels"],
+                "failed": [],
+                "discovered": 1,
+                "accepted": 1,
+                "downloaded": 1,
+                "duplicates": 0,
+                "rejected_counts": {},
+            },
+            "items": [
+                {
+                    "id": "MEDIA_PEXELS_1001",
+                    "media_type": "image",
+                    "local_path": "assets/source/images/pexels_1001.jpg",
+                    "sha256": _sha256(source_file),
+                    "source": "pexels",
+                    "source_url": "https://www.pexels.com/photo/1001/",
+                    "direct_url": None,
+                    "creator": "Test Photographer",
+                    "license": "Pexels License",
+                    "license_url": "https://www.pexels.com/license/",
+                    "public_domain_basis": None,
+                    "attribution_required": False,
+                    "attribution_text": "",
+                    "allowed_uses": ["display", "transform", "commercial"],
+                    "accessed_at": "2026-08-12T00:00:00+00:00",
+                    "claim_ids": [],
+                    "technical": {
+                        "format": "jpg",
+                        "width": 1920,
+                        "height": 1080,
+                        "duration_seconds": 0,
+                        "size_bytes": source_file.stat().st_size,
+                    },
+                }
+            ],
+        }
+        values = {"artifacts/media_collection_manifest.json": manifest}
+        checkpoint = _checkpoint(
+            project,
+            stage,
+            "completed",
+            {"media_collection_manifest": manifest},
+        )
     elif stage == "evidence_lock":
         registry = json.loads((artifacts / "evidence_registry.json").read_text())
         decision = {"version": "1.0", "project_id": project.name, "decisions": []}
@@ -139,11 +194,11 @@ def project_with_job(tmp_path: Path) -> tuple[Path, Path]:
     return project, job_path
 
 
-def test_worker_runs_three_stages_and_stops_at_proposal_gate(
+def test_worker_runs_four_stages_and_stops_at_proposal_gate(
     project_with_job: tuple[Path, Path],
 ) -> None:
     project, job_path = project_with_job
-    runner = FakeRunner(["success", "success", "success"])
+    runner = FakeRunner(["success", "success", "success", "success"])
 
     assert Coordinator(project.parent, runner).process_next() is True
 
@@ -151,6 +206,7 @@ def test_worker_runs_three_stages_and_stops_at_proposal_gate(
     assert job["state"] == "awaiting_human"
     assert [result["stage"] for result in job["stage_results"]] == [
         "research",
+        "media_collection",
         "evidence_lock",
         "proposal",
     ]
@@ -165,7 +221,7 @@ def test_worker_retries_one_ordinary_failure_only(
 ) -> None:
     project, job_path = project_with_job
     runner = FakeRunner(
-        [ordinary_failure("research"), "success", "success", "success"]
+        [ordinary_failure("research"), "success", "success", "success", "success"]
     )
 
     Coordinator(project.parent, runner).process_next()
@@ -197,10 +253,10 @@ def test_restart_skips_hash_bound_settled_stage(
         "research"
     ]
 
-    resumed = FakeRunner(["success", "success"])
+    resumed = FakeRunner(["success", "success", "success"])
     Coordinator(project.parent, resumed).process_next()
 
-    assert resumed.calls == ["evidence_lock", "proposal"]
+    assert resumed.calls == ["media_collection", "evidence_lock", "proposal"]
     assert load_job(job_path)["state"] == "awaiting_human"
 
 
@@ -221,3 +277,17 @@ def test_restart_fails_closed_when_settled_artifact_changed(
     failed = load_job(job_path)
     assert failed["state"] == "failed"
     assert failed["last_error"]["class"] == "integrity"
+
+
+def test_media_collection_rejects_changed_source_bytes(
+    project_with_job: tuple[Path, Path],
+) -> None:
+    project, _ = project_with_job
+    result = success(project, "media_collection")
+    source = project / "assets/source/images/pexels_1001.jpg"
+    source.write_bytes(b"tampered after manifest")
+
+    with pytest.raises(JobValidationError, match="source media hash mismatch"):
+        Coordinator(project.parent, FakeRunner([]))._validate_success(
+            project, "media_collection", result
+        )
