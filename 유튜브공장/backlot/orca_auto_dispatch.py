@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import shlex
 import subprocess
 import time
 from dataclasses import dataclass, field
@@ -267,7 +268,10 @@ After successful filesystem validation, write JSON to {result_path} with exactly
                     "--title",
                     f"YTF research {task_id}",
                     "--command",
-                    "ytf-research",
+                    (
+                        f"cd {shlex.quote(str(self.factory_root))} && "
+                        "exec ytf-research --no-restore-cwd"
+                    ),
                     "--json",
                 ]
             )

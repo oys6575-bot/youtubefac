@@ -157,3 +157,10 @@ def test_coordinator_health_requires_live_fresh_process(tmp_path: Path) -> None:
     stale["timestamp"] = "2026-08-12T00:00:00+00:00"
     path.write_text(json.dumps(stale), encoding="utf-8")
     assert any("stale" in item for item in module.audit_coordinator_health(path))
+
+
+def test_research_worker_cannot_restore_an_old_profile_working_directory() -> None:
+    adapter = (ROOT / "backlot/orca_auto_dispatch.py").read_text(encoding="utf-8")
+
+    assert "exec ytf-research --no-restore-cwd" in adapter
+    assert "shlex.quote(str(self.factory_root))" in adapter

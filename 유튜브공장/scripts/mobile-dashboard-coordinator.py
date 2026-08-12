@@ -7,6 +7,7 @@ import argparse
 import json
 import os
 import sys
+import threading
 import time
 import uuid
 from datetime import datetime, timezone
@@ -80,6 +81,14 @@ def _write_health(path: Path, projects: Path) -> None:
     os.replace(temporary, path)
 
 
+def _health_heartbeat(stop: threading.Event, path: Path, projects: Path) -> None:
+    while not stop.wait(5.0):
+        try:
+            _write_health(path, projects)
+        except Exception as exc:
+            _log("coordinator_health_failed", error=str(exc))
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.add_argument("--projects", type=Path, required=True)
@@ -107,6 +116,14 @@ def main(argv: list[str] | None = None) -> int:
     coordinator = Coordinator(projects, runner)
     _log("coordinator_started", projects=str(projects), once=args.once)
     _write_health(args.health, projects)
+    heartbeat_stop = threading.Event()
+    heartbeat = threading.Thread(
+        target=_health_heartbeat,
+        args=(heartbeat_stop, args.health, projects),
+        name="coordinator-health",
+        daemon=True,
+    )
+    heartbeat.start()
     while True:
         processed = False
         try:
@@ -117,6 +134,8 @@ def main(argv: list[str] | None = None) -> int:
             _log("coordinator_iteration_failed", error=str(exc))
         _write_health(args.health, projects)
         if args.once:
+            heartbeat_stop.set()
+            heartbeat.join(timeout=1)
             return 0
         if not processed:
             time.sleep(args.poll_seconds)
