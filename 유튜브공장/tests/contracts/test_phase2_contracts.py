@@ -167,12 +167,15 @@ class TestPhase2ErrorHandling:
         r = tool.execute({"input_path": "/nonexistent.mp4"})
         assert not r.success
 
-    def test_image_selector_no_provider(self):
+    def test_image_selector_no_provider(self, monkeypatch):
         tool = ImageSelector()
-        # Will fail if no API key or local model
+        # Contract tests must not become live stock-media calls merely because
+        # the local factory has real API keys connected.
+        monkeypatch.setattr(tool, "_providers", lambda: [])
         r = tool.execute({"prompt": "test"})
-        # Either succeeds (provider available) or fails gracefully
         assert isinstance(r, ToolResult)
+        assert r.success is False
+        assert r.error == "No image provider available."
 
     def test_diagram_gen_empty_boxes(self, tmp_path):
         tool = DiagramGen()
