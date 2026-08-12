@@ -1,0 +1,223 @@
+from __future__ import annotations
+
+import hashlib
+import json
+from pathlib import Path
+
+import pytest
+
+from backlot.auto_dispatch import load_job
+from backlot.auto_dispatch_worker import Coordinator
+from backlot.mobile_actions import Actor, execute_action
+from backlot.orca_auto_dispatch import StageResult
+from tests.backlot.mobile_fixtures import build_topic_gate, canonical_bytes
+from tests.backlot.test_mobile_actions import payload
+from tests.contracts.test_phase0_contracts import sample_artifact
+
+
+ACTOR = Actor(tailscale_login="owner@example.com", tailscale_user_id="123")
+
+
+def _sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _checkpoint(project: Path, stage: str, status: str, artifacts: dict) -> Path:
+    value = {
+        "version": "1.0",
+        "project_id": project.name,
+        "pipeline_type": "youtube-factory",
+        "stage": stage,
+        "status": status,
+        "timestamp": "2026-08-12T00:00:00+00:00",
+        "checkpoint_policy": "guided",
+        "human_approval_required": stage == "proposal",
+        "human_approved": False,
+        "artifacts": artifacts,
+    }
+    path = project / f"checkpoint_{stage}.json"
+    path.write_bytes(canonical_bytes(value))
+    return path
+
+
+def _write_stage_outputs(project: Path, stage: str) -> list[str]:
+    artifacts = project / "artifacts"
+    artifacts.mkdir(exist_ok=True)
+    if stage == "research":
+        brief = sample_artifact("research_brief")
+        registry = {
+            "schema_version": "1.0.0",
+            "registry_version": "test-1",
+            "project_id": project.name,
+            "sources": [],
+            "claims": [],
+        }
+        values = {
+            "artifacts/research_brief.json": brief,
+            "artifacts/evidence_registry.json": registry,
+        }
+        checkpoint_artifacts = {
+            "research_brief": brief,
+            "evidence_registry": registry,
+        }
+        checkpoint = _checkpoint(project, stage, "completed", checkpoint_artifacts)
+    elif stage == "evidence_lock":
+        registry = json.loads((artifacts / "evidence_registry.json").read_text())
+        decision = {"version": "1.0", "project_id": project.name, "decisions": []}
+        values = {
+            "artifacts/evidence_registry.json": registry,
+            "artifacts/decision_log.json": decision,
+        }
+        checkpoint = _checkpoint(
+            project,
+            stage,
+            "completed",
+            {"evidence_registry": registry, "decision_log": decision},
+        )
+    else:
+        proposal = sample_artifact("proposal_packet")
+        proposal["approval"] = {"status": "pending"}
+        decision = {"version": "1.0", "project_id": project.name, "decisions": []}
+        values = {
+            "artifacts/proposal_packet.json": proposal,
+            "artifacts/decision_log.json": decision,
+        }
+        checkpoint = _checkpoint(
+            project,
+            stage,
+            "awaiting_human",
+            {"proposal_packet": proposal, "decision_log": decision},
+        )
+    for relative, value in values.items():
+        (project / relative).write_bytes(canonical_bytes(value))
+    return [*values, checkpoint.relative_to(project).as_posix()]
+
+
+def success(project: Path, stage: str) -> StageResult:
+    paths = _write_stage_outputs(project, stage)
+    return StageResult(
+        outcome="success",
+        artifact_paths=paths,
+        artifact_sha256={path: _sha256(project / path) for path in paths},
+        source_commit="a" * 40,
+        verdict="PASS" if stage == "evidence_lock" else "NOT_APPLICABLE",
+        run_id="run_test",
+        task_id=f"task_{stage}",
+        dispatch_id=f"dispatch_{stage}",
+    )
+
+
+def ordinary_failure(stage: str) -> StageResult:
+    return StageResult.failure(stage, "ordinary", "temporary agent failure")
+
+
+def policy_failure(stage: str) -> StageResult:
+    return StageResult.failure(stage, "policy", "paid provider requested")
+
+
+class FakeRunner:
+    def __init__(self, results: list[object]) -> None:
+        self.results = list(results)
+        self.calls: list[str] = []
+
+    def run_stage(self, project: Path, job: dict, stage: str) -> StageResult:
+        self.calls.append(stage)
+        result = self.results.pop(0)
+        if result == "success":
+            return success(project, stage)
+        if isinstance(result, BaseException):
+            raise result
+        assert isinstance(result, StageResult)
+        return result
+
+
+@pytest.fixture
+def project_with_job(tmp_path: Path) -> tuple[Path, Path]:
+    project, candidate, expected = build_topic_gate(tmp_path)
+    execute_action(tmp_path, payload(candidate, expected), ACTOR)
+    job_path = next((project / "automation/jobs").glob("*.json"))
+    return project, job_path
+
+
+def test_worker_runs_three_stages_and_stops_at_proposal_gate(
+    project_with_job: tuple[Path, Path],
+) -> None:
+    project, job_path = project_with_job
+    runner = FakeRunner(["success", "success", "success"])
+
+    assert Coordinator(project.parent, runner).process_next() is True
+
+    job = load_job(job_path)
+    assert job["state"] == "awaiting_human"
+    assert [result["stage"] for result in job["stage_results"]] == [
+        "research",
+        "evidence_lock",
+        "proposal",
+    ]
+    proposal = json.loads((project / "checkpoint_proposal.json").read_text())
+    assert proposal["status"] == "awaiting_human"
+    assert proposal["human_approved"] is False
+    assert not (project / "checkpoint_script.json").exists()
+
+
+def test_worker_retries_one_ordinary_failure_only(
+    project_with_job: tuple[Path, Path],
+) -> None:
+    project, job_path = project_with_job
+    runner = FakeRunner(
+        [ordinary_failure("research"), "success", "success", "success"]
+    )
+
+    Coordinator(project.parent, runner).process_next()
+
+    assert runner.calls.count("research") == 2
+    assert load_job(job_path)["state"] == "awaiting_human"
+
+
+def test_policy_failure_is_not_retried(
+    project_with_job: tuple[Path, Path],
+) -> None:
+    project, job_path = project_with_job
+    runner = FakeRunner([policy_failure("research")])
+
+    Coordinator(project.parent, runner).process_next()
+
+    assert runner.calls == ["research"]
+    assert load_job(job_path)["state"] == "failed"
+
+
+def test_restart_skips_hash_bound_settled_stage(
+    project_with_job: tuple[Path, Path],
+) -> None:
+    project, job_path = project_with_job
+    crashing = FakeRunner(["success", KeyboardInterrupt()])
+    with pytest.raises(KeyboardInterrupt):
+        Coordinator(project.parent, crashing).process_next()
+    assert [result["stage"] for result in load_job(job_path)["stage_results"]] == [
+        "research"
+    ]
+
+    resumed = FakeRunner(["success", "success"])
+    Coordinator(project.parent, resumed).process_next()
+
+    assert resumed.calls == ["evidence_lock", "proposal"]
+    assert load_job(job_path)["state"] == "awaiting_human"
+
+
+def test_restart_fails_closed_when_settled_artifact_changed(
+    project_with_job: tuple[Path, Path],
+) -> None:
+    project, job_path = project_with_job
+    with pytest.raises(KeyboardInterrupt):
+        Coordinator(project.parent, FakeRunner(["success", KeyboardInterrupt()])).process_next()
+    job = load_job(job_path)
+    snapshot = project / job["stage_results"][0]["artifact_paths"][0]
+    snapshot.write_text("corrupt", encoding="utf-8")
+    runner = FakeRunner(["success", "success"])
+
+    Coordinator(project.parent, runner).process_next()
+
+    assert runner.calls == []
+    failed = load_job(job_path)
+    assert failed["state"] == "failed"
+    assert failed["last_error"]["class"] == "integrity"
