@@ -24,6 +24,9 @@ from schemas.artifacts import validate_artifact
 
 ROOT = Path(__file__).resolve().parents[1]
 RECEIPT_SCHEMA = ROOT / "schemas/mobile-dashboard/approval-receipt.schema.json"
+COLLECTION_PROGRESS_SCHEMA = (
+    ROOT / "schemas/mobile-dashboard/media-collection-progress.schema.json"
+)
 STAGES = ["research", "media_collection", "evidence_lock", "proposal"]
 STAGE_FILES = {
     "research": {
@@ -33,6 +36,7 @@ STAGE_FILES = {
     },
     "media_collection": {
         "artifacts/media_collection_manifest.json": "media_collection_manifest",
+        "automation/progress/media_collection.json": None,
         "checkpoint_media_collection.json": None,
     },
     "evidence_lock": {
@@ -277,6 +281,19 @@ class Coordinator:
                 value = _json(path)
                 validate_artifact(artifact_name, value)
                 loaded_artifacts[artifact_name] = value
+            elif relative == "automation/progress/media_collection.json":
+                progress = _json(path)
+                schema = json.loads(
+                    COLLECTION_PROGRESS_SCHEMA.read_text(encoding="utf-8")
+                )
+                try:
+                    jsonschema.Draft202012Validator(
+                        schema, format_checker=jsonschema.FormatChecker()
+                    ).validate(progress)
+                except jsonschema.ValidationError as exc:
+                    raise JobValidationError(
+                        "media collection progress is invalid"
+                    ) from exc
         if stage == "media_collection":
             self._validate_media_collection_assets(
                 project, loaded_artifacts["media_collection_manifest"]

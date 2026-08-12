@@ -109,7 +109,33 @@ def _write_stage_outputs(project: Path, stage: str) -> list[str]:
                 }
             ],
         }
-        values = {"artifacts/media_collection_manifest.json": manifest}
+        progress = {
+            "version": "1.0",
+            "project_id": project.name,
+            "state": "completed",
+            "current_source": None,
+            "current_query": None,
+            "sources": {
+                "attempted": ["pexels"],
+                "completed": ["pexels"],
+                "failed": [],
+            },
+            "counts": {
+                "discovered": 1,
+                "accepted": 1,
+                "downloaded": 1,
+                "duplicates": 0,
+                "rejected": 0,
+            },
+            "rejected_counts": {},
+            "elapsed_seconds": 1.25,
+            "updated_at": "2026-08-12T00:00:00+00:00",
+            "error": None,
+        }
+        values = {
+            "artifacts/media_collection_manifest.json": manifest,
+            "automation/progress/media_collection.json": progress,
+        }
         checkpoint = _checkpoint(
             project,
             stage,
@@ -144,7 +170,9 @@ def _write_stage_outputs(project: Path, stage: str) -> list[str]:
             {"proposal_packet": proposal, "decision_log": decision},
         )
     for relative, value in values.items():
-        (project / relative).write_bytes(canonical_bytes(value))
+        path = project / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(canonical_bytes(value))
     return [*values, checkpoint.relative_to(project).as_posix()]
 
 

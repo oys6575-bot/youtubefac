@@ -85,6 +85,10 @@ def test_mobile_ui_projects_automation_and_only_exposes_allowlisted_retry() -> N
     assert "공식 출처와 핵심 주장 수집·정리 중" in script
     assert "경과" in script
     assert "setInterval(refreshAutomationClock" in script
+    assert 'id="collection-progress"' in html
+    assert "실제 자료 수집 실행 중" in script
+    assert "수집 자료" in script
+    assert "권리 제외" in script
     assert "/shell" not in script
     assert "/orca" not in script
 

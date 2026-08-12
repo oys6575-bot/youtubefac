@@ -135,6 +135,9 @@ def test_explicit_reusable_license_downloads_and_validates_manifest(
     assert (tmp_path / item["local_path"]).is_file()
     assert item["allowed_uses"] == ["display", "transform", "commercial"]
     assert "selected_for_edit" not in item
+    progress = tmp_path / "automation/progress/media_collection.json"
+    assert progress.is_file()
+    assert __import__("json").loads(progress.read_text())["state"] == "completed"
 
 
 def test_retry_reuses_existing_file_without_duplicate_bytes(

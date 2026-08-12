@@ -16,7 +16,7 @@ def test_mobile_projection_has_full_stage_gate_candidates_and_roles(tmp_path: Pa
 
     assert state["project"]["project_id"] == "MOBILE_TEST"
     assert state["source_of_truth"] == "openmontage"
-    assert len(state["stages"]) == 18
+    assert len(state["stages"]) == 19
     assert state["current_gate"] == {
         "stage": "topic_approval",
         "checkpoint_sha256": expected_hash,
@@ -88,3 +88,80 @@ def test_mobile_projection_shows_durable_automation_state(tmp_path: Path) -> Non
     assert state["automation"]["label"] == "자료조사 시작 대기"
     assert state["automation"]["can_retry"] is False
     assert len(state["automation"]["job_sha256"]) == 64
+
+
+def _set_collection_running(project: Path) -> None:
+    job_path = next((project / "automation/jobs").glob("*.json"))
+    job = json.loads(job_path.read_text(encoding="utf-8"))
+    job["state"] = "running"
+    job["current_stage"] = "media_collection"
+    job["updated_at"] = "2026-08-12T12:05:00+00:00"
+    job_path.write_text(json.dumps(job), encoding="utf-8")
+
+
+def _write_collection_progress(project: Path) -> None:
+    path = project / "automation/progress/media_collection.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(
+            {
+                "version": "1.0",
+                "project_id": project.name,
+                "state": "downloading",
+                "current_source": "pexels",
+                "current_query": "Rana Plaza exterior",
+                "sources": {
+                    "attempted": ["pexels", "pixabay"],
+                    "completed": [],
+                    "failed": [],
+                },
+                "counts": {
+                    "discovered": 19,
+                    "accepted": 7,
+                    "downloaded": 6,
+                    "duplicates": 1,
+                    "rejected": 12,
+                },
+                "rejected_counts": {"unknown_rights": 8, "restricted_use": 4},
+                "elapsed_seconds": 34.2,
+                "updated_at": "2026-08-12T12:05:34+00:00",
+                "error": None,
+            }
+        ),
+        encoding="utf-8",
+    )
+
+
+def test_mobile_state_exposes_collection_activity(tmp_path: Path) -> None:
+    project, candidate, expected = build_topic_gate(tmp_path)
+    execute_action(
+        tmp_path,
+        payload(candidate, expected),
+        Actor(tailscale_login="owner@example.com", tailscale_user_id="123"),
+        now="2026-08-12T12:00:00+00:00",
+    )
+    _set_collection_running(project)
+    _write_collection_progress(project)
+
+    state = build_mobile_state(project)
+
+    assert state["automation"]["current_stage"] == "media_collection"
+    assert state["automation"]["label"] == "실제 자료 수집 실행 중"
+    assert state["automation"]["media_collection"]["state"] == "downloading"
+    assert state["automation"]["media_collection"]["counts"]["accepted"] == 7
+    assert "api" not in json.dumps(state["automation"]["media_collection"]).lower()
+
+
+def test_malformed_collection_progress_is_not_exposed(tmp_path: Path) -> None:
+    project, candidate, expected = build_topic_gate(tmp_path)
+    execute_action(
+        tmp_path,
+        payload(candidate, expected),
+        Actor(tailscale_login="owner@example.com", tailscale_user_id="123"),
+    )
+    _set_collection_running(project)
+    path = project / "automation/progress/media_collection.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("{}", encoding="utf-8")
+
+    assert build_mobile_state(project)["automation"]["media_collection"] is None

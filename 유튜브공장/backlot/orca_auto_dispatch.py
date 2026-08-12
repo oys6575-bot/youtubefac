@@ -221,6 +221,7 @@ class OrcaRunner:
             "media_collection": {
                 "paths": [
                     "artifacts/media_collection_manifest.json",
+                    "automation/progress/media_collection.json",
                     "checkpoint_media_collection.json",
                 ],
                 "artifacts": ["media_collection_manifest"],

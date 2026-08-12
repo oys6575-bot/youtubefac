@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openmontage/mobile-dashboard/media-collection-progress",
+  "title": "Bounded rights-cleared media collection progress",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "project_id",
+    "state",
+    "current_source",
+    "current_query",
+    "sources",
+    "counts",
+    "rejected_counts",
+    "elapsed_seconds",
+    "updated_at",
+    "error"
+  ],
+  "properties": {
+    "version": {"const": "1.0"},
+    "project_id": {"type": "string", "pattern": "^[A-Z][A-Z0-9_-]{2,95}$"},
+    "state": {"enum": ["searching", "downloading", "completed", "partial", "failed"]},
+    "current_source": {
+      "type": ["string", "null"],
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+    },
+    "current_query": {"type": ["string", "null"], "minLength": 1, "maxLength": 160},
+    "sources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["attempted", "completed", "failed"],
+      "properties": {
+        "attempted": {"$ref": "#/$defs/sourceList"},
+        "completed": {"$ref": "#/$defs/sourceList"},
+        "failed": {"$ref": "#/$defs/sourceList"}
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["discovered", "accepted", "downloaded", "duplicates", "rejected"],
+      "properties": {
+        "discovered": {"type": "integer", "minimum": 0},
+        "accepted": {"type": "integer", "minimum": 0},
+        "downloaded": {"type": "integer", "minimum": 0},
+        "duplicates": {"type": "integer", "minimum": 0},
+        "rejected": {"type": "integer", "minimum": 0}
+      }
+    },
+    "rejected_counts": {
+      "type": "object",
+      "maxProperties": 32,
+      "propertyNames": {"pattern": "^[a-z][a-z0-9_]{1,63}$"},
+      "additionalProperties": {"type": "integer", "minimum": 1}
+    },
+    "elapsed_seconds": {"type": "number", "minimum": 0},
+    "updated_at": {"type": "string", "format": "date-time"},
+    "error": {"type": ["string", "null"], "minLength": 1, "maxLength": 500}
+  },
+  "$defs": {
+    "sourceList": {
+      "type": "array",
+      "maxItems": 32,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$"
+      }
+    }
+  }
+}

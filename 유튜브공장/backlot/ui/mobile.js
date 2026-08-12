@@ -10,6 +10,7 @@
     rail: document.querySelector("#stage-rail"), gateCard: document.querySelector("#gate-card"),
     automationCard: document.querySelector("#automation-card"), automationLabel: document.querySelector("#automation-label"),
     automationDetail: document.querySelector("#automation-detail"), automationActions: document.querySelector("#automation-actions"),
+    collectionProgress: document.querySelector("#collection-progress"),
     gateTitle: document.querySelector("#gate-title"), gateDetail: document.querySelector("#gate-detail"),
     gateStage: document.querySelector("#gate-stage"), gateSelection: document.querySelector("#gate-selection"),
     gateActions: document.querySelector("#gate-actions"), topCandidates: document.querySelector("#top-candidates"),
@@ -170,10 +171,34 @@
     if (automation.state === "completed") return "허용된 자동 작업 완료";
     const activities = {
       research: "공식 출처와 핵심 주장 수집·정리 중",
+      media_collection: "사용 가능한 실제 사진·영상·문서 수집 중",
       evidence_lock: "출처 원문과 주장 일치 여부 교차검증 중",
       proposal: "검증된 사실로 구성·영상 기획안 작성 중",
     };
     return activities[automation.current_stage] || "자동 작업 실행 중";
+  }
+
+  function renderCollectionProgress(automation) {
+    if (!ui.collectionProgress) return;
+    const progress = automation.current_stage === "media_collection" ? automation.media_collection : null;
+    ui.collectionProgress.replaceChildren();
+    ui.collectionProgress.classList.toggle("hidden", !progress);
+    if (!progress) return;
+    const source = progress.current_source || "소스 준비";
+    const state = progress.state === "downloading" ? "다운로드 중" : progress.state === "searching" ? "검색 중" : progress.state;
+    const head = node("div", "collection-head");
+    head.append(node("strong", "", `${source} · ${state}`), node("span", "", `${Math.round(progress.elapsed_seconds)}초`));
+    const counts = node("div", "collection-counts");
+    counts.append(
+      node("span", "", `발견 ${progress.counts.discovered}`),
+      node("span", "", `수집 자료 ${progress.counts.accepted}`),
+      node("span", "", `다운로드 ${progress.counts.downloaded}`),
+      node("span", "", `권리 제외 ${progress.counts.rejected}`),
+      node("span", "", `중복 ${progress.counts.duplicates}`),
+    );
+    const sourceLine = node("p", "collection-source", `완료 소스 ${progress.sources.completed.length}/${progress.sources.attempted.length}${progress.current_query ? ` · ${progress.current_query}` : ""}`);
+    ui.collectionProgress.append(head, counts, sourceLine);
+    if (progress.error) ui.collectionProgress.append(node("p", "collection-error", progress.error));
   }
 
   function renderAutomation() {
@@ -188,7 +213,7 @@
     }
     const fallbackLabels = {
       queued: "자료조사 시작 대기",
-      running: automation.current_stage === "research" ? "자료조사 실행 중" : automation.current_stage === "evidence_lock" ? "사실검증 실행 중" : "기획안 작성 중",
+      running: automation.current_stage === "research" ? "자료조사 실행 중" : automation.current_stage === "media_collection" ? "실제 자료 수집 실행 중" : automation.current_stage === "evidence_lock" ? "사실검증 실행 중" : "기획안 작성 중",
       retrying: "자동 작업 재시도 중",
       failed: "실패 · 다시 실행 가능",
       awaiting_human: "기획안 승인 대기",
@@ -197,7 +222,7 @@
     ui.automationCard.classList.remove("hidden");
     ui.automationCard.dataset.state = automation.state;
     ui.automationLabel.textContent = automation.label || fallbackLabels[automation.state] || "자동 작업 상태";
-    const stageNames = { research: "자료조사", evidence_lock: "사실검증", proposal: "기획안" };
+    const stageNames = { research: "자료조사", media_collection: "실제 자료 수집", evidence_lock: "사실검증", proposal: "기획안" };
     const completed = automation.completed_stages.length
       ? `완료: ${automation.completed_stages.map(stage => stageNames[stage] || stage).join(" → ")}`
       : "완료 단계 없음";
@@ -206,6 +231,7 @@
       : "";
     const error = automation.last_error ? ` · ${automation.last_error.message}` : "";
     ui.automationDetail.textContent = `현재 작업: ${automationActivity(automation)}${elapsed} · ${completed}${error}`;
+    renderCollectionProgress(automation);
     ui.automationActions.replaceChildren();
     if (automation.can_retry) {
       ui.automationActions.append(actionButton("다시 실행", "retry_auto_dispatch", "primary"));

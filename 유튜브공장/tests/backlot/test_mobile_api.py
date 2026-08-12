@@ -60,6 +60,35 @@ def test_dashboard_projection_is_authenticated_and_never_cached(mobile_client) -
     assert response.json()["current_gate"]["checkpoint_sha256"] == checkpoint_hash
 
 
+def test_dashboard_api_exposes_valid_collection_progress(mobile_client) -> None:
+    client, project, candidate, checkpoint_hash = mobile_client
+    session = client.get("/api/mobile/session", headers=IDENTITY)
+    token = session.json()["csrf_token"]
+    response = client.post(
+        "/api/mobile/project/MOBILE_TEST/actions",
+        json=payload(candidate, checkpoint_hash),
+        headers={
+            **IDENTITY,
+            "X-CSRF-Token": token,
+            "Origin": "https://factory.tail.test",
+        },
+    )
+    assert response.status_code == 200
+    from tests.backlot.test_mobile_state import (
+        _set_collection_running,
+        _write_collection_progress,
+    )
+
+    _set_collection_running(project)
+    _write_collection_progress(project)
+
+    dashboard = client.get(
+        "/api/mobile/project/MOBILE_TEST/dashboard", headers=IDENTITY
+    ).json()
+    assert dashboard["automation"]["media_collection"]["current_source"] == "pexels"
+    assert dashboard["automation"]["media_collection"]["counts"]["downloaded"] == 6
+
+
 def test_mobile_page_and_project_list_require_identity(mobile_client) -> None:
     client, _project, _candidate, _hash = mobile_client
     assert client.get("/mobile").status_code == 401

@@ -8,6 +8,7 @@ library. Creative selection is intentionally outside this tool.
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 import re
 import time
@@ -212,6 +213,8 @@ class RightsClearedMediaCollection(BaseTool):
 
     def execute(self, inputs: dict[str, Any]) -> ToolResult:
         started = time.time()
+        progress_path: Path | None = None
+        project_id = str(inputs.get("project_id") or "")
         try:
             from tools.video.stock_sources import available_sources, get_source
 
@@ -222,6 +225,7 @@ class RightsClearedMediaCollection(BaseTool):
                     error="output_dir must be the canonical project assets/source directory",
                 )
             project_root = output_dir.parent.parent
+            progress_path = project_root / "automation/progress/media_collection.json"
             output_dir.mkdir(parents=True, exist_ok=True)
             staging = output_dir / ".staging"
             staging.mkdir(parents=True, exist_ok=True)
@@ -254,6 +258,40 @@ class RightsClearedMediaCollection(BaseTool):
             known_hashes = _existing_hashes(output_dir)
             discovered = downloaded = duplicates = 0
 
+            def write_progress(
+                state: str,
+                current_source: str | None = None,
+                current_query: str | None = None,
+                error: str | None = None,
+            ) -> None:
+                rejected = sum(rejected_counts.values())
+                _atomic_json_write(
+                    progress_path,
+                    {
+                        "version": "1.0",
+                        "project_id": project_id,
+                        "state": state,
+                        "current_source": current_source,
+                        "current_query": _safe_query_summary(current_query),
+                        "sources": {
+                            "attempted": attempted,
+                            "completed": sorted(completed_sources),
+                            "failed": sorted(failed_sources),
+                        },
+                        "counts": {
+                            "discovered": discovered,
+                            "accepted": len(items_by_id),
+                            "downloaded": downloaded,
+                            "duplicates": duplicates,
+                            "rejected": rejected,
+                        },
+                        "rejected_counts": dict(sorted(rejected_counts.items())),
+                        "elapsed_seconds": round(time.time() - started, 3),
+                        "updated_at": datetime.now(timezone.utc).isoformat(),
+                        "error": error,
+                    },
+                )
+
             query_records = [
                 {
                     "query_id": f"Q{index:03d}",
@@ -263,10 +301,14 @@ class RightsClearedMediaCollection(BaseTool):
                 }
                 for index, spec in enumerate(queries, start=1)
             ]
+            write_progress("searching")
 
             for source in sources:
                 source_failed = False
                 for query_record in query_records:
+                    write_progress(
+                        "searching", source.name, query_record["text"]
+                    )
                     filters = SearchFilters(
                         kind=query_record["kind"],
                         per_page=max_items,
@@ -287,6 +329,12 @@ class RightsClearedMediaCollection(BaseTool):
                                 "error": f"{type(exc).__name__}: {exc}",
                             }
                         )
+                        write_progress(
+                            "searching",
+                            source.name,
+                            query_record["text"],
+                            error=f"{type(exc).__name__}",
+                        )
                         continue
 
                     discovered += len(candidates)
@@ -296,8 +344,14 @@ class RightsClearedMediaCollection(BaseTool):
                             rejected_counts[decision.reason] = (
                                 rejected_counts.get(decision.reason, 0) + 1
                             )
+                            write_progress(
+                                "searching", source.name, query_record["text"]
+                            )
                             continue
                         try:
+                            write_progress(
+                                "downloading", source.name, query_record["text"]
+                            )
                             item, was_downloaded, was_duplicate = _freeze_candidate(
                                 source=source,
                                 candidate=candidate,
@@ -319,12 +373,22 @@ class RightsClearedMediaCollection(BaseTool):
                                     "error": f"{type(exc).__name__}: {exc}",
                                 }
                             )
+                            write_progress(
+                                "searching",
+                                source.name,
+                                query_record["text"],
+                                error=f"{type(exc).__name__}",
+                            )
                             continue
                         items_by_id.setdefault(item["id"], item)
                         downloaded += int(was_downloaded)
                         duplicates += int(was_duplicate)
+                        write_progress(
+                            "searching", source.name, query_record["text"]
+                        )
                 if not source_failed:
                     completed_sources.add(source.name)
+                write_progress("searching", source.name)
 
             try:
                 staging.rmdir()
@@ -349,6 +413,8 @@ class RightsClearedMediaCollection(BaseTool):
                 },
                 "items": sorted(items_by_id.values(), key=lambda item: item["id"]),
             }
+            final_state = "partial" if failed_sources else "completed"
+            write_progress(final_state)
             return ToolResult(
                 success=True,
                 data={
@@ -358,16 +424,68 @@ class RightsClearedMediaCollection(BaseTool):
                     "duplicates": duplicates,
                     "rejected_counts": dict(sorted(rejected_counts.items())),
                     "source_errors": source_errors,
+                    "progress_path": progress_path.relative_to(project_root).as_posix(),
                 },
                 cost_usd=0.0,
                 duration_seconds=round(time.time() - started, 3),
             )
         except Exception as exc:
+            if progress_path is not None:
+                try:
+                    _atomic_json_write(
+                        progress_path,
+                        {
+                            "version": "1.0",
+                            "project_id": project_id,
+                            "state": "failed",
+                            "current_source": None,
+                            "current_query": None,
+                            "sources": {"attempted": [], "completed": [], "failed": []},
+                            "counts": {
+                                "discovered": 0,
+                                "accepted": 0,
+                                "downloaded": 0,
+                                "duplicates": 0,
+                                "rejected": 0,
+                            },
+                            "rejected_counts": {},
+                            "elapsed_seconds": round(time.time() - started, 3),
+                            "updated_at": datetime.now(timezone.utc).isoformat(),
+                            "error": type(exc).__name__,
+                        },
+                    )
+                except OSError:
+                    pass
             return ToolResult(
                 success=False,
                 error=f"{type(exc).__name__}: {exc}",
                 duration_seconds=round(time.time() - started, 3),
             )
+
+
+def _safe_query_summary(value: str | None) -> str | None:
+    if value is None:
+        return None
+    summary = re.sub(r"https?://\S+", "[link]", str(value), flags=re.IGNORECASE)
+    summary = re.sub(r"\s+", " ", summary).strip()
+    return summary[:160] or None
+
+
+def _atomic_json_write(path: Path, value: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(f".{path.name}.{os.getpid()}.tmp")
+    payload = (json.dumps(value, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+    try:
+        with open(temporary, "wb") as handle:
+            handle.write(payload)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, path)
+    finally:
+        try:
+            temporary.unlink()
+        except FileNotFoundError:
+            pass
 
 
 def _freeze_candidate(

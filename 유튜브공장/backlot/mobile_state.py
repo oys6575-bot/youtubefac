@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+import jsonschema
 
 from backlot.auto_dispatch import JobValidationError, load_job
 from backlot.state import load_board_state
@@ -17,6 +18,9 @@ from lib.topic_scorecard import rank_candidates
 
 ROOT = Path(__file__).resolve().parents[1]
 ROUTING_PATH = ROOT / "config/orca-model-routing.yaml"
+COLLECTION_PROGRESS_SCHEMA = (
+    ROOT / "schemas/mobile-dashboard/media-collection-progress.schema.json"
+)
 TWO_STEP_GATES = frozenset(
     {"budget", "asset_selection", "final_review", "title_thumbnail", "publish"}
 )
@@ -160,6 +164,34 @@ def _providers(project: Path) -> dict[str, dict[str, Any]]:
     return output
 
 
+def _collection_progress(project: Path) -> dict[str, Any] | None:
+    value = _read_json(project / "automation/progress/media_collection.json")
+    schema = _read_json(COLLECTION_PROGRESS_SCHEMA)
+    if value is None or schema is None:
+        return None
+    try:
+        jsonschema.Draft202012Validator(
+            schema, format_checker=jsonschema.FormatChecker()
+        ).validate(value)
+    except jsonschema.ValidationError:
+        return None
+    return {
+        "state": value["state"],
+        "current_source": value["current_source"],
+        "current_query": value["current_query"],
+        "sources": {
+            "attempted": list(value["sources"]["attempted"]),
+            "completed": list(value["sources"]["completed"]),
+            "failed": list(value["sources"]["failed"]),
+        },
+        "counts": dict(value["counts"]),
+        "rejected_counts": dict(value["rejected_counts"]),
+        "elapsed_seconds": value["elapsed_seconds"],
+        "updated_at": value["updated_at"],
+        "error": "자료 수집 중 오류가 기록되었습니다." if value["error"] else None,
+    }
+
+
 def _automation(project: Path) -> dict[str, Any] | None:
     jobs_dir = project / "automation/jobs"
     if not jobs_dir.is_dir():
@@ -175,6 +207,7 @@ def _automation(project: Path) -> dict[str, Any] | None:
     path, job = max(jobs, key=lambda item: (item[1]["created_at"], item[1]["job_id"]))
     stage_labels = {
         "research": "자료조사",
+        "media_collection": "실제 자료 수집",
         "evidence_lock": "사실검증",
         "proposal": "기획안 작성",
     }
@@ -203,6 +236,7 @@ def _automation(project: Path) -> dict[str, Any] | None:
         "last_error": job["last_error"],
         "can_retry": state == "failed",
         "updated_at": job["updated_at"],
+        "media_collection": _collection_progress(project),
     }
 
 

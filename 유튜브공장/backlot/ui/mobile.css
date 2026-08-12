@@ -148,6 +148,13 @@ h1 { margin-bottom: 6px; font-size: clamp(25px, 3vw, 38px); letter-spacing: -.04
 .automation-card p:last-child { margin: 0; color: var(--muted); font-size: 11px; line-height: 1.55; }
 .automation-card[data-state="failed"] { border-color: rgba(255,104,122,.45); background: rgba(255,104,122,.06); }
 .automation-actions { flex: 0 0 auto; }
+.collection-progress { margin-top: 13px; padding: 12px; border: 1px solid rgba(49,229,192,.2); border-radius: 12px; background: rgba(5,10,15,.52); }
+.collection-head { display: flex; justify-content: space-between; gap: 12px; color: #dce9f4; font-size: 12px; }
+.collection-head span, .collection-source { color: var(--muted); }
+.collection-counts { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; margin-top: 9px; }
+.collection-counts span { padding: 7px 5px; border-radius: 8px; background: rgba(49,229,192,.07); color: #b9c9d8; font-size: 10px; text-align: center; }
+.collection-source, .collection-error { margin: 8px 0 0 !important; }
+.collection-error { color: var(--danger) !important; }
 .provider-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; }
 .provider-card { border: 1px solid var(--line); border-radius: 13px; background: #0d1219; padding: 16px; }
 .provider-card header { display: flex; justify-content: space-between; gap: 10px; }
@@ -189,6 +196,7 @@ textarea:focus, input:focus { border-color: var(--teal); }
   .gate-card { padding: 18px 16px; }
   .automation-card { align-items: stretch; flex-direction: column; padding: 16px; }
   .automation-actions .button { width: 100%; }
+  .collection-counts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .gate-body { display: block; }
   .gate-stage { display: inline-block; margin-top: 14px; }
   .gate-actions .button { flex: 1 1 calc(50% - 9px); }
