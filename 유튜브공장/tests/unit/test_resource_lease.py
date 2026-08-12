@@ -100,3 +100,36 @@ def test_only_control_can_recover_expired_lease(tmp_path: Path) -> None:
     with pytest.raises(PermissionError, match="control"):
         lease.recover_expired(authority="qa")
 
+
+def test_control_can_recover_matching_stale_dead_pid_lease(tmp_path: Path) -> None:
+    lock = tmp_path / "stale.lease"
+    lease = ResourceLease(lock, lane="local_text", owner="dead-research", ttl_seconds=60)
+    payload = lease.acquire()
+    payload["pid"] = 999999
+    lock.write_text(json.dumps(payload), encoding="utf-8")
+
+    recovered = lease.recover_stale(
+        authority="control",
+        expected_owner="dead-research",
+    )
+
+    assert recovered["owner"] == "dead-research"
+    assert not lock.exists()
+
+
+def test_stale_recovery_rejects_live_pid_or_wrong_owner(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    lock = tmp_path / "active.lease"
+    lease = ResourceLease(lock, lane="local_text", owner="active-research", ttl_seconds=60)
+    lease.acquire()
+
+    with pytest.raises(PermissionError, match="owner"):
+        lease.recover_stale(authority="control", expected_owner="other-task")
+
+    monkeypatch.setattr(ResourceLease, "_pid_is_alive", staticmethod(lambda pid: True))
+    with pytest.raises(LeaseConflictError, match="still alive"):
+        lease.recover_stale(
+            authority="control",
+            expected_owner="active-research",
+        )

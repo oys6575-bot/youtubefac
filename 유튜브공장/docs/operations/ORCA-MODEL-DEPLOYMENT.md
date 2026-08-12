@@ -152,6 +152,15 @@ PYTHONPATH=. ./.venv/bin/python scripts/orca/run_with_resource_lease.py \
 - 만료 파일도 자동 삭제하지 않는다. 실제 프로세스·Orca task 상태를 확인한 뒤
   `control` 역할만 복구한다.
 
+terminal 강제 종료 뒤 PID가 사라졌지만 lease만 남았다면 정확한 기존 owner를
+지정해 복구한다. PID가 살아 있거나 owner가 다르면 명령은 실패한다.
+
+```bash
+PYTHONPATH=. ./.venv/bin/python scripts/orca/recover_resource_lease.py \
+  --lock .runtime/orca/local-heavy.lease \
+  --expected-owner '<run-id>-research'
+```
+
 ## Research → Verification 전달
 
 1. Research가 shortlist JSON/Markdown을 자기 브랜치에 커밋한다.
@@ -208,4 +217,4 @@ VisualPlan, 생성, TopView, 게시 단계로 진행하지 않는다.
 - 실제 모델 사전 점검: `scripts/orca/model_preflight.py`
 - 로컬 리소스 잠금: `lib/resource_lease.py`
 - lease 실행 wrapper: `scripts/orca/run_with_resource_lease.py`
-
+- crash-left lease 복구: `scripts/orca/recover_resource_lease.py`

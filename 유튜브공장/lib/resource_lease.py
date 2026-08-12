@@ -100,3 +100,35 @@ class ResourceLease:
         self.path.unlink()
         return payload
 
+    @staticmethod
+    def _pid_is_alive(pid: int) -> bool:
+        if not isinstance(pid, int) or isinstance(pid, bool) or pid <= 0:
+            return False
+        try:
+            os.kill(pid, 0)
+        except ProcessLookupError:
+            return False
+        except PermissionError:
+            return True
+        return True
+
+    def recover_stale(
+        self,
+        *,
+        authority: str,
+        expected_owner: str,
+    ) -> dict[str, Any]:
+        """Remove a crash-left lease only after exact owner and PID checks."""
+
+        if authority != "control":
+            raise PermissionError("only control can recover a stale resource lease")
+        payload = self._read()
+        if payload.get("owner") != expected_owner:
+            raise PermissionError("stale lease owner does not match expected owner")
+        pid = payload.get("pid")
+        if not isinstance(pid, int) or isinstance(pid, bool) or pid <= 0:
+            raise LeaseConflictError("stale lease has no trustworthy PID")
+        if self._pid_is_alive(pid):
+            raise LeaseConflictError(f"lease PID {pid} is still alive")
+        self.path.unlink()
+        return payload
