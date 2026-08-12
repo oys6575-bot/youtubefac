@@ -6,9 +6,9 @@ Scope: provider-neutral direction principles, VisualPlan contract, TopView manua
 
 ## Verdict
 
-**PASS for the scoped cinematic-direction integration.** All 53 directly related contract and tool tests pass, both deterministic audits are clean, all three research inputs match their recorded SHA-256 values, and the TopView route remains manual-only.
+**PASS.** All 53 directly related contract and tool tests pass, the complete repository suite passes, both deterministic audits are clean, all three research inputs match their recorded SHA-256 values, and the TopView route remains manual-only.
 
-The repository-wide suite retains one unrelated baseline failure that existed before this implementation: the vendored ComfyUI tree contains 958 counted files while `vendor/comfyui/source-lock.json` records 1006. This task did not alter the ComfyUI vendor tree or its lock and does not claim that repository-wide issue is resolved.
+The first repository-wide run exposed a pre-existing incomplete ComfyUI vendor import: the lock correctly recorded 1006 files but only 958 had been committed. Comparison with the exact locked upstream commit proved that all 48 omissions matched Git ignore rules. The missing files were restored from that commit without overwriting the existing 958 files, then byte-for-byte directory comparison and the full suite were rerun.
 
 ## Executed evidence
 
@@ -25,7 +25,7 @@ Command:
   tests/tools/test_topview_manual_ingest.py -q
 ```
 
-Result: `53 passed in 5.94s`.
+Final result: `53 passed in 5.63s`.
 
 Verified behavior includes:
 
@@ -48,17 +48,19 @@ Command:
 .venv/bin/python -m pytest -q
 ```
 
-Result: `1044 passed, 10 skipped, 1 subtests passed, 1 failed in 144.80s`.
+Final result: `1045 passed, 10 skipped, 1 subtests passed in 144.31s`.
 
-Only failure:
+The initial run failed one pre-existing contract with `958 == 1006`. Root-cause evidence and repair:
 
-```text
-tests/contracts/test_factory_toolchain_audit.py::
-test_vendored_comfyui_source_is_exact_and_has_local_video_blueprints
-assert 958 == 1006
-```
+- official `v0.31.0` checkout resolved to locked commit `43cb4fffc89bba20ab7bd61467a36d0339338dab`;
+- upstream `git ls-files` count was 1006;
+- the 48 missing paths were ignored by project `internal/` or vendored `/input/`, `/output/`, `/models/`, `/custom_nodes/`, and `extra_model_paths.yaml` patterns;
+- only missing paths were copied; existing vendor files were not overwritten;
+- `diff -qr --exclude=.git` between the repaired vendor tree and official checkout returned no differences;
+- repaired local file count is 1006;
+- the previously failing targeted contract passed, followed by the green full-suite result above.
 
-The same test failed on the pre-change baseline with the same `958 == 1006` mismatch. No cinematic-direction file participates in that contract.
+The lock value was not weakened to match an incomplete copy.
 
 ### Deterministic audits
 
