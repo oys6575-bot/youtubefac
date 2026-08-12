@@ -165,6 +165,8 @@
   }
 
   function automationActivity(automation) {
+    const activeStage = automation.active_stage || automation.current_stage;
+    if (activeStage === "media_collection" && automation.media_collection && ["searching", "downloading"].includes(automation.media_collection.state)) return "사용 가능한 실제 사진·영상·문서 수집 중";
     if (automation.state === "queued") return "Coordinator가 작업 시작을 준비 중";
     if (automation.state === "failed") return "자동 실행이 멈춤";
     if (automation.state === "awaiting_human") return "기획안 작성 완료 · 사용자 검토 대기";
@@ -175,12 +177,12 @@
       evidence_lock: "출처 원문과 주장 일치 여부 교차검증 중",
       proposal: "검증된 사실로 구성·영상 기획안 작성 중",
     };
-    return activities[automation.current_stage] || "자동 작업 실행 중";
+    return activities[activeStage] || "자동 작업 실행 중";
   }
 
   function renderCollectionProgress(automation) {
     if (!ui.collectionProgress) return;
-    const progress = automation.current_stage === "media_collection" ? automation.media_collection : null;
+    const progress = (automation.active_stage || automation.current_stage) === "media_collection" ? automation.media_collection : null;
     ui.collectionProgress.replaceChildren();
     ui.collectionProgress.classList.toggle("hidden", !progress);
     if (!progress) return;

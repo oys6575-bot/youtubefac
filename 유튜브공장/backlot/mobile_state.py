@@ -212,7 +212,14 @@ def _automation(project: Path) -> dict[str, Any] | None:
         "proposal": "기획안 작성",
     }
     state = job["state"]
-    if state == "queued":
+    collection = _collection_progress(project)
+    collection_active = bool(
+        collection and collection.get("state") in {"searching", "downloading"}
+    )
+    active_stage = "media_collection" if collection_active else job["current_stage"]
+    if collection_active:
+        label = "실제 자료 수집 실행 중"
+    elif state == "queued":
         label = f"{stage_labels[job['current_stage']]} 시작 대기"
     elif state == "running":
         label = f"{stage_labels[job['current_stage']]} 실행 중"
@@ -229,6 +236,7 @@ def _automation(project: Path) -> dict[str, Any] | None:
         "job_sha256": _raw_hash(path),
         "state": state,
         "current_stage": job["current_stage"],
+        "active_stage": active_stage,
         "label": label,
         "attempt": job["attempt"],
         "max_retries": job["max_retries"],
@@ -236,7 +244,7 @@ def _automation(project: Path) -> dict[str, Any] | None:
         "last_error": job["last_error"],
         "can_retry": state == "failed",
         "updated_at": job["updated_at"],
-        "media_collection": _collection_progress(project),
+        "media_collection": collection,
     }
 
 

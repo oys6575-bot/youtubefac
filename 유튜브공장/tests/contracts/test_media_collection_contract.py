@@ -74,6 +74,13 @@ def test_manifest_rejects_creative_selection_fields() -> None:
         validate_artifact("media_collection_manifest", value)
 
 
+def test_manifest_accepts_canonical_lowercase_project_id() -> None:
+    value = sample_manifest()
+    value["project_id"] = "collapse-topic-pilot-2026-08-12"
+
+    validate_artifact("media_collection_manifest", value)
+
+
 @pytest.mark.parametrize(
     ("field", "value"),
     [

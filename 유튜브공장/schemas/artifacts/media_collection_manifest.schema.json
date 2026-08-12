@@ -16,7 +16,7 @@
   ],
   "properties": {
     "schema_version": {"const": "1.0.0"},
-    "project_id": {"type": "string", "pattern": "^[A-Z][A-Z0-9_-]{2,95}$"},
+    "project_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{1,95}$"},
     "collection_status": {"enum": ["completed", "partial"]},
     "generated_at": {"type": "string", "format": "date-time"},
     "queries": {

@@ -165,3 +165,26 @@ def test_malformed_collection_progress_is_not_exposed(tmp_path: Path) -> None:
     path.write_text("{}", encoding="utf-8")
 
     assert build_mobile_state(project)["automation"]["media_collection"] is None
+
+
+def test_manual_collection_is_visible_without_rewriting_terminal_job(
+    tmp_path: Path,
+) -> None:
+    project, candidate, expected = build_topic_gate(tmp_path)
+    execute_action(
+        tmp_path,
+        payload(candidate, expected),
+        Actor(tailscale_login="owner@example.com", tailscale_user_id="123"),
+    )
+    job_path = next((project / "automation/jobs").glob("*.json"))
+    job = json.loads(job_path.read_text(encoding="utf-8"))
+    job["state"] = "awaiting_human"
+    job["current_stage"] = "proposal"
+    job_path.write_text(json.dumps(job), encoding="utf-8")
+    _write_collection_progress(project)
+
+    automation = build_mobile_state(project)["automation"]
+
+    assert automation["current_stage"] == "proposal"
+    assert automation["active_stage"] == "media_collection"
+    assert automation["label"] == "실제 자료 수집 실행 중"
