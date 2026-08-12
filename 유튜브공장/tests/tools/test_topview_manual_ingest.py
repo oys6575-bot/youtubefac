@@ -56,6 +56,9 @@ def _prepared_project(tmp_path: Path) -> tuple[Path, Path, Path]:
     plan["global_style"]["resolution"] = "320x180"
     plan["sequences"][0]["shots"][1]["duration_seconds"] = 1
     plan["sequences"][0]["shots"][1]["generation_brief"]["reference_paths"] = []
+    plan["sequences"][0]["shots"][1]["cinematic_direction"][
+        "reference_bindings"
+    ] = []
     plan_path = artifact_dir / "visual_plan.json"
     plan_path.write_text(json.dumps(plan, ensure_ascii=False, indent=2), encoding="utf-8")
     handoff = TopViewManualHandoff().execute(

@@ -31,6 +31,9 @@ def _project(tmp_path: Path, reference_path: str = "references/archive-frame.png
     plan["sequences"][0]["shots"][1]["generation_brief"]["reference_paths"] = [
         reference_path
     ]
+    plan["sequences"][0]["shots"][1]["cinematic_direction"][
+        "reference_bindings"
+    ][0]["path"] = reference_path
     plan_path = artifact_dir / "visual_plan.json"
     plan_path.write_text(json.dumps(plan, ensure_ascii=False, indent=2), encoding="utf-8")
     return project, plan_path
@@ -82,6 +85,19 @@ def test_job_pack_contains_only_manual_topview_shots_and_frozen_references(tmp_p
     assert frozen.read_bytes() == b"frozen-reference-image"
     assert topview_job["reference_files"][0]["sha256"] == _sha256(frozen)
     assert topview_job["reference_files"][0]["role"] == "ENVIRONMENT_REFERENCE"
+    assert topview_job["reference_files"][0]["controls"] == [
+        "workspace geometry",
+        "material character",
+        "light direction",
+    ]
+    assert "camera framing" in topview_job["reference_files"][0]["excludes"]
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    plan_shot = plan["sequences"][0]["shots"][1]
+    assert topview_job["cinematic_direction"] == plan_shot["cinematic_direction"]
+    instructions = Path(result.data["instructions_path"]).read_text(encoding="utf-8")
+    assert "첫 프레임" in instructions
+    assert "시간 비트" in instructions
+    assert "레퍼런스 역할" in instructions
     assert job["automated_api_cost_usd"] == 0
 
     schema = json.loads(
@@ -124,6 +140,29 @@ def test_reference_outside_project_is_rejected_before_outbox_creation(tmp_path: 
 
     assert result.success is False
     assert "outside project" in (result.error or "")
+    assert not (project / "handoff/topview/outbox/BATCH_001").exists()
+
+
+def test_missing_reference_role_binding_is_rejected_before_outbox_creation(
+    tmp_path: Path,
+) -> None:
+    project, plan_path = _project(tmp_path)
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    plan["sequences"][0]["shots"][1]["cinematic_direction"][
+        "reference_bindings"
+    ] = []
+    plan_path.write_text(json.dumps(plan, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    result = _tool_class()().execute(
+        {
+            "project_dir": str(project),
+            "visual_plan_path": str(plan_path),
+            "batch_id": "BATCH_001",
+        }
+    )
+
+    assert result.success is False
+    assert "reference bindings" in (result.error or "")
     assert not (project / "handoff/topview/outbox/BATCH_001").exists()
 
 

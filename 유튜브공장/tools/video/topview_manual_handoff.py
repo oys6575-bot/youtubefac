@@ -167,8 +167,32 @@ class TopViewManualHandoff(BaseTool):
 
                 brief = shot["generation_brief"]
                 route = shot["provider_route"]
-                reference_files: list[dict[str, str]] = []
-                for reference in brief.get("reference_paths", []):
+                cinematic_direction = shot["cinematic_direction"]
+                binding_map: dict[str, dict[str, Any]] = {}
+                for binding in cinematic_direction.get("reference_bindings", []):
+                    binding_path = binding["path"]
+                    if binding_path in binding_map:
+                        return ToolResult(
+                            success=False,
+                            error=(
+                                f"{shot['shot_id']}: duplicate reference bindings for "
+                                f"{binding_path}"
+                            ),
+                        )
+                    binding_map[binding_path] = binding
+
+                reference_paths = brief.get("reference_paths", [])
+                if set(reference_paths) != set(binding_map):
+                    return ToolResult(
+                        success=False,
+                        error=(
+                            f"{shot['shot_id']}: reference bindings must match "
+                            "generation reference_paths exactly"
+                        ),
+                    )
+
+                reference_files: list[dict[str, Any]] = []
+                for reference in reference_paths:
                     source = (project_dir / reference).resolve()
                     if not _inside(project_dir, source):
                         return ToolResult(
@@ -180,12 +204,15 @@ class TopViewManualHandoff(BaseTool):
                     checksum = _sha256(source)
                     frozen_name = f"{checksum[:16]}-{source.name}"
                     frozen_rel = Path("handoff/topview/outbox") / batch_id / "references" / frozen_name
+                    binding = binding_map[reference]
                     reference_files.append(
                         {
                             "original_path": source.relative_to(project_dir).as_posix(),
                             "frozen_path": frozen_rel.as_posix(),
                             "sha256": checksum,
-                            "role": "ENVIRONMENT_REFERENCE",
+                            "role": binding["role"],
+                            "controls": binding["controls"],
+                            "excludes": binding["excludes"],
                         }
                     )
                     pending_copies.append((source, frozen_rel.as_posix()))
@@ -221,6 +248,7 @@ class TopViewManualHandoff(BaseTool):
                         "native_audio_requested": "native-audio" in {
                             item.strip().lower().replace("_", "-") for item in requirements
                         },
+                        "cinematic_direction": cinematic_direction,
                         "camera": shot.get("camera", {}),
                         "lighting": shot.get("lighting", {}),
                         "composition": shot.get("composition", ""),
@@ -347,6 +375,9 @@ class TopViewManualHandoff(BaseTool):
             "",
         ]
         for job in job_pack["jobs"]:
+            direction = job["cinematic_direction"]
+            opening = direction["opening_frame"]
+            optics = direction["optical_result"]
             lines.extend(
                 [
                     f"### {job['shot_id']}",
@@ -361,6 +392,27 @@ class TopViewManualHandoff(BaseTool):
                     f"- 최대 시도: {job['budget']['max_attempts']}회",
                     f"- 프롬프트: {job['prompt']}",
                     f"- 제외 프롬프트: {job['negative_prompt']}",
+                    f"- 첫 프레임: {opening['description']}",
+                    f"- 첫 프레임 동작 상태: {opening['action_state']}",
+                    f"- 광학 결과: {optics['perspective_behavior']} / {optics['focus_behavior']}",
+                    f"- 물리 단서: {'; '.join(direction['physical_cues'])}",
+                    "- 시간 비트:",
+                    *[
+                        (
+                            f"  - {beat['start_seconds']:g}–{beat['end_seconds']:g}초: "
+                            f"{beat['visible_action']} / 카메라 {beat['camera_behavior']}"
+                        )
+                        for beat in direction["timed_beats"]
+                    ],
+                    "- 레퍼런스 역할:",
+                    *[
+                        (
+                            f"  - `{item['original_path']}` = {item['role']} | "
+                            f"유지: {', '.join(item['controls'])} | "
+                            f"제외: {', '.join(item['excludes'])}"
+                        )
+                        for item in job["reference_files"]
+                    ],
                     "- 사실 텍스트: 생성 화면에 넣지 않고 후단 합성에서만 추가",
                     f"- 공개 라벨: {job['disclosure_label']}",
                     f"- 작업 메모: {job['operator_notes']}",
