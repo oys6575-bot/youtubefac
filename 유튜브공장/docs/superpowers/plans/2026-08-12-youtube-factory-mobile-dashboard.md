@@ -126,4 +126,4 @@
 - [x] 390x844와 1180x820에서 브라우저 screenshot을 만들고 overflow, overlap, text legibility, disabled/offline 상태를 눈으로 검사한다.
 - [x] Gateway가 loopback에만 listen하는지 확인하고 Tailscale Serve status에서 Funnel 비활성·전용 socket 사용을 확인한다.
 - [x] 검증 결과, 남은 실제 사용자 단계(Tailscale 로그인·휴대폰 접속), 정확한 접속 URL을 리뷰 문서에 기록한다.
-- [ ] 의도한 파일만 commit하고 feature branch를 non-force push한다. Human Gate fixture 외 실제 프로젝트 승인이나 유료 호출·게시를 실행하지 않는다.
+- [x] 의도한 파일만 commit하고 feature branch를 non-force push한다. Human Gate fixture 외 실제 프로젝트 승인이나 유료 호출·게시를 실행하지 않는다.
