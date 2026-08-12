@@ -47,6 +47,114 @@ techniques:
       - State what the viewer learns or feels before naming lens, angle, or motion.
       - Keep one dominant visual idea per shot.
 
+  - id: direction.opening_frame_intent
+    name: Deliberate opening-frame intent
+    description: Define the first readable image, its visible subjects, and any delayed reveal before describing motion.
+    category: direction
+    status: ACTIVE
+    selectable: true
+    priority: 97
+    phases: [visual_plan, animatic, production]
+    intents: [opening_frame, first_frame, delayed_reveal]
+    tags: [composition, reveal, visual_anchor, shot_design]
+    provider_scopes: [GENERIC]
+    render_runtimes: [ANY]
+    source: {type: project_doc, label: Provider-neutral cinematic direction design, license: PROJECT_LOCAL, path: docs/superpowers/specs/2026-08-12-cinematic-direction-principles-design.md}
+    activation: {default_allowed: true, requires_human_opt_in: false, requires_license_review: false, requires_network: false}
+    directives:
+      - Describe what is visible before the first movement begins.
+      - Use an empty or partial opening only when the delayed reveal has a narrative purpose.
+
+  - id: continuity.explicit_spatial_blocking
+    name: Explicit spatial blocking
+    description: Anchor every important subject in screen space and world space, including orientation, attention, and movement path.
+    category: continuity
+    status: ACTIVE
+    selectable: true
+    priority: 96
+    phases: [visual_plan, animatic, production]
+    intents: [spatial_blocking, subject_placement, action_continuity]
+    tags: [blocking, geography, eye_line, screen_direction]
+    provider_scopes: [GENERIC]
+    render_runtimes: [ANY]
+    source: {type: project_doc, label: Provider-neutral cinematic direction design, license: PROJECT_LOCAL, path: docs/superpowers/specs/2026-08-12-cinematic-direction-principles-design.md}
+    activation: {default_allowed: true, requires_human_opt_in: false, requires_license_review: false, requires_network: false}
+    directives:
+      - State where each subject begins, faces, looks, and travels relative to a stable anchor.
+      - Preserve the declared relationships across cuts unless the change itself is the story beat.
+
+  - id: direction.behavioral_performance_beats
+    name: Observable performance beats
+    description: Direct emotion through objectives, obstacles, tactics, reactions, and visible behavior rather than labels alone.
+    category: direction
+    status: ACTIVE
+    selectable: true
+    priority: 94
+    phases: [visual_plan, animatic, production]
+    intents: [behavioral_performance, acting_direction, reaction]
+    tags: [performance, subtext, objective, beat_change]
+    provider_scopes: [GENERIC]
+    render_runtimes: [ANY]
+    source: {type: project_doc, label: Provider-neutral cinematic direction design, license: PROJECT_LOCAL, path: docs/superpowers/specs/2026-08-12-cinematic-direction-principles-design.md}
+    activation: {default_allowed: true, requires_human_opt_in: false, requires_license_review: false, requires_network: false}
+    directives:
+      - Convert internal emotion into gaze, breath, posture, interrupted action, or a change of tactic.
+      - Give reactions and listening behavior their own timed beat when they carry meaning.
+
+  - id: camera.observable_optical_result
+    name: Observable optical result
+    description: Specify how perspective, subject scale, background, and focus should look instead of relying on lens jargon alone.
+    category: camera
+    status: ACTIVE
+    selectable: true
+    priority: 95
+    phases: [visual_plan, animatic, production]
+    intents: [optical_result, lens_intent, perspective]
+    tags: [optics, depth, compression, focus, subject_scale]
+    provider_scopes: [GENERIC]
+    render_runtimes: [ANY]
+    source: {type: project_doc, label: Provider-neutral cinematic direction design, license: PROJECT_LOCAL, path: docs/superpowers/specs/2026-08-12-cinematic-direction-principles-design.md}
+    activation: {default_allowed: true, requires_human_opt_in: false, requires_license_review: false, requires_network: false}
+    directives:
+      - State the intended perspective, background behavior, focus behavior, and subject scale in visible terms.
+      - Treat focal length as an optional implementation hint, never as a substitute for the result.
+
+  - id: direction.physical_causality
+    name: Physical causality cues
+    description: Make motion obey contact, weight, inertia, resistance, airflow, and material response so cause and effect remain legible.
+    category: direction
+    status: ACTIVE
+    selectable: true
+    priority: 93
+    phases: [visual_plan, animatic, production]
+    intents: [physical_causality, material_response, believable_motion]
+    tags: [physics, weight, contact, inertia, environment]
+    provider_scopes: [GENERIC]
+    render_runtimes: [ANY]
+    source: {type: project_doc, label: Provider-neutral cinematic direction design, license: PROJECT_LOCAL, path: docs/superpowers/specs/2026-08-12-cinematic-direction-principles-design.md}
+    activation: {default_allowed: true, requires_human_opt_in: false, requires_license_review: false, requires_network: false}
+    directives:
+      - Name the force, contact, and visible material response for every important movement.
+      - Reject motion that changes position without a plausible initiating cause or settling behavior.
+
+  - id: continuity.reference_role_binding
+    name: Reference-role binding
+    description: Assign each reference one explicit control role and state what it must preserve and what it must not transfer.
+    category: continuity
+    status: ACTIVE
+    selectable: true
+    priority: 92
+    phases: [visual_plan, production]
+    intents: [reference_role, multi_reference, identity_continuity]
+    tags: [reference, identity, environment, object, style]
+    provider_scopes: [GENERIC]
+    render_runtimes: [ANY]
+    source: {type: project_doc, label: Provider-neutral cinematic direction design, license: PROJECT_LOCAL, path: docs/superpowers/specs/2026-08-12-cinematic-direction-principles-design.md}
+    activation: {default_allowed: true, requires_human_opt_in: false, requires_license_review: false, requires_network: false}
+    directives:
+      - Bind each file to one primary role such as subject, environment, object, composition, lighting, or style.
+      - List both the attributes controlled by the reference and the attributes that must not leak from it.
+
   - id: continuity.process_geography
     name: Establish process geography
     description: Show the relationship among maker, tool, material, and workspace before fragmenting into details.

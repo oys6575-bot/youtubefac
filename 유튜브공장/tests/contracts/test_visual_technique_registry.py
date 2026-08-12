@@ -4,6 +4,7 @@ import importlib
 import json
 from pathlib import Path
 
+import pytest
 from jsonschema import Draft202012Validator
 
 
@@ -96,6 +97,32 @@ def test_topview_scope_never_leaks_other_provider_specific_guidance() -> None:
         set(item["provider_scopes"]) & {"GENERIC", "TOPVIEW_MANUAL"}
         for item in selected
     )
+
+
+@pytest.mark.parametrize(
+    ("intent", "technique_id"),
+    [
+        ("opening_frame", "direction.opening_frame_intent"),
+        ("spatial_blocking", "continuity.explicit_spatial_blocking"),
+        ("behavioral_performance", "direction.behavioral_performance_beats"),
+        ("optical_result", "camera.observable_optical_result"),
+        ("physical_causality", "direction.physical_causality"),
+        ("reference_role", "continuity.reference_role_binding"),
+    ],
+)
+def test_generic_cinematic_principles_are_route_safe(
+    intent: str, technique_id: str
+) -> None:
+    result = _module().select_techniques(
+        intents=[intent],
+        phase="visual_plan",
+        provider_scope="TOPVIEW_MANUAL",
+        render_runtime="ANY",
+    )
+
+    selected = {item["id"]: item for item in result["selected"]}
+    assert technique_id in selected
+    assert selected[technique_id]["provider_scopes"] == ["GENERIC"]
 
 
 def test_on_demand_library_is_discoverable_but_not_silently_selected() -> None:
