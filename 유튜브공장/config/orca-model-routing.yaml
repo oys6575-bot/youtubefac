@@ -3,7 +3,14 @@ schema_version: "1.0.0"
 control_plane:
   source_of_truth: openmontage
   coordinator_role: control
-  pilot_stop_gate: topic_approval
+  pilot_stop_gate: proposal
+
+auto_dispatch:
+  enabled: true
+  trigger_action: approve_topic
+  stages: [research, evidence_lock, proposal]
+  max_retries: 1
+  stop_gate: proposal
 
 orchestrator:
   name: orca

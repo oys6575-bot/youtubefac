@@ -60,6 +60,19 @@ def test_topview_and_provider_fallback_are_locked() -> None:
     }
 
 
+def test_safe_auto_dispatch_is_exact_and_topview_remains_manual() -> None:
+    routing = load_routing()
+    assert routing["auto_dispatch"] == {
+        "enabled": True,
+        "trigger_action": "approve_topic",
+        "stages": ["research", "evidence_lock", "proposal"],
+        "max_retries": 1,
+        "stop_gate": "proposal",
+    }
+    assert routing["control_plane"]["pilot_stop_gate"] == "proposal"
+    assert routing["topview"]["automatic_dispatch"] is False
+
+
 def test_human_gates_cannot_be_auto_approved() -> None:
     routing = load_routing()
     assert set(routing["human_gates"]) == {
@@ -160,6 +173,14 @@ def test_workspace_and_handoff_bind_every_role_to_exact_bytes() -> None:
                 "merge_requires_exact_match", False
             ),
             "handoff",
+        ),
+        (
+            lambda data: data["auto_dispatch"].__setitem__("max_retries", 2),
+            "auto.dispatch",
+        ),
+        (
+            lambda data: data["auto_dispatch"]["stages"].append("script"),
+            "auto.dispatch",
         ),
     ],
 )

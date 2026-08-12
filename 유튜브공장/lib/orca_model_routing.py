@@ -115,6 +115,14 @@ EXPECTED_HANDOFF = {
     "merge_requires_exact_match": True,
 }
 
+EXPECTED_AUTO_DISPATCH = {
+    "enabled": True,
+    "trigger_action": "approve_topic",
+    "stages": ["research", "evidence_lock", "proposal"],
+    "max_retries": 1,
+    "stop_gate": "proposal",
+}
+
 
 class RoutingContractError(ValueError):
     """Raised when routing can violate the approved deployment design."""
@@ -143,6 +151,7 @@ def _schema_validate(data: Mapping[str, Any]) -> None:
             "secrets": "secret",
             "workspace": "workspace",
             "handoff": "handoff",
+            "auto_dispatch": "auto dispatch",
         }.get(section, section)
         raise RoutingContractError(
             f"{label} schema violation at {location}: {error.message}"
@@ -165,6 +174,12 @@ def validate_routing(data: Mapping[str, Any]) -> dict[str, Any]:
 
     if payload["handoff"] != EXPECTED_HANDOFF:
         raise RoutingContractError("handoff is not bound to exact commit and artifact bytes")
+
+    if payload["auto_dispatch"] != EXPECTED_AUTO_DISPATCH:
+        raise RoutingContractError("auto dispatch stage, trigger, retry, or stop gate drift")
+
+    if payload["control_plane"]["pilot_stop_gate"] != "proposal":
+        raise RoutingContractError("auto dispatch must stop at the proposal gate")
 
     expected_topview = {
         "mode": "manual_semi_automatic",

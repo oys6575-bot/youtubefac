@@ -124,7 +124,6 @@ def test_pipeline_keeps_all_required_human_gates() -> None:
 
     assert gated == {
         "topic_approval",
-        "evidence_lock",
         "proposal",
         "script",
         "animatic",
@@ -149,6 +148,19 @@ def test_pipeline_keeps_all_required_human_gates() -> None:
         "topic_verification",
     ]
     assert stages["topic_approval"]["produces"] == ["topic_selection"]
+
+
+def test_evidence_lock_is_machine_gate_and_proposal_is_human_gate() -> None:
+    stages = {
+        stage["name"]: stage
+        for stage in load_pipeline("youtube-factory")["stages"]
+    }
+    assert stages["evidence_lock"]["human_approval_default"] is False
+    assert stages["proposal"]["human_approval_default"] is True
+    assert any(
+        "independent" in criterion.lower() and "pass" in criterion.lower()
+        for criterion in stages["evidence_lock"]["success_criteria"]
+    )
 
 
 def test_pipeline_director_files_and_local_manual_tools_are_available() -> None:

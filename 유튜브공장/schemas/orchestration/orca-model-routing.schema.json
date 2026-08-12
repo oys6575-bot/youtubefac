@@ -7,6 +7,7 @@
   "required": [
     "schema_version",
     "control_plane",
+    "auto_dispatch",
     "orchestrator",
     "workspace",
     "handoff",
@@ -28,7 +29,22 @@
       "properties": {
         "source_of_truth": {"const": "openmontage"},
         "coordinator_role": {"const": "control"},
-        "pilot_stop_gate": {"const": "topic_approval"}
+        "pilot_stop_gate": {"const": "proposal"}
+      }
+    },
+    "auto_dispatch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled", "trigger_action", "stages", "max_retries", "stop_gate"],
+      "properties": {
+        "enabled": {"const": true},
+        "trigger_action": {"const": "approve_topic"},
+        "stages": {
+          "type": "array",
+          "const": ["research", "evidence_lock", "proposal"]
+        },
+        "max_retries": {"const": 1},
+        "stop_gate": {"const": "proposal"}
       }
     },
     "orchestrator": {
