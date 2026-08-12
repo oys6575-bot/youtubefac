@@ -23,6 +23,7 @@ from typing import Any, Callable, Iterator, Mapping
 
 import jsonschema
 
+from backlot.auto_dispatch import build_topic_job
 from lib.checkpoint import _enforce_stage_prerequisites, validate_checkpoint
 from lib.pipeline_loader import load_pipeline_readonly
 from schemas.artifacts import validate_artifact
@@ -402,8 +403,11 @@ def execute_action(
 
         receipt_id = str(uuid.uuid4())
         targets: list[tuple[str, bytes]] = []
+        approved_checkpoint: dict[str, Any] | None = None
         if payload["action"] in {"approve_topic", "approve_gate"}:
-            _checkpoint, approval_targets = _checkpoint_for_approval(project, payload, timestamp)
+            approved_checkpoint, approval_targets = _checkpoint_for_approval(
+                project, payload, timestamp
+            )
             old_checkpoint = (project / f"checkpoint_{payload['stage']}.json").read_bytes()
             history_name = f"history/checkpoint_{payload['stage']}_{_sha256(old_checkpoint)[:16]}.json"
             targets.append((history_name, old_checkpoint))
@@ -441,6 +445,18 @@ def execute_action(
 
         receipt_rel = f"approvals/receipts/{receipt_id}.json"
         targets.append((receipt_rel, _json_bytes(receipt)))
+        if payload["action"] == "approve_topic":
+            assert approved_checkpoint is not None
+            job = build_topic_job(
+                project,
+                receipt,
+                resulting_hash,
+                timestamp,
+                topic_selection=approved_checkpoint["artifacts"]["topic_selection"],
+            )
+            targets.append(
+                (f"automation/jobs/{receipt_id}.json", _json_bytes(job))
+            )
         key_hash = _sha256(payload["idempotency_key"].encode("utf-8"))
         targets.append(
             (

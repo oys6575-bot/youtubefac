@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openmontage/mobile-dashboard/auto-dispatch-job",
+  "title": "Durable topic approval auto-dispatch job",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "job_id",
+    "project_id",
+    "trigger_receipt_path",
+    "trigger_checkpoint_sha256",
+    "selected_candidate_id",
+    "state",
+    "current_stage",
+    "stages",
+    "attempt",
+    "max_retries",
+    "created_at",
+    "updated_at",
+    "stage_results",
+    "last_error"
+  ],
+  "properties": {
+    "version": {"const": "1.0"},
+    "job_id": {"type": "string", "pattern": "^[0-9a-f-]{36}$"},
+    "project_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{1,95}$"},
+    "trigger_receipt_path": {
+      "type": "string",
+      "pattern": "^approvals/receipts/[0-9a-f-]{36}\\.json$"
+    },
+    "trigger_checkpoint_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "selected_candidate_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,95}$"},
+    "state": {
+      "enum": ["queued", "running", "retrying", "awaiting_human", "failed", "completed"]
+    },
+    "current_stage": {"enum": ["research", "evidence_lock", "proposal"]},
+    "stages": {"const": ["research", "evidence_lock", "proposal"]},
+    "attempt": {"type": "integer", "minimum": 0, "maximum": 1},
+    "max_retries": {"const": 1},
+    "created_at": {"type": "string", "format": "date-time"},
+    "updated_at": {"type": "string", "format": "date-time"},
+    "run_id": {"type": ["string", "null"], "minLength": 1},
+    "lease": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["worker_id", "claimed_at", "heartbeat_at"],
+          "properties": {
+            "worker_id": {"type": "string", "minLength": 1},
+            "claimed_at": {"type": "string", "format": "date-time"},
+            "heartbeat_at": {"type": "string", "format": "date-time"}
+          }
+        }
+      ]
+    },
+    "stage_results": {
+      "type": "array",
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "stage",
+          "outcome",
+          "artifact_paths",
+          "artifact_sha256",
+          "source_commit",
+          "verdict",
+          "run_id",
+          "task_id",
+          "dispatch_id",
+          "settled_at"
+        ],
+        "properties": {
+          "stage": {"enum": ["research", "evidence_lock", "proposal"]},
+          "outcome": {"const": "success"},
+          "artifact_paths": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))[A-Za-z0-9_.\\-/가-힣]+$"
+            }
+          },
+          "artifact_sha256": {
+            "type": "object",
+            "minProperties": 1,
+            "additionalProperties": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+          },
+          "source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+          "verdict": {"enum": ["PASS", "NOT_APPLICABLE"]},
+          "run_id": {"type": "string", "minLength": 1},
+          "task_id": {"type": "string", "minLength": 1},
+          "dispatch_id": {"type": "string", "minLength": 1},
+          "settled_at": {"type": "string", "format": "date-time"}
+        }
+      }
+    },
+    "last_error": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["stage", "class", "message", "timestamp"],
+          "properties": {
+            "stage": {"enum": ["research", "evidence_lock", "proposal"]},
+            "class": {"enum": ["ordinary", "policy", "integrity", "configuration"]},
+            "message": {"type": "string", "minLength": 1, "maxLength": 2000},
+            "timestamp": {"type": "string", "format": "date-time"}
+          }
+        }
+      ]
+    },
+    "retry_of": {"type": "string", "pattern": "^[0-9a-f-]{36}$"}
+  }
+}

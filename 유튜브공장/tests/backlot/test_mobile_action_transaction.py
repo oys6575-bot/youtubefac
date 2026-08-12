@@ -38,6 +38,7 @@ def test_four_concurrent_retries_create_exactly_one_receipt(tmp_path: Path) -> N
         "after_target_2",
         "after_target_3",
         "after_target_4",
+        "after_target_5",
     ],
 )
 def test_prepared_transaction_recovers_to_one_complete_decision(
@@ -59,6 +60,7 @@ def test_prepared_transaction_recovers_to_one_complete_decision(
     assert checkpoint["artifacts"]["topic_selection"] == selection
     assert len(list((project / "approvals/receipts").glob("*.json"))) == 1
     assert len(list((project / "history").glob("checkpoint_topic_approval_*.json"))) == 1
+    assert len(list((project / "automation/jobs").glob("*.json"))) == 1
     assert len(journals) == 1
     assert journals[0]["state"] == "completed"
 
