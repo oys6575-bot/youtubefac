@@ -213,6 +213,11 @@
     ui.dialog.showModal();
   }
 
+  function closeDecision() {
+    pendingAction = null;
+    ui.dialog.close();
+  }
+
   async function submitDecision(event) {
     event.preventDefault();
     if (!pendingAction || !dashboard.current_gate || !navigator.onLine) return;
@@ -270,6 +275,7 @@
 
   document.querySelectorAll("[data-panel]").forEach(button => button.addEventListener("click", () => openPanel(button.dataset.panel)));
   document.querySelectorAll("[data-open-panel]").forEach(button => button.addEventListener("click", () => openPanel(button.dataset.openPanel)));
+  document.querySelectorAll("[data-dialog-close]").forEach(button => button.addEventListener("click", closeDecision));
   ui.form.addEventListener("submit", submitDecision);
   addEventListener("online", () => { setConnection(); start(); });
   addEventListener("offline", setConnection);

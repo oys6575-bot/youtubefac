@@ -58,3 +58,13 @@ def test_ui_never_contains_publish_or_shell_execution_endpoint() -> None:
     assert "/shell" not in script
     assert "/orca" not in script
     assert "/actions" in script
+
+
+def test_mobile_decision_dialog_close_controls_do_not_submit_the_form() -> None:
+    html = (UI / "mobile.html").read_text(encoding="utf-8")
+    script = (UI / "mobile.js").read_text(encoding="utf-8")
+
+    assert html.count('type="button" data-dialog-close') == 2
+    assert "function closeDecision()" in script
+    assert 'querySelectorAll("[data-dialog-close]")' in script
+    assert 'button.addEventListener("click", closeDecision)' in script

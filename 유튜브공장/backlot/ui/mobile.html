@@ -137,7 +137,7 @@
 
   <dialog id="decision-dialog" class="decision-dialog">
     <form method="dialog" id="decision-form">
-      <button class="dialog-close" value="cancel" aria-label="닫기">×</button>
+      <button type="button" data-dialog-close class="dialog-close" aria-label="닫기">×</button>
       <p class="eyebrow" id="dialog-kicker">HUMAN DECISION</p>
       <h2 id="dialog-title">결정 확인</h2>
       <p id="dialog-summary" class="dialog-summary"></p>
@@ -151,7 +151,7 @@
         <input id="confirm-input" autocomplete="off" spellcheck="false">
       </label>
       <div class="dialog-actions">
-        <button class="button secondary" value="cancel">취소</button>
+        <button type="button" data-dialog-close class="button secondary">취소</button>
         <button class="button primary" id="decision-submit" value="default">결정 기록</button>
       </div>
     </form>
