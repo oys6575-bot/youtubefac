@@ -6,6 +6,8 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
+from lib.reviewed_media_inventory import all_reviewed_items
+
 
 ALLOWED_SUFFIXES = {
     ".jpg": "image/jpeg",
@@ -32,14 +34,7 @@ class MobileMedia:
 
 def resolve_mobile_media(project: Path, asset_id: str) -> MobileMedia | None:
     """Resolve one exact manifest id to a file inside assets/source."""
-    manifest_path = project / "artifacts/media_collection_manifest.json"
-    try:
-        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    except (OSError, UnicodeError, json.JSONDecodeError):
-        return None
-    items = manifest.get("items") if isinstance(manifest, dict) else None
-    if not isinstance(items, list):
-        return None
+    items = all_reviewed_items(project)
     match = next(
         (
             item

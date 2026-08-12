@@ -4,7 +4,7 @@
   const TWO_STEP_GATES = new Set(["budget", "asset_selection", "final_review", "title_thumbnail", "publish"]);
   const STAGE_NAMES = {
     topic_search: "주제 검색", topic_verification: "주제 검증", topic_approval: "주제 승인",
-    research: "자료 조사", media_collection: "자료 수집", evidence_lock: "사실 검증",
+    research: "자료 조사", media_collection: "자료 수집", media_relevance_review: "수집 자료 검수", evidence_lock: "사실 검증",
     proposal: "구성", script: "대본", visual_plan: "영상 설계", animatic: "애니매틱",
     budget: "예산", assets: "에셋 제작", asset_selection: "에셋 선택", edit: "편집",
     compose: "영상 조립", final_review: "검수", package: "최종본", title_thumbnail: "제목·썸네일", publish: "게시",
@@ -18,7 +18,7 @@
     gateCard: document.querySelector("#gate-card"), gateTitle: document.querySelector("#gate-title"), gateDetail: document.querySelector("#gate-detail"), gateStage: document.querySelector("#gate-stage"), gateSelection: document.querySelector("#gate-selection"), gateActions: document.querySelector("#gate-actions"),
     statusAssetCount: document.querySelector("#status-asset-count"), statusScriptState: document.querySelector("#status-script-state"), statusEditState: document.querySelector("#status-edit-state"),
     topicList: document.querySelector("#topic-list"), scriptTitle: document.querySelector("#script-title"), scriptDuration: document.querySelector("#script-duration"), scriptSections: document.querySelector("#script-sections"), visualPrompts: document.querySelector("#visual-prompts"),
-    assetGrid: document.querySelector("#asset-grid"), assetCount: document.querySelector("#asset-count"), assetTotal: document.querySelector("#asset-total"), assetImages: document.querySelector("#asset-images"), assetVideos: document.querySelector("#asset-videos"), assetAudio: document.querySelector("#asset-audio"),
+    assetGrid: document.querySelector("#asset-grid"), assetCount: document.querySelector("#asset-count"), assetRecommended: document.querySelector("#asset-recommended"), assetEvent: document.querySelector("#asset-event"), assetNews: document.querySelector("#asset-news"), assetOfficial: document.querySelector("#asset-official"), assetExplanatory: document.querySelector("#asset-explanatory"), assetGeneric: document.querySelector("#asset-generic"), assetExcluded: document.querySelector("#asset-excluded"),
     editStatus: document.querySelector("#edit-status"), editOverview: document.querySelector("#edit-overview"), editGaps: document.querySelector("#edit-gaps"), editCuts: document.querySelector("#edit-cuts"),
     reviewStatus: document.querySelector("#review-status"), reviewPlayer: document.querySelector("#review-player"), reviewEmpty: document.querySelector("#review-empty"), reviewFindings: document.querySelector("#review-findings"), reviewActions: document.querySelector("#review-actions"),
     finalStatus: document.querySelector("#final-status"), finalPlayer: document.querySelector("#final-player"), finalEmpty: document.querySelector("#final-empty"), finalMeta: document.querySelector("#final-meta"), finalDownload: document.querySelector("#final-download"),
@@ -30,7 +30,7 @@
   let csrfToken = null;
   let selectedCandidate = null;
   let pendingAction = null;
-  let assetFilter = "all";
+  let assetFilter = "recommended";
   let projectId = location.pathname.split("/").filter(Boolean)[1] || null;
 
   function node(tag, className, text) {
@@ -121,22 +121,26 @@
   function automationActivity(automation) {
     const activeStage = automation.active_stage || automation.current_stage;
     if (activeStage === "media_collection" && automation.media_collection && ["searching", "downloading"].includes(automation.media_collection.state)) return "사용 가능한 실제 사진·영상·문서 수집 중";
+    if (activeStage === "media_relevance_review") return "수집 자료를 사건 직접·뉴스·공식·설명·제외로 자동 분류 중";
     if (automation.state === "queued") return "Coordinator가 작업 시작을 준비 중";
     if (automation.state === "failed") return "자동 실행이 멈춤";
     if (automation.state === "awaiting_human") return "기획안 작성 완료 · 사용자 검토 대기";
     if (automation.state === "completed") return "허용된 자동 작업 완료";
-    return ({ research: "공식 출처와 핵심 주장 수집·정리 중", media_collection: "실제 자료 수집 실행 중", evidence_lock: "출처 원문과 주장 일치 여부 교차검증 중", proposal: "검증된 사실로 구성·영상 기획안 작성 중" })[activeStage] || "자동 작업 실행 중";
+    return ({ research: "공식 출처와 핵심 주장 수집·정리 중", media_collection: "실제 자료 수집 실행 중", media_relevance_review: "수집 자료 관련성·쓸모 검수 중", evidence_lock: "출처 원문과 주장 일치 여부 교차검증 중", proposal: "검증된 사실로 구성·영상 기획안 작성 중" })[activeStage] || "자동 작업 실행 중";
   }
 
   function renderCollectionProgress(automation) {
-    const progress = (automation.active_stage || automation.current_stage) === "media_collection" ? automation.media_collection : null;
+    const active = automation.active_stage || automation.current_stage;
+    const progress = active === "media_collection" ? automation.media_collection : active === "media_relevance_review" ? automation.media_relevance_review : null;
     ui.collectionProgress.replaceChildren();
     ui.collectionProgress.classList.toggle("hidden", !progress);
     if (!progress) return;
     const head = node("div", "collection-head");
-    head.append(node("strong", "", `${progress.current_source || "소스 준비"} · ${progress.state === "downloading" ? "다운로드 중" : "검색 중"}`), node("span", "", `${Math.round(progress.elapsed_seconds)}초`));
+    if (active === "media_relevance_review") head.append(node("strong", "", progress.phase === "archive_supplement" ? "부족한 뉴스·공식 자료 보충 중" : "수집 자료 관련성 검수 중"));
+    else head.append(node("strong", "", `${progress.current_source || "소스 준비"} · ${progress.state === "downloading" ? "다운로드 중" : "검색 중"}`), node("span", "", `${Math.round(progress.elapsed_seconds)}초`));
     const counts = node("div", "collection-counts");
-    counts.append(node("span", "", `발견 ${progress.counts.discovered}`), node("span", "", `수집 자료 ${progress.counts.accepted}`), node("span", "", `다운로드 ${progress.counts.downloaded}`), node("span", "", `권리 제외 ${progress.counts.rejected}`));
+    if (active === "media_relevance_review") counts.append(node("span", "", `검수 ${progress.counts.reviewed}`), node("span", "", `추천 ${progress.counts.eligible}`), node("span", "", `제외 ${progress.counts.excluded}`), node("span", "", `보류 ${progress.counts.held}`));
+    else counts.append(node("span", "", `발견 ${progress.counts.discovered}`), node("span", "", `수집 자료 ${progress.counts.accepted}`), node("span", "", `다운로드 ${progress.counts.downloaded}`), node("span", "", `권리 제외 ${progress.counts.rejected}`));
     ui.collectionProgress.append(head, counts);
   }
 
@@ -218,6 +222,11 @@
 
   function formatDuration(seconds) { return seconds ? `${Math.round(seconds)}초` : ""; }
 
+  const CATEGORY_LABELS = {
+    event_direct: "사건 직접", news_report: "뉴스·보도", official_record: "공식 기록",
+    explanatory: "설명 자료", generic_broll: "일반 B-roll", unrelated: "관련 없음", unknown: "확인 필요",
+  };
+
   function openMedia(asset) {
     ui.mediaStage.replaceChildren();
     let media;
@@ -227,7 +236,7 @@
     ui.mediaStage.append(media);
     ui.mediaTitle.textContent = asset.label;
     const dimensions = asset.width && asset.height ? `${asset.width}×${asset.height}` : "";
-    ui.mediaMeta.textContent = [asset.media_type === "image" ? "사진" : asset.media_type === "video" ? "영상" : "오디오", dimensions, formatDuration(asset.duration_seconds)].filter(Boolean).join(" · ");
+    ui.mediaMeta.textContent = [CATEGORY_LABELS[asset.category], asset.review_reason, asset.media_type === "image" ? "사진" : asset.media_type === "video" ? "영상" : "오디오", dimensions, formatDuration(asset.duration_seconds)].filter(Boolean).join(" · ");
     ui.mediaDialog.showModal();
   }
 
@@ -246,7 +255,7 @@
       if (asset.media_type === "video") preview.append(node("span", "play-mark", "▶"));
     }
     const info = node("div", "asset-info");
-    info.append(node("strong", "", asset.label), node("small", "", asset.media_type === "video" ? `영상 ${formatDuration(asset.duration_seconds)}` : asset.media_type === "image" ? "사진" : "오디오"));
+    info.append(node("span", `asset-category ${asset.eligibility}`, CATEGORY_LABELS[asset.category] || "미검수"), node("strong", "", asset.label), node("small", "", asset.review_reason || (asset.media_type === "video" ? `영상 ${formatDuration(asset.duration_seconds)}` : asset.media_type === "image" ? "사진" : "오디오")));
     card.append(preview, info);
     card.addEventListener("click", () => openMedia(asset));
     return card;
@@ -256,12 +265,17 @@
     const library = dashboard.asset_library || { summary: {}, items: [] };
     const summary = library.summary || {};
     ui.assetCount.textContent = `${summary.total || 0}개`;
-    ui.assetTotal.textContent = summary.total || 0;
-    ui.assetImages.textContent = summary.images || 0;
-    ui.assetVideos.textContent = summary.videos || 0;
-    ui.assetAudio.textContent = summary.audio || 0;
-    ui.statusAssetCount.textContent = summary.total || 0;
-    const items = library.items.filter(asset => assetFilter === "all" || asset.media_type === assetFilter);
+    const itemsAll = library.items || [];
+    const categoryCount = category => itemsAll.filter(asset => asset.category === category).length;
+    ui.assetRecommended.textContent = (library.counts || {}).recommended || 0;
+    ui.assetEvent.textContent = categoryCount("event_direct");
+    ui.assetNews.textContent = categoryCount("news_report");
+    ui.assetOfficial.textContent = categoryCount("official_record");
+    ui.assetExplanatory.textContent = categoryCount("explanatory");
+    ui.assetGeneric.textContent = categoryCount("generic_broll");
+    ui.assetExcluded.textContent = (library.counts || {}).excluded || 0;
+    ui.statusAssetCount.textContent = (library.counts || {}).recommended || 0;
+    const items = itemsAll.filter(asset => assetFilter === "recommended" ? asset.recommended : assetFilter === "excluded" ? !asset.recommended : asset.category === assetFilter);
     ui.assetGrid.replaceChildren();
     if (!items.length) ui.assetGrid.append(emptyState("표시할 에셋이 없습니다", "수집 또는 생성이 완료되면 사진과 영상이 여기에 나타납니다."));
     else ui.assetGrid.append(...items.map(assetCard));

@@ -17,7 +17,7 @@ def test_mobile_projection_has_full_stage_gate_candidates_and_roles(tmp_path: Pa
 
     assert state["project"]["project_id"] == "MOBILE_TEST"
     assert state["source_of_truth"] == "openmontage"
-    assert len(state["stages"]) == 19
+    assert len(state["stages"]) == 20
     assert state["current_gate"] == {
         "stage": "topic_approval",
         "checkpoint_sha256": expected_hash,
@@ -166,6 +166,19 @@ def test_malformed_collection_progress_is_not_exposed(tmp_path: Path) -> None:
     path.write_text("{}", encoding="utf-8")
 
     assert build_mobile_state(project)["automation"]["media_collection"] is None
+
+
+def test_dashboard_asset_library_defaults_to_reviewed_recommended_items(tmp_path: Path) -> None:
+    from tests.lib.test_reviewed_media_inventory import build_project
+
+    project = build_project(tmp_path)
+    (project / "project.json").write_text(json.dumps({
+        "project_id": "pilot", "title": "Pilot", "pipeline_type": "youtube-factory"
+    }), encoding="utf-8")
+    library = build_mobile_state(project)["asset_library"]
+    assert library["default_filter"] == "recommended"
+    assert library["counts"] == {"recommended": 4, "excluded": 3, "held": 1}
+    assert sum(item["recommended"] for item in library["items"]) == 4
 
 
 def test_manual_collection_is_visible_without_rewriting_terminal_job(
@@ -318,6 +331,10 @@ def test_mobile_projection_exposes_media_previews_without_private_metadata(
         "width": 1920,
         "height": 1080,
         "duration_seconds": 0.0,
+        "category": "unknown",
+        "eligibility": "held",
+        "recommended": False,
+        "review_reason": "automatic relevance review is missing or no longer matches these bytes",
     }
     serialized = json.dumps(library)
     assert "local_path" not in serialized

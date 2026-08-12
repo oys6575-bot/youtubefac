@@ -14,6 +14,7 @@ import jsonschema
 
 from backlot.auto_dispatch import JobValidationError, load_job
 from backlot.state import load_board_state
+from lib.reviewed_media_inventory import all_reviewed_items
 from lib.topic_scorecard import rank_candidates
 
 
@@ -21,6 +22,9 @@ ROOT = Path(__file__).resolve().parents[1]
 ROUTING_PATH = ROOT / "config/orca-model-routing.yaml"
 COLLECTION_PROGRESS_SCHEMA = (
     ROOT / "schemas/mobile-dashboard/media-collection-progress.schema.json"
+)
+RELEVANCE_PROGRESS_SCHEMA = (
+    ROOT / "schemas/mobile-dashboard/media-relevance-progress.schema.json"
 )
 TWO_STEP_GATES = frozenset(
     {"budget", "asset_selection", "final_review", "title_thumbnail", "publish"}
@@ -129,10 +133,12 @@ def _asset_label(item: dict[str, Any], queries: list[dict[str, Any]]) -> str:
 
 def _asset_library(project: Path, project_id: str) -> dict[str, Any]:
     manifest = _read_json(project / "artifacts/media_collection_manifest.json") or {}
+    review = _read_json(project / "artifacts/media_relevance_review.json") or {}
     queries = [item for item in manifest.get("queries", []) if isinstance(item, dict)]
     items = []
     counts = {"image": 0, "video": 0, "audio": 0}
-    for item in manifest.get("items", []):
+    eligibility_counts = {"recommended": 0, "excluded": 0, "held": 0}
+    for item in all_reviewed_items(project):
         if not isinstance(item, dict):
             continue
         media_type = item.get("media_type")
@@ -143,6 +149,12 @@ def _asset_library(project: Path, project_id: str) -> dict[str, Any]:
         encoded_project = quote(project_id, safe="")
         encoded_asset = quote(asset_id, safe="")
         counts[media_type] += 1
+        if item.get("recommended"):
+            eligibility_counts["recommended"] += 1
+        else:
+            eligibility_counts["excluded"] += 1
+        if item.get("eligibility") == "held":
+            eligibility_counts["held"] += 1
         items.append(
             {
                 "id": asset_id,
@@ -153,10 +165,17 @@ def _asset_library(project: Path, project_id: str) -> dict[str, Any]:
                 "width": int(technical.get("width") or 0),
                 "height": int(technical.get("height") or 0),
                 "duration_seconds": float(technical.get("duration_seconds") or 0),
+                "category": item.get("category", "unknown"),
+                "eligibility": item.get("eligibility", "held"),
+                "recommended": bool(item.get("recommended")),
+                "review_reason": item.get("review_reason"),
             }
         )
     return {
-        "status": manifest.get("collection_status", "preparing"),
+        "status": review.get("review_status", manifest.get("collection_status", "preparing")),
+        "default_filter": "recommended",
+        "counts": eligibility_counts,
+        "coverage": review.get("coverage", []) if isinstance(review.get("coverage"), list) else [],
         "summary": {
             "total": len(items),
             "images": counts["image"],
@@ -359,6 +378,26 @@ def _collection_progress(project: Path) -> dict[str, Any] | None:
     }
 
 
+def _relevance_progress(project: Path) -> dict[str, Any] | None:
+    value = _read_json(project / "automation/progress/media_relevance_review.json")
+    schema = _read_json(RELEVANCE_PROGRESS_SCHEMA)
+    if value is None or schema is None:
+        return None
+    try:
+        jsonschema.Draft202012Validator(
+            schema, format_checker=jsonschema.FormatChecker()
+        ).validate(value)
+    except jsonschema.ValidationError:
+        return None
+    return {
+        "state": value["state"],
+        "phase": value["phase"],
+        "counts": dict(value["counts"]),
+        "updated_at": value["updated_at"],
+        "error": "수집 자료 검수 중 오류가 기록되었습니다." if value["error"] else None,
+    }
+
+
 def _automation(project: Path) -> dict[str, Any] | None:
     jobs_dir = project / "automation/jobs"
     if not jobs_dir.is_dir():
@@ -375,17 +414,28 @@ def _automation(project: Path) -> dict[str, Any] | None:
     stage_labels = {
         "research": "자료조사",
         "media_collection": "실제 자료 수집",
+        "media_relevance_review": "수집 자료 자동 검수",
         "evidence_lock": "사실검증",
         "proposal": "기획안 작성",
     }
     state = job["state"]
     collection = _collection_progress(project)
+    relevance = _relevance_progress(project)
     collection_active = bool(
         collection and collection.get("state") in {"searching", "downloading"}
     )
-    active_stage = "media_collection" if collection_active else job["current_stage"]
+    relevance_active = bool(
+        relevance and relevance.get("state") in {"reviewing", "supplementing"}
+    )
+    active_stage = (
+        "media_collection" if collection_active
+        else "media_relevance_review" if relevance_active
+        else job["current_stage"]
+    )
     if collection_active:
         label = "실제 자료 수집 실행 중"
+    elif relevance_active:
+        label = "수집 자료 자동 검수 중"
     elif state == "queued":
         label = f"{stage_labels[job['current_stage']]} 시작 대기"
     elif state == "running":
@@ -412,6 +462,7 @@ def _automation(project: Path) -> dict[str, Any] | None:
         "can_retry": state == "failed",
         "updated_at": job["updated_at"],
         "media_collection": collection,
+        "media_relevance_review": relevance,
     }
 
 
