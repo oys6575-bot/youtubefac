@@ -55,6 +55,7 @@ class KnowledgeSources:
     toolchain: tuple[dict[str, Any], ...]
     topview_capabilities: tuple[dict[str, Any], ...]
     topview_models: tuple[dict[str, Any], ...]
+    research_syntheses: tuple[dict[str, Any], ...]
 
 
 @dataclass(frozen=True)
@@ -143,6 +144,9 @@ def load_knowledge_sources(*, root: Path = FACTORY_ROOT) -> KnowledgeSources:
     local_models = _read_json(project_root / "config" / "local-models.lock.json")
     toolchain = _read_json(project_root / "config" / "toolchain-lock.json")
     topview = _read_yaml(project_root / "config" / "topview-capabilities.yaml")
+    cinematic_research = _read_yaml(
+        project_root / "config" / "cinematic-direction-coverage.yaml"
+    )
 
     routed_skills = {item["name"]: item for item in skill_routing.get("skills", [])}
     manifested_skills = {item["name"]: item for item in skill_manifest.get("skills", [])}
@@ -185,6 +189,22 @@ def load_knowledge_sources(*, root: Path = FACTORY_ROOT) -> KnowledgeSources:
         toolchain=toolchain_records,
         topview_capabilities=topview_capabilities,
         topview_models=topview_models,
+        research_syntheses=tuple(
+            {
+                **record,
+                "status": cinematic_research.get("policy", {}).get(
+                    "status", "REFERENCE_ONLY"
+                ),
+                "activation_status": cinematic_research.get("policy", {}).get(
+                    "activation_status", "REFERENCE_ONLY"
+                ),
+                "copyright_mode": cinematic_research.get("policy", {}).get(
+                    "copyright_mode", "paraphrase_only"
+                ),
+                "retrieved_at": cinematic_research.get("retrieved_at"),
+            }
+            for record in cinematic_research.get("notes", [])
+        ),
     )
 
 
@@ -222,6 +242,15 @@ def _research_bucket(host: str) -> str:
     if host in {"huggingface.co", "www.huggingface.co"}:
         return "hugging-face"
     return "official-sites"
+
+
+def _research_vault_path(record: Mapping[str, Any]) -> Path:
+    path = Path(str(record.get("path", "")))
+    if not path.parts or path.parts[0] != "knowledge" or ".." in path.parts:
+        raise KnowledgeVaultError(
+            f"Research synthesis path must be inside knowledge/: {path}"
+        )
+    return Path(*path.parts[1:])
 
 
 def _common_frontmatter(
@@ -736,7 +765,11 @@ def _entity_map(title: str, cards: Iterable[_Card]) -> str:
     return "\n\n".join(parts).rstrip() + "\n"
 
 
-def _static_vault_files(cards: list[_Card], catalog_version: str) -> dict[Path, str]:
+def _static_vault_files(
+    cards: list[_Card],
+    catalog_version: str,
+    research_syntheses: tuple[dict[str, Any], ...] = (),
+) -> dict[Path, str]:
     by_type: dict[str, list[_Card]] = {}
     for card in cards:
         by_type.setdefault(card.entity_type, []).append(card)
@@ -780,10 +813,26 @@ def _static_vault_files(cards: list[_Card], catalog_version: str) -> dict[Path, 
             for name, items in sorted(runtimes.items())
         ]
     ) + "\n"
+    maps[Path("01-MAPS/Cinematic-Direction-Research.md")] = (
+        "# Cinematic direction research\n\n"
+        "These project-authored syntheses are searchable but remain `REFERENCE_ONLY`. "
+        "Open them for difficult shots, failure analysis, or registry maintenance; "
+        "do not add the whole research layer to a normal production pack.\n\n"
+        + _bullet_list(
+            "[[" + _research_vault_path(record).with_suffix("").as_posix()
+            + "|" + str(record["title"]) + "]]"
+            for record in research_syntheses
+        )
+        + "\n"
+    )
 
     statuses: dict[str, int] = {}
     for card in cards:
         statuses[card.status] = statuses.get(card.status, 0) + 1
+    if research_syntheses:
+        statuses["REFERENCE_ONLY"] = statuses.get("REFERENCE_ONLY", 0) + len(
+            research_syntheses
+        )
     maps[Path("01-MAPS/Status-and-Safety.md")] = (
         "# Status and safety\n\n"
         "Status is a production constraint, not decoration. `BLOCKED`, `PROHIBITED`, "
@@ -809,6 +858,7 @@ This is the searchable knowledge layer for MK Visual Director and OpenMontage. I
 - [[01-MAPS/Sources]]
 - [[01-MAPS/Models]]
 - [[01-MAPS/Status-and-Safety]]
+- [[01-MAPS/Cinematic-Direction-Research]]
 - [[03-PLAYBOOKS/Heritage-Forge]]
 - [[04-PROVIDERS/TopView-Manual]]
 
@@ -915,19 +965,29 @@ Provider outputs are proposals. They cannot write approval state or become timel
     files.update(maps)
     files.update(runtime_docs)
     files.update(templates)
+    catalog_cards = [
+        {
+            "card_id": card.card_id,
+            "entity_type": card.entity_type,
+            "status": card.status,
+            "path": card.relative_path.as_posix(),
+        }
+        for card in cards
+    ]
+    catalog_cards.extend(
+        {
+            "card_id": str(record["card_id"]),
+            "entity_type": "research_synthesis",
+            "status": "REFERENCE_ONLY",
+            "path": _research_vault_path(record).as_posix(),
+        }
+        for record in research_syntheses
+    )
     catalog = {
         "knowledge_schema": "1.0",
         "visual_technique_catalog_version": catalog_version,
-        "entity_count": len(cards),
-        "cards": [
-            {
-                "card_id": card.card_id,
-                "entity_type": card.entity_type,
-                "status": card.status,
-                "path": card.relative_path.as_posix(),
-            }
-            for card in sorted(cards, key=lambda item: item.card_id)
-        ],
+        "entity_count": len(catalog_cards),
+        "cards": sorted(catalog_cards, key=lambda item: str(item["card_id"])),
     }
     files[Path(".factory-catalog.json")] = (
         json.dumps(catalog, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
@@ -976,8 +1036,24 @@ def sync_vault(
         result = _write_if_changed(path, _render_card(card, lookup, existing))
         outcomes[result] += 1
 
+    for record in sources.research_syntheses:
+        source_path = sources.project_root / str(record["path"])
+        if not source_path.is_file():
+            raise KnowledgeVaultError(
+                f"Missing canonical research synthesis: {source_path}"
+            )
+        target_path = vault / _research_vault_path(record)
+        if target_path.exists():
+            outcomes["unchanged"] += 1
+            continue
+        target_path.parent.mkdir(parents=True, exist_ok=True)
+        target_path.write_text(source_path.read_text(encoding="utf-8"), encoding="utf-8")
+        outcomes["created"] += 1
+
     for relative_path, content in sorted(
-        _static_vault_files(cards, sources.catalog_version).items(),
+        _static_vault_files(
+            cards, sources.catalog_version, sources.research_syntheses
+        ).items(),
         key=lambda item: item[0].as_posix(),
     ):
         result = _write_if_changed(vault / relative_path, content)
@@ -987,8 +1063,11 @@ def sync_vault(
         created=outcomes["created"],
         updated=outcomes["updated"],
         unchanged=outcomes["unchanged"],
-        entity_cards=len(cards),
-        entity_counts=counts,
+        entity_cards=len(cards) + len(sources.research_syntheses),
+        entity_counts={
+            **counts,
+            "research_synthesis": len(sources.research_syntheses),
+        },
         orphans=tuple(path.as_posix() for path in orphans),
     )
 
@@ -1105,7 +1184,80 @@ def audit_vault(
                 f"duplicate card_id {card_id}: {relative_path.as_posix()}"
             )
 
-    static_files = _static_vault_files(cards, sources.catalog_version)
+    seen_coverage: dict[str, str] = {}
+    for record in sources.research_syntheses:
+        relative_path = _research_vault_path(record)
+        path = vault / relative_path
+        card_id = str(record["card_id"])
+        if not path.is_file():
+            findings.append(
+                f"missing research synthesis {card_id}: {relative_path.as_posix()}"
+            )
+            continue
+        try:
+            frontmatter = _parse_frontmatter(
+                path.read_text(encoding="utf-8"), path=path
+            )
+        except KnowledgeVaultError as exc:
+            findings.append(str(exc))
+            continue
+
+        actual_id = str(frontmatter.get("card_id", ""))
+        if actual_id in seen_ids:
+            findings.append(
+                f"duplicate card_id {actual_id}: {relative_path.as_posix()}"
+            )
+        elif actual_id:
+            seen_ids[actual_id] = path
+
+        expected_frontmatter = {
+            "card_id": card_id,
+            "type": "research-synthesis",
+            "title": record["title"],
+            "status": record["status"],
+            "activation_status": record["activation_status"],
+            "copyright_mode": record["copyright_mode"],
+            "retrieved_at": record["retrieved_at"],
+            "domain": record["domain"],
+            "source_ids": record["source_ids"],
+        }
+        for key, expected_value in expected_frontmatter.items():
+            actual_value = frontmatter.get(key)
+            if actual_value != expected_value:
+                findings.append(
+                    f"research drift {card_id}: {key} expected={expected_value!r} "
+                    f"actual={actual_value!r}"
+                )
+
+        expected_coverage = list(record.get("coverage_ids", []))
+        actual_coverage = frontmatter.get("coverage_ids")
+        if actual_coverage != expected_coverage:
+            findings.append(
+                f"research {card_id}: coverage_ids mismatch "
+                f"expected={expected_coverage!r} actual={actual_coverage!r}"
+            )
+        if not isinstance(actual_coverage, list):
+            continue
+        string_coverage = [
+            item for item in actual_coverage if isinstance(item, str) and item
+        ]
+        if len(string_coverage) != len(set(string_coverage)):
+            findings.append(f"research {card_id}: duplicate coverage_ids")
+        for coverage_id in actual_coverage:
+            if not isinstance(coverage_id, str) or not coverage_id:
+                findings.append(f"research {card_id}: invalid coverage_id")
+                continue
+            owner = seen_coverage.get(coverage_id)
+            if owner is not None:
+                findings.append(
+                    f"duplicate research coverage_id {coverage_id}: {owner}, {card_id}"
+                )
+            else:
+                seen_coverage[coverage_id] = card_id
+
+    static_files = _static_vault_files(
+        cards, sources.catalog_version, sources.research_syntheses
+    )
     for relative_path, expected in sorted(
         static_files.items(), key=lambda item: item[0].as_posix()
     ):
@@ -1192,6 +1344,7 @@ def search_vault(
         "card_id", "technique_id", "intents", "tags", "skill_name", "tool_name",
         "source_id", "model_id", "capability_id", "model_family", "default_route",
         "provider_scopes", "render_runtimes", "capability", "provider", "runtime",
+        "coverage_ids", "domain", "activation_status", "keywords", "source_ids",
     }
     for record in records:
         entity_type = str(record.get("entity_type", ""))
@@ -1363,7 +1516,7 @@ def resolve_knowledge_pack(
     for item in selected_techniques:
         source = dict(item.get("source", {}))
         source_path = str(source.get("path", ""))
-        if source_path:
+        if source_path and not source_path.startswith("knowledge/10-RESEARCH/"):
             source_paths.append(source_path)
             skill_name = _source_skill(source_path)
             if skill_name:

@@ -7,6 +7,12 @@
       "status": "ACTIVE"
     },
     {
+      "card_id": "camera.observable_optical_result",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/camera/camera.observable_optical_result.md",
+      "status": "ACTIVE"
+    },
+    {
       "card_id": "camera.rack_focus",
       "entity_type": "technique",
       "path": "02-TECHNIQUES/camera/camera.rack_focus.md",
@@ -31,15 +37,45 @@
       "status": "ACTIVE"
     },
     {
+      "card_id": "continuity.explicit_spatial_blocking",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/continuity/continuity.explicit_spatial_blocking.md",
+      "status": "ACTIVE"
+    },
+    {
       "card_id": "continuity.process_geography",
       "entity_type": "technique",
       "path": "02-TECHNIQUES/continuity/continuity.process_geography.md",
       "status": "ACTIVE"
     },
     {
+      "card_id": "continuity.reference_role_binding",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/continuity/continuity.reference_role_binding.md",
+      "status": "ACTIVE"
+    },
+    {
       "card_id": "continuity.screen_direction",
       "entity_type": "technique",
       "path": "02-TECHNIQUES/continuity/continuity.screen_direction.md",
+      "status": "ACTIVE"
+    },
+    {
+      "card_id": "direction.behavioral_performance_beats",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/direction/direction.behavioral_performance_beats.md",
+      "status": "ACTIVE"
+    },
+    {
+      "card_id": "direction.opening_frame_intent",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/direction/direction.opening_frame_intent.md",
+      "status": "ACTIVE"
+    },
+    {
+      "card_id": "direction.physical_causality",
+      "entity_type": "technique",
+      "path": "02-TECHNIQUES/direction/direction.physical_causality.md",
       "status": "ACTIVE"
     },
     {
@@ -317,6 +353,30 @@
       "entity_type": "research_url",
       "path": "06-SOURCES/hugging-face/d4725c0e95a8-Wan2.2-I2V-A14B.md",
       "status": "CITED_REFERENCE"
+    },
+    {
+      "card_id": "research.cinematic.behavioral_performance",
+      "entity_type": "research_synthesis",
+      "path": "10-RESEARCH/cinematic-direction/Behavioral-Performance-Direction.md",
+      "status": "REFERENCE_ONLY"
+    },
+    {
+      "card_id": "research.cinematic.camera_spatial_physics",
+      "entity_type": "research_synthesis",
+      "path": "10-RESEARCH/cinematic-direction/Camera-Spatial-Physics-Direction.md",
+      "status": "REFERENCE_ONLY"
+    },
+    {
+      "card_id": "research.cinematic.direction_map",
+      "entity_type": "research_synthesis",
+      "path": "10-RESEARCH/cinematic-direction/Cinematic-Direction-Map.md",
+      "status": "REFERENCE_ONLY"
+    },
+    {
+      "card_id": "research.cinematic.image_reference_asset",
+      "entity_type": "research_synthesis",
+      "path": "10-RESEARCH/cinematic-direction/Image-Reference-Asset-Direction.md",
+      "status": "REFERENCE_ONLY"
     },
     {
       "card_id": "research.hf.av_skills",
@@ -2281,7 +2341,7 @@
       "status": "ACTIVE"
     }
   ],
-  "entity_count": 380,
+  "entity_count": 390,
   "knowledge_schema": "1.0",
   "visual_technique_catalog_version": "2026-08-12"
 }

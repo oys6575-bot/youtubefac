@@ -13,6 +13,7 @@ This is the searchable knowledge layer for MK Visual Director and OpenMontage. I
 - [[01-MAPS/Sources]]
 - [[01-MAPS/Models]]
 - [[01-MAPS/Status-and-Safety]]
+- [[01-MAPS/Cinematic-Direction-Research]]
 - [[03-PLAYBOOKS/Heritage-Forge]]
 - [[04-PROVIDERS/TopView-Manual]]
 

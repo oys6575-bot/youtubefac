@@ -59,7 +59,7 @@ techniques:
     tags: [composition, reveal, visual_anchor, shot_design]
     provider_scopes: [GENERIC]
     render_runtimes: [ANY]
-    source: {type: project_doc, label: Provider-neutral cinematic direction design, license: PROJECT_LOCAL, path: docs/superpowers/specs/2026-08-12-cinematic-direction-principles-design.md}
+    source: {type: project_doc, label: Camera spatial physics synthesis, license: PROJECT_LOCAL, path: knowledge/10-RESEARCH/cinematic-direction/Camera-Spatial-Physics-Direction.md}
     activation: {default_allowed: true, requires_human_opt_in: false, requires_license_review: false, requires_network: false}
     directives:
       - Describe what is visible before the first movement begins.
@@ -77,7 +77,7 @@ techniques:
     tags: [blocking, geography, eye_line, screen_direction]
     provider_scopes: [GENERIC]
     render_runtimes: [ANY]
-    source: {type: project_doc, label: Provider-neutral cinematic direction design, license: PROJECT_LOCAL, path: docs/superpowers/specs/2026-08-12-cinematic-direction-principles-design.md}
+    source: {type: project_doc, label: Camera spatial physics synthesis, license: PROJECT_LOCAL, path: knowledge/10-RESEARCH/cinematic-direction/Camera-Spatial-Physics-Direction.md}
     activation: {default_allowed: true, requires_human_opt_in: false, requires_license_review: false, requires_network: false}
     directives:
       - State where each subject begins, faces, looks, and travels relative to a stable anchor.
@@ -95,7 +95,7 @@ techniques:
     tags: [performance, subtext, objective, beat_change]
     provider_scopes: [GENERIC]
     render_runtimes: [ANY]
-    source: {type: project_doc, label: Provider-neutral cinematic direction design, license: PROJECT_LOCAL, path: docs/superpowers/specs/2026-08-12-cinematic-direction-principles-design.md}
+    source: {type: project_doc, label: Behavioral performance synthesis, license: PROJECT_LOCAL, path: knowledge/10-RESEARCH/cinematic-direction/Behavioral-Performance-Direction.md}
     activation: {default_allowed: true, requires_human_opt_in: false, requires_license_review: false, requires_network: false}
     directives:
       - Convert internal emotion into gaze, breath, posture, interrupted action, or a change of tactic.
@@ -113,7 +113,7 @@ techniques:
     tags: [optics, depth, compression, focus, subject_scale]
     provider_scopes: [GENERIC]
     render_runtimes: [ANY]
-    source: {type: project_doc, label: Provider-neutral cinematic direction design, license: PROJECT_LOCAL, path: docs/superpowers/specs/2026-08-12-cinematic-direction-principles-design.md}
+    source: {type: project_doc, label: Camera spatial physics synthesis, license: PROJECT_LOCAL, path: knowledge/10-RESEARCH/cinematic-direction/Camera-Spatial-Physics-Direction.md}
     activation: {default_allowed: true, requires_human_opt_in: false, requires_license_review: false, requires_network: false}
     directives:
       - State the intended perspective, background behavior, focus behavior, and subject scale in visible terms.
@@ -131,7 +131,7 @@ techniques:
     tags: [physics, weight, contact, inertia, environment]
     provider_scopes: [GENERIC]
     render_runtimes: [ANY]
-    source: {type: project_doc, label: Provider-neutral cinematic direction design, license: PROJECT_LOCAL, path: docs/superpowers/specs/2026-08-12-cinematic-direction-principles-design.md}
+    source: {type: project_doc, label: Camera spatial physics synthesis, license: PROJECT_LOCAL, path: knowledge/10-RESEARCH/cinematic-direction/Camera-Spatial-Physics-Direction.md}
     activation: {default_allowed: true, requires_human_opt_in: false, requires_license_review: false, requires_network: false}
     directives:
       - Name the force, contact, and visible material response for every important movement.
@@ -149,7 +149,7 @@ techniques:
     tags: [reference, identity, environment, object, style]
     provider_scopes: [GENERIC]
     render_runtimes: [ANY]
-    source: {type: project_doc, label: Provider-neutral cinematic direction design, license: PROJECT_LOCAL, path: docs/superpowers/specs/2026-08-12-cinematic-direction-principles-design.md}
+    source: {type: project_doc, label: Image reference asset synthesis, license: PROJECT_LOCAL, path: knowledge/10-RESEARCH/cinematic-direction/Image-Reference-Asset-Direction.md}
     activation: {default_allowed: true, requires_human_opt_in: false, requires_license_review: false, requires_network: false}
     directives:
       - Bind each file to one primary role such as subject, environment, object, composition, lighting, or style.

@@ -4,7 +4,7 @@ Status is a production constraint, not decoration. `BLOCKED`, `PROHIBITED`, or r
 
 ## Current counts
 
-- ACTIVE: 25
+- ACTIVE: 31
 - ACTIVE_LOCAL: 33
 - ANECDOTAL_SIGNAL: 6
 - BLOCKED: 10
@@ -30,7 +30,7 @@ Status is a production constraint, not decoration. `BLOCKED`, `PROHIBITED`, or r
 - PRIMARY_LOCAL_PILOT: 1
 - PRIMARY_MANUAL: 5
 - PROHIBITED: 3
-- REFERENCE_ONLY: 19
+- REFERENCE_ONLY: 23
 - REQUIRED: 37
 - REQUIRED_WITH_RESTRICTION: 1
 - RIGHTS_REVIEW_REQUIRED: 3

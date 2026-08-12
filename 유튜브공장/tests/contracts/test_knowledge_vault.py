@@ -13,7 +13,7 @@ import pytest
 ROOT = Path(__file__).resolve().parents[2]
 
 EXPECTED_ENTITY_COUNTS = {
-    "technique": 43,
+    "technique": 49,
     "skill": 107,
     "tool": 104,
     "creative_source": 16,
@@ -22,6 +22,7 @@ EXPECTED_ENTITY_COUNTS = {
     "toolchain": 10,
     "topview_capability": 59,
     "topview_model": 12,
+    "research_synthesis": 4,
 }
 
 
@@ -40,7 +41,7 @@ def test_loads_every_audited_knowledge_source() -> None:
     sources = _module().load_knowledge_sources(root=ROOT)
 
     assert sources.project_root == ROOT.resolve()
-    assert len(sources.techniques) == 43
+    assert len(sources.techniques) == 49
     assert len(sources.skills) == 107
     assert len(sources.tools) == 104
     assert len(sources.creative_sources) == 16
@@ -55,6 +56,7 @@ def test_loads_every_audited_knowledge_source() -> None:
     assert len(sources.toolchain) == 10
     assert len(sources.topview_capabilities) == 59
     assert len(sources.topview_models) == 12
+    assert len(sources.research_syntheses) == 4
 
 
 def test_sync_creates_complete_portable_vault(tmp_path: Path) -> None:
@@ -64,7 +66,7 @@ def test_sync_creates_complete_portable_vault(tmp_path: Path) -> None:
     report = module.sync_vault(sources, root=tmp_path)
     vault = tmp_path / "knowledge"
 
-    assert report.entity_cards == 380
+    assert report.entity_cards == 390
     assert report.entity_counts == EXPECTED_ENTITY_COUNTS
     assert len(list(vault.rglob("*.md"))) > 380
     assert (vault / "00-START-HERE.md").is_file()
@@ -80,6 +82,46 @@ def test_sync_creates_complete_portable_vault(tmp_path: Path) -> None:
     assert "source_path: .agents/skills/hyperframes-animation/rules/nudge-curve.md" in text
     assert "<!-- USER-NOTES:BEGIN -->" in text
     assert "<!-- USER-NOTES:END -->" in text
+
+
+def test_research_syntheses_are_searchable_but_excluded_from_production_pack(
+    tmp_path: Path,
+) -> None:
+    module = _module()
+    sources = _sync_fixture(tmp_path)
+    research_dir = tmp_path / "knowledge/10-RESEARCH/cinematic-direction"
+
+    assert len(list(research_dir.glob("*.md"))) == 4
+    results = module.search_vault("시선 호흡 전술", root=tmp_path)
+    assert results[0]["entity_type"] == "research_synthesis"
+    assert results[0]["status"] == "REFERENCE_ONLY"
+    pack = module.resolve_knowledge_pack(
+        _selection(), sources=sources, root=tmp_path
+    )
+    assert all("10-RESEARCH" not in path for path in pack["load_order"])
+    assert module.audit_vault(sources, root=tmp_path) == []
+
+
+def test_research_coverage_tamper_is_reported_without_rewriting_note(
+    tmp_path: Path,
+) -> None:
+    module = _module()
+    sources = _sync_fixture(tmp_path)
+    note = (
+        tmp_path
+        / "knowledge/10-RESEARCH/cinematic-direction/Behavioral-Performance-Direction.md"
+    )
+    original = note.read_text(encoding="utf-8")
+    note.write_text(original.replace("ACT-001", "ACT-999", 1), encoding="utf-8")
+
+    findings = module.audit_vault(sources, root=tmp_path)
+
+    assert any(
+        "research.cinematic.behavioral_performance" in item
+        and "coverage_ids mismatch" in item
+        for item in findings
+    )
+    assert "ACT-999" in note.read_text(encoding="utf-8")
 
 
 def test_sync_is_idempotent_and_preserves_production_notes(tmp_path: Path) -> None:
