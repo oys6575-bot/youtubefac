@@ -1,0 +1,27 @@
+enabled: true
+
+# Tailscale Serve가 표시하는 고정 HTTPS 주소입니다. 끝에 /를 붙이지 않습니다.
+canonical_origin: https://youtube-factory.YOUR-TAILNET.ts.net
+
+# domain이나 Everyone이 아니라 정확한 Tailscale login만 적습니다.
+# user_id는 Serve header에 없으므로 이 exact-login과 함께 receipt에 고정할 로컬 식별자입니다.
+allowed_users:
+  - login: owner@example.com
+    user_id: replace-with-a-stable-local-id
+
+gateway:
+  host: 127.0.0.1
+  port: 8787
+
+max_payload_bytes: 8192
+rate_limit_per_minute: 30
+
+# 운영에서는 반드시 false입니다. 로컬 시각 점검 때만 잠깐 true로 바꿉니다.
+allow_local_development: false
+
+tailscale:
+  hostname: youtube-factory
+  runtime_dir: .runtime/mobile-dashboard/tailscale
+  socket_dir: /tmp/ytf-mobile-USER_ID
+  use_serve: true
+  use_funnel: false

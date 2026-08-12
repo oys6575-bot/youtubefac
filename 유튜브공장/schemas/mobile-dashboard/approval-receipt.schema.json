@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openmontage/mobile-dashboard/approval-receipt",
+  "title": "Append-only mobile Human Gate receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "receipt_id",
+    "project_id",
+    "action",
+    "stage",
+    "expected_checkpoint_sha256",
+    "resulting_checkpoint_sha256",
+    "actor",
+    "idempotency_key",
+    "created_at"
+  ],
+  "properties": {
+    "version": {"const": "1.0"},
+    "receipt_id": {"type": "string", "pattern": "^[0-9a-f-]{36}$"},
+    "project_id": {"type": "string", "minLength": 1},
+    "action": {"enum": ["approve_topic", "approve_gate", "reject_gate", "request_revision", "request_stop"]},
+    "stage": {"type": "string", "minLength": 1},
+    "expected_checkpoint_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "resulting_checkpoint_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "selected_candidate_id": {"type": "string", "minLength": 1},
+    "reason": {"type": "string", "minLength": 1, "maxLength": 2000},
+    "actor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tailscale_login", "tailscale_user_id"],
+      "properties": {
+        "tailscale_login": {"type": "string", "minLength": 1},
+        "tailscale_user_id": {"type": "string", "minLength": 1}
+      }
+    },
+    "idempotency_key": {"type": "string", "minLength": 8, "maxLength": 128},
+    "created_at": {"type": "string", "format": "date-time"}
+  }
+}

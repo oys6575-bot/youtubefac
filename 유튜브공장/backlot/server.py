@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import Optional
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import FileResponse, HTMLResponse, StreamingResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
 from backlot.state import PROJECTS_DIR, REPO_ROOT, list_projects, load_board_state, summarize_project
@@ -162,14 +162,205 @@ async def _lifespan(app: FastAPI):
             await task
 
 
-def create_app() -> FastAPI:
+def create_app(*, mobile_config: Optional[dict] = None) -> FastAPI:
     app = FastAPI(title="Backlot", docs_url=None, redoc_url=None, lifespan=_lifespan)
+    from backlot.mobile_security import MobileAuthError, MobileSecurity, load_mobile_config
+
+    mobile_security = MobileSecurity(mobile_config if mobile_config is not None else load_mobile_config())
+    app.state.mobile_security = mobile_security
+
+    def _mobile_actor(request: Request):
+        client_host = request.client.host if request.client else None
+        return mobile_security.authenticate(
+            client_host, request.headers.get("Tailscale-User-Login")
+        )
+
+    def _auth_error(exc: MobileAuthError) -> JSONResponse:
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={"ok": False, "code": exc.code},
+            headers={"Cache-Control": "no-store"},
+        )
 
     # ---- API ----------------------------------------------------------
 
     @app.get("/api/health")
     async def health() -> dict:
         return {"ok": True, "app": "backlot"}
+
+    # ---- Mobile Human Gate API ---------------------------------------
+
+    @app.get("/api/mobile/session")
+    async def mobile_session(request: Request):
+        try:
+            actor = _mobile_actor(request)
+        except MobileAuthError as exc:
+            return _auth_error(exc)
+        cookie, csrf_token = mobile_security.issue_session()
+        response = JSONResponse(
+            {
+                "ok": True,
+                "csrf_token": csrf_token,
+                "actor": {"tailscale_login": actor.tailscale_login},
+            },
+            headers={"Cache-Control": "no-store"},
+        )
+        response.set_cookie(
+            "mobile_session",
+            cookie,
+            secure=True,
+            httponly=True,
+            samesite="strict",
+            path="/",
+        )
+        return response
+
+    @app.get("/api/mobile/projects")
+    async def mobile_projects(request: Request):
+        try:
+            _mobile_actor(request)
+        except MobileAuthError as exc:
+            return _auth_error(exc)
+        summaries = await asyncio.to_thread(_cached_summaries)
+        return JSONResponse(summaries, headers={"Cache-Control": "no-store"})
+
+    @app.get("/api/mobile/project/{project_id}/dashboard")
+    async def mobile_dashboard_state(project_id: str, request: Request):
+        from backlot.mobile_state import build_mobile_state
+
+        try:
+            _mobile_actor(request)
+        except MobileAuthError as exc:
+            return _auth_error(exc)
+        try:
+            project_dir = _safe_project_dir(project_id)
+        except HTTPException as exc:
+            return JSONResponse(
+                status_code=exc.status_code,
+                content={"ok": False, "code": "project_not_found"},
+                headers={"Cache-Control": "no-store"},
+            )
+        state = await asyncio.to_thread(build_mobile_state, project_dir)
+        return JSONResponse(state, headers={"Cache-Control": "no-store"})
+
+    @app.get("/api/mobile/project/{project_id}/events")
+    async def mobile_project_events(project_id: str, request: Request):
+        try:
+            _mobile_actor(request)
+        except MobileAuthError as exc:
+            return _auth_error(exc)
+        try:
+            _safe_project_dir(project_id)
+        except HTTPException as exc:
+            return JSONResponse(
+                status_code=exc.status_code,
+                content={"ok": False, "code": "project_not_found"},
+                headers={"Cache-Control": "no-store"},
+            )
+
+        async def mobile_stream():
+            q = hub.subscribe(project_id)
+            try:
+                yield _sse({"type": "hello", "project_id": project_id})
+                while True:
+                    if await request.is_disconnected():
+                        return
+                    try:
+                        await asyncio.wait_for(q.get(), timeout=SSE_HEARTBEAT_SECONDS)
+                    except asyncio.TimeoutError:
+                        yield _sse({"type": "heartbeat", "ts": time.time()})
+                        continue
+                    while not q.empty():
+                        try:
+                            q.get_nowait()
+                        except asyncio.QueueEmpty:
+                            break
+                    yield _sse({"type": "change", "project_id": project_id})
+            finally:
+                hub.unsubscribe(q)
+
+        return StreamingResponse(
+            mobile_stream(),
+            media_type="text/event-stream",
+            headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"},
+        )
+
+    @app.post("/api/mobile/project/{project_id}/actions")
+    async def mobile_action(project_id: str, request: Request):
+        from backlot.mobile_actions import (
+            ActionConflict,
+            ActionValidationError,
+            execute_action,
+        )
+
+        try:
+            actor = _mobile_actor(request)
+            mobile_security.verify_post(
+                request.cookies.get("mobile_session"),
+                request.headers.get("X-CSRF-Token"),
+                request.headers.get("Origin"),
+            )
+            mobile_security.enforce_rate_limit(actor)
+        except MobileAuthError as exc:
+            return _auth_error(exc)
+
+        content_length = request.headers.get("Content-Length")
+        if content_length:
+            try:
+                if int(content_length) > mobile_security.max_payload_bytes:
+                    return JSONResponse(
+                        status_code=413,
+                        content={"ok": False, "code": "payload_too_large"},
+                        headers={"Cache-Control": "no-store"},
+                    )
+            except ValueError:
+                return JSONResponse(
+                    status_code=400,
+                    content={"ok": False, "code": "invalid_content_length"},
+                    headers={"Cache-Control": "no-store"},
+                )
+        body = await request.body()
+        if len(body) > mobile_security.max_payload_bytes:
+            return JSONResponse(
+                status_code=413,
+                content={"ok": False, "code": "payload_too_large"},
+                headers={"Cache-Control": "no-store"},
+            )
+        try:
+            payload = json.loads(body)
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            return JSONResponse(
+                status_code=400,
+                content={"ok": False, "code": "invalid_json"},
+                headers={"Cache-Control": "no-store"},
+            )
+        if not isinstance(payload, dict) or payload.get("project_id") != project_id:
+            return JSONResponse(
+                status_code=422,
+                content={"ok": False, "code": "project_id_mismatch"},
+                headers={"Cache-Control": "no-store"},
+            )
+        try:
+            result = await asyncio.to_thread(
+                execute_action, PROJECTS_DIR, payload, actor
+            )
+        except ActionConflict as exc:
+            return JSONResponse(
+                status_code=409,
+                content={"ok": False, "code": str(exc)},
+                headers={"Cache-Control": "no-store"},
+            )
+        except ActionValidationError as exc:
+            return JSONResponse(
+                status_code=422,
+                content={"ok": False, "code": str(exc)},
+                headers={"Cache-Control": "no-store"},
+            )
+        hub.publish(project_id)
+        return JSONResponse(
+            {"ok": True, "receipt": result.receipt, "replayed": result.replayed},
+            headers={"Cache-Control": "no-store"},
+        )
 
     @app.get("/api/projects")
     async def projects() -> list:
@@ -277,6 +468,46 @@ def create_app() -> FastAPI:
 
     # ---- UI ------------------------------------------------------------
 
+    @app.get("/manifest.webmanifest")
+    async def mobile_manifest() -> FileResponse:
+        return FileResponse(
+            UI_DIR / "manifest.webmanifest",
+            media_type="application/manifest+json",
+            headers={"Cache-Control": "no-cache"},
+        )
+
+    @app.get("/sw.js")
+    async def mobile_service_worker() -> FileResponse:
+        return FileResponse(
+            UI_DIR / "sw.js",
+            media_type="application/javascript",
+            headers={"Cache-Control": "no-cache", "Service-Worker-Allowed": "/"},
+        )
+
+    @app.get("/mobile")
+    async def mobile_page(request: Request):
+        try:
+            _mobile_actor(request)
+        except MobileAuthError as exc:
+            return _auth_error(exc)
+        return _ui_html("mobile.html", ("mobile.css", "mobile.js"))
+
+    @app.get("/mobile/{project_id}")
+    async def mobile_project_page(project_id: str, request: Request):
+        try:
+            _mobile_actor(request)
+        except MobileAuthError as exc:
+            return _auth_error(exc)
+        try:
+            _safe_project_dir(project_id)
+        except HTTPException as exc:
+            return JSONResponse(
+                status_code=exc.status_code,
+                content={"ok": False, "code": "project_not_found"},
+                headers={"Cache-Control": "no-store"},
+            )
+        return _ui_html("mobile.html", ("mobile.css", "mobile.js"))
+
     @app.get("/p/{project_id}")
     async def board_page(project_id: str) -> HTMLResponse:
         return _ui_html("board.html", ("board.css", "board.js"))
@@ -300,8 +531,17 @@ def create_app() -> FastAPI:
     async def ui_no_cache(request, call_next):
         response = await call_next(request)
         path = request.url.path
-        if path == "/" or path.startswith("/ui") or path.startswith("/p/"):
+        if path == "/" or path.startswith("/ui") or path.startswith("/p/") or path.startswith("/mobile"):
             response.headers["Cache-Control"] = "no-cache"
+        if path.startswith("/mobile") or path.startswith("/api/mobile"):
+            response.headers["Content-Security-Policy"] = (
+                "default-src 'self'; connect-src 'self'; img-src 'self' data:; "
+                "style-src 'self'; script-src 'self'; manifest-src 'self'; "
+                "worker-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'"
+            )
+            response.headers["Referrer-Policy"] = "no-referrer"
+            response.headers["X-Content-Type-Options"] = "nosniff"
+            response.headers["X-Frame-Options"] = "DENY"
         return response
 
     return app

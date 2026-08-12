@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openmontage/mobile-dashboard/action",
+  "title": "Restricted mobile Human Gate action",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "action",
+    "project_id",
+    "stage",
+    "expected_checkpoint_sha256",
+    "idempotency_key"
+  ],
+  "properties": {
+    "action": {
+      "enum": [
+        "approve_topic",
+        "approve_gate",
+        "reject_gate",
+        "request_revision",
+        "request_stop"
+      ]
+    },
+    "project_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{1,95}$"},
+    "stage": {"type": "string", "pattern": "^[a-z][a-z0-9_]{1,63}$"},
+    "expected_checkpoint_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "idempotency_key": {"type": "string", "minLength": 8, "maxLength": 128, "pattern": "^[A-Za-z0-9._:-]+$"},
+    "selected_candidate_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,95}$"},
+    "reason": {"type": "string", "minLength": 1, "maxLength": 2000},
+    "confirmation": {"type": "string", "enum": ["CONFIRM"]}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"action": {"const": "approve_topic"}}},
+      "then": {"required": ["selected_candidate_id"]}
+    },
+    {
+      "if": {"properties": {"action": {"enum": ["reject_gate", "request_revision", "request_stop"]}}},
+      "then": {"required": ["reason"]}
+    }
+  ]
+}
