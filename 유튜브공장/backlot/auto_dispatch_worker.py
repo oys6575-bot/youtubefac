@@ -27,7 +27,12 @@ RECEIPT_SCHEMA = ROOT / "schemas/mobile-dashboard/approval-receipt.schema.json"
 COLLECTION_PROGRESS_SCHEMA = (
     ROOT / "schemas/mobile-dashboard/media-collection-progress.schema.json"
 )
-STAGES = ["research", "media_collection", "evidence_lock", "proposal"]
+RELEVANCE_PROGRESS_SCHEMA = (
+    ROOT / "schemas/mobile-dashboard/media-relevance-progress.schema.json"
+)
+STAGES = [
+    "research", "media_collection", "media_relevance_review", "evidence_lock", "proposal"
+]
 STAGE_FILES = {
     "research": {
         "artifacts/research_brief.json": "research_brief",
@@ -38,6 +43,11 @@ STAGE_FILES = {
         "artifacts/media_collection_manifest.json": "media_collection_manifest",
         "automation/progress/media_collection.json": None,
         "checkpoint_media_collection.json": None,
+    },
+    "media_relevance_review": {
+        "artifacts/media_relevance_review.json": "media_relevance_review",
+        "automation/progress/media_relevance_review.json": None,
+        "checkpoint_media_relevance_review.json": None,
     },
     "evidence_lock": {
         "artifacts/evidence_registry.json": "evidence_registry",
@@ -229,6 +239,18 @@ class Coordinator:
                 if manifest_path is None:
                     raise JobValidationError("settled media manifest is missing")
                 self._validate_media_collection_assets(project, _json(manifest_path))
+            if result["stage"] == "media_relevance_review":
+                review_path = next(
+                    (
+                        _safe_path(project, relative)
+                        for relative in result["artifact_paths"]
+                        if relative.endswith("/artifacts/media_relevance_review.json")
+                    ),
+                    None,
+                )
+                if review_path is None:
+                    raise JobValidationError("settled media review is missing")
+                self._validate_media_relevance_review(project, _json(review_path))
 
     @staticmethod
     def _validate_media_collection_assets(
@@ -256,6 +278,41 @@ class Coordinator:
             technical = item.get("technical")
             if not isinstance(technical, dict) or technical.get("size_bytes") != path.stat().st_size:
                 raise JobValidationError("source media size mismatch")
+
+    def _validate_media_relevance_review(self, project: Path, review: dict[str, Any]) -> None:
+        manifest_path = project / "artifacts/media_collection_manifest.json"
+        manifest = _json(manifest_path)
+        if review.get("base_manifest_sha256") != _sha256(manifest_path):
+            raise JobValidationError("media review base manifest hash mismatch")
+        supplement = review.get("supplement_manifest")
+        manifests = [manifest]
+        if supplement is not None:
+            validate_artifact("media_collection_manifest", supplement)
+            self._validate_media_collection_assets(project, supplement)
+            manifests.append(supplement)
+        expected: dict[str, str] = {}
+        for current in manifests:
+            for item in current.get("items", []):
+                media_id, digest = item.get("id"), item.get("sha256")
+                if media_id in expected:
+                    raise JobValidationError("duplicate media id in reviewed manifests")
+                expected[media_id] = digest
+        decisions = review.get("decisions", [])
+        actual = {row.get("media_id"): row.get("media_sha256") for row in decisions}
+        if len(actual) != len(decisions) or actual != expected:
+            raise JobValidationError("media review decisions do not bind every exact media hash")
+        counts = review.get("counts", {})
+        eligibility = {key: 0 for key in ("eligible", "excluded", "held")}
+        categories: dict[str, int] = {}
+        for row in decisions:
+            eligibility[row["eligibility"]] += 1
+            categories[row["category"]] = categories.get(row["category"], 0) + 1
+        if (
+            counts.get("total") != len(decisions)
+            or any(counts.get(key) != value for key, value in eligibility.items())
+            or counts.get("by_category") != dict(sorted(categories.items()))
+        ):
+            raise JobValidationError("media review counts are inconsistent")
 
     def _validate_success(
         self, project: Path, stage: str, result: StageResult
@@ -297,9 +354,22 @@ class Coordinator:
                     raise JobValidationError(
                         "media collection progress is invalid"
                     ) from exc
+            elif relative == "automation/progress/media_relevance_review.json":
+                progress = _json(path)
+                schema = json.loads(RELEVANCE_PROGRESS_SCHEMA.read_text(encoding="utf-8"))
+                try:
+                    jsonschema.Draft202012Validator(
+                        schema, format_checker=jsonschema.FormatChecker()
+                    ).validate(progress)
+                except jsonschema.ValidationError as exc:
+                    raise JobValidationError("media relevance progress is invalid") from exc
         if stage == "media_collection":
             self._validate_media_collection_assets(
                 project, loaded_artifacts["media_collection_manifest"]
+            )
+        if stage == "media_relevance_review":
+            self._validate_media_relevance_review(
+                project, loaded_artifacts["media_relevance_review"]
             )
         checkpoint = _json(project / f"checkpoint_{stage}.json")
         validate_checkpoint(checkpoint)

@@ -118,7 +118,9 @@ EXPECTED_HANDOFF = {
 EXPECTED_AUTO_DISPATCH = {
     "enabled": True,
     "trigger_action": "approve_topic",
-    "stages": ["research", "media_collection", "evidence_lock", "proposal"],
+    "stages": [
+        "research", "media_collection", "media_relevance_review", "evidence_lock", "proposal"
+    ],
     "max_retries": 1,
     "stop_gate": "proposal",
 }

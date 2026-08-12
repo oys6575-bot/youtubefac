@@ -14,7 +14,14 @@ import jsonschema
 
 ROOT = Path(__file__).resolve().parents[1]
 JOB_SCHEMA = ROOT / "schemas/mobile-dashboard/auto-dispatch-job.schema.json"
-AUTO_STAGES = ["research", "media_collection", "evidence_lock", "proposal"]
+AUTO_STAGES = [
+    "research",
+    "media_collection",
+    "media_relevance_review",
+    "evidence_lock",
+    "proposal",
+]
+LEGACY_FOUR_AUTO_STAGES = ["research", "media_collection", "evidence_lock", "proposal"]
 LEGACY_AUTO_STAGES = ["research", "evidence_lock", "proposal"]
 MUTABLE_FIELDS = frozenset(
     {
@@ -65,7 +72,7 @@ def validate_job(value: Mapping[str, Any]) -> dict[str, Any]:
     result_stages = [item["stage"] for item in payload["stage_results"]]
     if result_stages != stages[: len(result_stages)]:
         raise JobValidationError("settled stage order drift")
-    if stages == LEGACY_AUTO_STAGES and payload["state"] not in {
+    if stages in [LEGACY_AUTO_STAGES, LEGACY_FOUR_AUTO_STAGES] and payload["state"] not in {
         "failed",
         "awaiting_human",
         "completed",
@@ -131,6 +138,8 @@ def build_retry_job(
     source = validate_job(original)
     if source["state"] != "failed":
         raise JobValidationError("only failed jobs can be retried")
+    if source["stages"] != AUTO_STAGES:
+        raise JobValidationError("historical automatic job cannot be retried")
     if receipt.get("action") != "retry_auto_dispatch":
         raise JobValidationError("retry job requires a retry receipt")
     if receipt.get("retry_job_id") != source["job_id"]:

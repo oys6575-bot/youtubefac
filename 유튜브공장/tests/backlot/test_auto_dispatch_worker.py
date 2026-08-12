@@ -142,6 +142,62 @@ def _write_stage_outputs(project: Path, stage: str) -> list[str]:
             "completed",
             {"media_collection_manifest": manifest},
         )
+    elif stage == "media_relevance_review":
+        manifest_path = artifacts / "media_collection_manifest.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        item = manifest["items"][0]
+        review = {
+            "schema_version": "1.0.0",
+            "project_id": project.name,
+            "review_status": "completed",
+            "generated_at": "2026-08-12T00:00:00+00:00",
+            "base_manifest_sha256": _sha256(manifest_path),
+            "supplement_manifest": None,
+            "topic_identity": {
+                "canonical_name": "Rana Plaza collapse",
+                "aliases": ["Rana Plaza"],
+                "locations": ["Savar", "Bangladesh"],
+                "dates": ["2013-04-24"],
+            },
+            "decisions": [{
+                "media_id": item["id"],
+                "media_sha256": item["sha256"],
+                "category": "unknown",
+                "eligibility": "held",
+                "relevance_score": 0,
+                "identity_evidence": [],
+                "mismatch_evidence": [],
+                "visual_summary": "",
+                "usefulness": "identity not established",
+                "review_method": ["metadata"],
+                "reviewed_at": "2026-08-12T00:00:00+00:00",
+            }],
+            "coverage": [{
+                "lane": "event_site", "status": "missing", "eligible_media_ids": []
+            }],
+            "counts": {
+                "total": 1, "eligible": 0, "excluded": 0, "held": 1,
+                "by_category": {"unknown": 1},
+            },
+        }
+        progress = {
+            "version": "1.0",
+            "project_id": project.name,
+            "state": "completed",
+            "phase": "final_review",
+            "counts": {
+                "total": 1, "reviewed": 1, "eligible": 0, "excluded": 0, "held": 1
+            },
+            "updated_at": "2026-08-12T00:00:00+00:00",
+            "error": None,
+        }
+        values = {
+            "artifacts/media_relevance_review.json": review,
+            "automation/progress/media_relevance_review.json": progress,
+        }
+        checkpoint = _checkpoint(
+            project, stage, "completed", {"media_relevance_review": review}
+        )
     elif stage == "evidence_lock":
         registry = json.loads((artifacts / "evidence_registry.json").read_text())
         decision = {"version": "1.0", "project_id": project.name, "decisions": []}
@@ -222,11 +278,11 @@ def project_with_job(tmp_path: Path) -> tuple[Path, Path]:
     return project, job_path
 
 
-def test_worker_runs_four_stages_and_stops_at_proposal_gate(
+def test_worker_runs_five_stages_and_stops_at_proposal_gate(
     project_with_job: tuple[Path, Path],
 ) -> None:
     project, job_path = project_with_job
-    runner = FakeRunner(["success", "success", "success", "success"])
+    runner = FakeRunner(["success", "success", "success", "success", "success"])
 
     assert Coordinator(project.parent, runner).process_next() is True
 
@@ -235,6 +291,7 @@ def test_worker_runs_four_stages_and_stops_at_proposal_gate(
     assert [result["stage"] for result in job["stage_results"]] == [
         "research",
         "media_collection",
+        "media_relevance_review",
         "evidence_lock",
         "proposal",
     ]
@@ -249,7 +306,7 @@ def test_worker_retries_one_ordinary_failure_only(
 ) -> None:
     project, job_path = project_with_job
     runner = FakeRunner(
-        [ordinary_failure("research"), "success", "success", "success", "success"]
+        [ordinary_failure("research"), "success", "success", "success", "success", "success"]
     )
 
     Coordinator(project.parent, runner).process_next()
@@ -281,10 +338,12 @@ def test_restart_skips_hash_bound_settled_stage(
         "research"
     ]
 
-    resumed = FakeRunner(["success", "success", "success"])
+    resumed = FakeRunner(["success", "success", "success", "success"])
     Coordinator(project.parent, resumed).process_next()
 
-    assert resumed.calls == ["media_collection", "evidence_lock", "proposal"]
+    assert resumed.calls == [
+        "media_collection", "media_relevance_review", "evidence_lock", "proposal"
+    ]
     assert load_job(job_path)["state"] == "awaiting_human"
 
 
@@ -318,4 +377,26 @@ def test_media_collection_rejects_changed_source_bytes(
     with pytest.raises(JobValidationError, match="source media hash mismatch"):
         Coordinator(project.parent, FakeRunner([]))._validate_success(
             project, "media_collection", result
+        )
+
+
+def test_review_is_bound_to_exact_collection_manifest(
+    project_with_job: tuple[Path, Path],
+) -> None:
+    project, _ = project_with_job
+    success(project, "media_collection")
+    result = success(project, "media_relevance_review")
+    review_path = project / "artifacts/media_relevance_review.json"
+    review = json.loads(review_path.read_text(encoding="utf-8"))
+    review["base_manifest_sha256"] = "0" * 64
+    review_path.write_bytes(canonical_bytes(review))
+    result = StageResult(
+        **{**result.__dict__, "artifact_sha256": {
+            **result.artifact_sha256,
+            "artifacts/media_relevance_review.json": _sha256(review_path),
+        }}
+    )
+    with pytest.raises(JobValidationError, match="base manifest hash"):
+        Coordinator(project.parent, FakeRunner([]))._validate_success(
+            project, "media_relevance_review", result
         )

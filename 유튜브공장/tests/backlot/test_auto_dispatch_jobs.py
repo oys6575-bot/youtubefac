@@ -36,6 +36,7 @@ def test_topic_approval_atomically_creates_one_queued_job(tmp_path: Path) -> Non
     assert job["stages"] == [
         "research",
         "media_collection",
+        "media_relevance_review",
         "evidence_lock",
         "proposal",
     ]
@@ -103,6 +104,16 @@ def test_legacy_three_stage_active_job_is_not_reactivated(tmp_path: Path) -> Non
     execute_action(tmp_path, payload(candidate_id, expected), ACTOR)
     job = json.loads(next((project / "automation/jobs").glob("*.json")).read_text())
     job["stages"] = ["research", "evidence_lock", "proposal"]
+
+    with pytest.raises(JobValidationError, match="legacy automatic job is historical"):
+        validate_job(job)
+
+
+def test_legacy_four_stage_active_job_is_not_reactivated(tmp_path: Path) -> None:
+    project, candidate_id, expected = build_topic_gate(tmp_path)
+    execute_action(tmp_path, payload(candidate_id, expected), ACTOR)
+    job = json.loads(next((project / "automation/jobs").glob("*.json")).read_text())
+    job["stages"] = ["research", "media_collection", "evidence_lock", "proposal"]
 
     with pytest.raises(JobValidationError, match="legacy automatic job is historical"):
         validate_job(job)

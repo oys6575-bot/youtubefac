@@ -177,6 +177,27 @@ def test_collection_prompt_uses_production_role_and_forbids_gemini(tmp_path: Pat
     assert "no Gemini" in prompt
 
 
+def test_relevance_prompt_requires_local_pipeline_and_exact_archive_policy(tmp_path: Path) -> None:
+    runner = OrcaRunner.__new__(OrcaRunner)
+    runner.factory_root = tmp_path
+    runner.routing = {"roles": {"production": {
+        "runtime": "hermes", "model": "local", "effort": None, "profile": "ytf-production",
+    }}}
+    project = tmp_path / "projects/P1"
+    prompt = runner._task_prompt(
+        project,
+        {"job_id": "job-1", "selected_candidate_id": "rana-plaza"},
+        "media_relevance_review",
+        project / "automation/stage-results/job-1/review-attempt-0.json",
+    )
+    assert "media-relevance-review-director.md" in prompt
+    assert "media_review_pipeline.py" in prompt
+    assert "media_relevance_review.json" in prompt
+    assert "Query text" in prompt
+    assert "no Gemini" in prompt
+    assert "no stock-provider fallback" in prompt
+
+
 def test_transport_provenance_is_bound_by_coordinator(tmp_path: Path) -> None:
     path = tmp_path / "result.json"
     path.write_text(

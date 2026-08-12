@@ -202,6 +202,7 @@ class OrcaRunner:
         role = {
             "research": "research",
             "media_collection": "production",
+            "media_relevance_review": "production",
             "evidence_lock": "verification",
             "proposal": "story_visual",
         }[stage]
@@ -225,6 +226,17 @@ class OrcaRunner:
                     "checkpoint_media_collection.json",
                 ],
                 "artifacts": ["media_collection_manifest"],
+                "status": "completed",
+                "approval_required": "false",
+                "verdict": "NOT_APPLICABLE",
+            },
+            "media_relevance_review": {
+                "paths": [
+                    "artifacts/media_relevance_review.json",
+                    "automation/progress/media_relevance_review.json",
+                    "checkpoint_media_relevance_review.json",
+                ],
+                "artifacts": ["media_relevance_review"],
                 "status": "completed",
                 "approval_required": "false",
                 "verdict": "NOT_APPLICABLE",
@@ -259,6 +271,12 @@ class OrcaRunner:
         if stage == "media_collection":
             collection_rules = """
 Read skills/pipelines/youtube-factory/media-collection-director.md before collecting. Use the rights_cleared_media_collection tool and only the configured Pexels, Pixabay, Unsplash, explicit public-domain, CC0, CC BY, or CC BY-SA paths. Use no Gemini. Reject permission-required, purchase-only, restricted/editorial-only, unknown-rights, watermarked, preview-only, or inaccessible-original candidates before download. Frozen accepted bytes may additionally be written only under assets/source/**. Those media byte paths are bound inside media_collection_manifest.json and must not be added to the stage result artifact_paths list. Do not perform creative shot selection at this stage.
+"""
+        if stage == "media_relevance_review":
+            collection_rules = f"""
+Read skills/pipelines/youtube-factory/media-relevance-review-director.md. Execute the deterministic local runner exactly once:
+  .venv/bin/python tools/video/media_review_pipeline.py --project {shlex.quote(str(project))}
+It must perform base review, archive-only supplementation for missing lanes, and final review. Query text and claim_ids are never event identity evidence. Event-direct and news-report decisions require positive identity metadata. Use only archive_org, wikimedia, nara, loc, and pond5_pd for supplementation; no stock-provider fallback. Keep wrong-event, generic, and unknown files on disk but exclude or hold them. Use no Gemini, paid API, permission-required, purchase-only, editorial-only, unknown-rights, watermarked, or preview material. Do not rewrite the base manifest or existing source bytes, and do not fabricate Human Gate approval.
 """
         return f"""You are the {role} worker for the YouTube Factory canonical project.
 
@@ -325,6 +343,10 @@ After validating every artifact with schemas.artifacts.validate_artifact and the
             ),
             "media_collection": (
                 "production",
+                "exec ytf-production --no-restore-cwd",
+            ),
+            "media_relevance_review": (
+                "production-review",
                 "exec ytf-production --no-restore-cwd",
             ),
         }.get(stage)
