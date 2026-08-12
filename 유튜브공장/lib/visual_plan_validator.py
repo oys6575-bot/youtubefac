@@ -197,6 +197,59 @@ def validate_visual_plan(
             if route == "TOPVIEW_HANDOFF" and not shot.get("generation_brief"):
                 errors.append(f"{shot_id}: TOPVIEW_HANDOFF requires generation_brief")
 
+            cinematic_direction = shot.get("cinematic_direction")
+            generated_motion = route in AI_ROUTES
+            if generated_motion and not isinstance(cinematic_direction, dict):
+                errors.append(
+                    f"{shot_id}: generated motion route requires cinematic_direction"
+                )
+
+            if isinstance(cinematic_direction, dict):
+                previous_end = 0.0
+                for beat in cinematic_direction.get("timed_beats", []):
+                    if not isinstance(beat, dict):
+                        continue
+                    start_value = beat.get("start_seconds")
+                    end_value = beat.get("end_seconds")
+                    if not isinstance(start_value, (int, float)) or not isinstance(
+                        end_value, (int, float)
+                    ):
+                        continue
+                    start = float(start_value)
+                    end = float(end_value)
+                    if end <= start:
+                        errors.append(
+                            f"{shot_id}: cinematic timed beat end must follow start"
+                        )
+                        break
+                    if start < previous_end:
+                        errors.append(f"{shot_id}: cinematic timed beats overlap")
+                        break
+                    if end > float(shot.get("duration_seconds", 0)):
+                        errors.append(
+                            f"{shot_id}: cinematic timed beat exceeds shot duration"
+                        )
+                        break
+                    previous_end = end
+
+                reference_paths = shot.get("generation_brief", {}).get(
+                    "reference_paths", []
+                )
+                bindings = cinematic_direction.get("reference_bindings", [])
+                binding_paths = [
+                    binding.get("path")
+                    for binding in bindings
+                    if isinstance(binding, dict) and isinstance(binding.get("path"), str)
+                ]
+                if (
+                    len(reference_paths) != len(set(reference_paths))
+                    or len(binding_paths) != len(set(binding_paths))
+                    or set(reference_paths) != set(binding_paths)
+                ):
+                    errors.append(
+                        f"{shot_id}: generation references and reference_bindings must match"
+                    )
+
             factual_precision = shot.get("factual_precision")
             if factual_precision in {"high", "exact"} and not shot.get("evidence_ids"):
                 errors.append(f"{shot_id}: precise factual shot requires evidence_ids")

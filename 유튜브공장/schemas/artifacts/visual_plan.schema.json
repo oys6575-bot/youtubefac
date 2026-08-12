@@ -330,6 +330,7 @@
             "operator_notes": { "type": "string", "minLength": 1 }
           }
         },
+        "cinematic_direction": { "$ref": "#/$defs/cinematicDirection" },
         "camera": { "$ref": "#/$defs/camera" },
         "lighting": {
           "type": "object",
@@ -428,7 +429,8 @@
             "required": ["provider_route"]
           },
           "then": {
-            "properties": { "contains_ai": { "const": true } }
+            "properties": { "contains_ai": { "const": true } },
+            "required": ["cinematic_direction"]
           }
         },
         {
@@ -475,6 +477,172 @@
           "then": { "required": ["camera", "lighting"] }
         }
       ]
+    },
+    "cinematicDirection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "opening_frame",
+        "spatial_blocking",
+        "optical_result",
+        "timed_beats",
+        "physical_cues"
+      ],
+      "properties": {
+        "opening_frame": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "description",
+            "subjects_visible",
+            "environment_state",
+            "action_state",
+            "deliberate_empty_opening"
+          ],
+          "properties": {
+            "description": { "type": "string", "minLength": 1 },
+            "subjects_visible": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 },
+              "uniqueItems": true
+            },
+            "environment_state": { "type": "string", "minLength": 1 },
+            "action_state": { "type": "string", "minLength": 1 },
+            "deliberate_empty_opening": { "type": "boolean" }
+          }
+        },
+        "spatial_blocking": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "subject",
+              "screen_position",
+              "world_anchor",
+              "distance_relation",
+              "body_orientation",
+              "attention_target",
+              "movement_path"
+            ],
+            "properties": {
+              "subject": { "type": "string", "minLength": 1 },
+              "screen_position": { "type": "string", "minLength": 1 },
+              "world_anchor": { "type": "string", "minLength": 1 },
+              "distance_relation": { "type": "string", "minLength": 1 },
+              "body_orientation": { "type": "string", "minLength": 1 },
+              "attention_target": { "type": "string", "minLength": 1 },
+              "movement_path": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "optical_result": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "camera_distance",
+            "perspective_behavior",
+            "background_behavior",
+            "focus_behavior",
+            "subject_scale"
+          ],
+          "properties": {
+            "camera_distance": { "type": "string", "minLength": 1 },
+            "perspective_behavior": { "type": "string", "minLength": 1 },
+            "background_behavior": { "type": "string", "minLength": 1 },
+            "focus_behavior": { "type": "string", "minLength": 1 },
+            "subject_scale": { "type": "string", "minLength": 1 }
+          }
+        },
+        "timed_beats": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "start_seconds",
+              "end_seconds",
+              "visible_action",
+              "camera_behavior",
+              "physical_result"
+            ],
+            "properties": {
+              "start_seconds": { "$ref": "#/$defs/seconds" },
+              "end_seconds": { "$ref": "#/$defs/seconds" },
+              "visible_action": { "type": "string", "minLength": 1 },
+              "camera_behavior": { "type": "string", "minLength": 1 },
+              "physical_result": { "type": "string", "minLength": 1 },
+              "audio_event": { "type": ["string", "null"] }
+            }
+          }
+        },
+        "physical_cues": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "performance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "objective",
+            "obstacle",
+            "tactic",
+            "observable_behaviors",
+            "reaction_cue",
+            "beat_change"
+          ],
+          "properties": {
+            "objective": { "type": "string", "minLength": 1 },
+            "obstacle": { "type": "string", "minLength": 1 },
+            "tactic": { "type": "string", "minLength": 1 },
+            "observable_behaviors": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "type": "string", "minLength": 1 },
+              "uniqueItems": true
+            },
+            "reaction_cue": { "type": "string", "minLength": 1 },
+            "beat_change": { "type": "string", "minLength": 1 }
+          }
+        },
+        "reference_bindings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["path", "role", "controls", "excludes"],
+            "properties": {
+              "path": { "type": "string", "minLength": 1 },
+              "role": {
+                "enum": [
+                  "SUBJECT_REFERENCE",
+                  "ENVIRONMENT_REFERENCE",
+                  "OBJECT_REFERENCE",
+                  "COMPOSITION_REFERENCE",
+                  "LIGHTING_REFERENCE",
+                  "STYLE_REFERENCE"
+                ]
+              },
+              "controls": {
+                "type": "array",
+                "minItems": 1,
+                "items": { "type": "string", "minLength": 1 },
+                "uniqueItems": true
+              },
+              "excludes": {
+                "type": "array",
+                "minItems": 1,
+                "items": { "type": "string", "minLength": 1 },
+                "uniqueItems": true
+              }
+            }
+          }
+        }
+      }
     },
     "camera": {
       "type": "object",

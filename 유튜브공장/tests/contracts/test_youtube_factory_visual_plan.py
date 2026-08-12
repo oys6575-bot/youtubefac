@@ -26,6 +26,57 @@ def _bridge_module():
     return importlib.import_module("lib.visual_plan_bridge")
 
 
+def _material_direction() -> dict:
+    return {
+        "opening_frame": {
+            "description": "기록 사진의 작업장 전체가 먼저 읽힌다.",
+            "subjects_visible": ["장인", "작업대", "유기 그릇"],
+            "environment_state": "흐린 자연광이 드는 작업장",
+            "action_state": "망치를 내리기 직전 정지",
+            "deliberate_empty_opening": False,
+        },
+        "spatial_blocking": [
+            {
+                "subject": "장인",
+                "screen_position": "화면 중앙 오른쪽",
+                "world_anchor": "작업대 뒤편",
+                "distance_relation": "유기 그릇에서 팔 길이 거리",
+                "body_orientation": "몸은 왼쪽 45도",
+                "attention_target": "유기 그릇 표면",
+                "movement_path": "제자리에서 망치를 수직으로 내린다",
+            }
+        ],
+        "optical_result": {
+            "camera_distance": "작업장과 손동작이 함께 보이는 중원경",
+            "perspective_behavior": "공간 깊이는 자연스럽고 가장자리 왜곡은 없다",
+            "background_behavior": "배경 작업 도구의 간격이 유지된다",
+            "focus_behavior": "장인과 그릇이 읽히고 배경만 부드럽게 분리된다",
+            "subject_scale": "장인의 상반신이 프레임 높이의 절반을 차지한다",
+        },
+        "timed_beats": [
+            {
+                "start_seconds": 0,
+                "end_seconds": 1.5,
+                "visible_action": "정지 사진의 질감이 살아나며 장인이 숨을 들이쉰다",
+                "camera_behavior": "중심축을 유지한 채 아주 느리게 전진한다",
+                "physical_result": "옷자락과 손목만 미세하게 움직인다",
+            },
+            {
+                "start_seconds": 1.5,
+                "end_seconds": 4,
+                "visible_action": "망치가 내려가 그릇 표면에 닿고 다시 멈춘다",
+                "camera_behavior": "접촉 직전에 감속하고 결과를 유지한다",
+                "physical_result": "접촉점의 진동이 금속 표면으로 짧게 퍼진다",
+            },
+        ],
+        "physical_cues": [
+            "망치의 무게가 손목과 팔꿈치에 전달된다",
+            "금속 접촉 뒤 작은 진동이 감쇠한다",
+        ],
+        "reference_bindings": [],
+    }
+
+
 def test_factory_schemas_compile_and_accept_valid_fixture() -> None:
     evidence_schema = json.loads(
         (FACTORY_ROOT / "schemas/artifacts/evidence_registry.schema.json").read_text(
@@ -93,6 +144,69 @@ def test_ai_route_rejects_contains_ai_and_disclosure_contradictions() -> None:
 
     assert "SHOT_002: AI route requires contains_ai=true" in errors
     assert "SHOT_002: AI content requires disclosure" in errors
+
+
+def test_generated_motion_route_requires_cinematic_direction() -> None:
+    plan = _load("visual_plan.valid.json")
+    plan["sequences"][0]["shots"][1].pop("cinematic_direction", None)
+
+    errors = _validator_module().validate_visual_plan(
+        plan, _load("evidence_registry.valid.json")
+    )
+
+    assert "SHOT_002: generated motion route requires cinematic_direction" in errors
+
+
+def test_cinematic_beats_must_be_ordered_and_fit_duration() -> None:
+    plan = _load("visual_plan.valid.json")
+    direction = _material_direction()
+    direction["timed_beats"][1]["start_seconds"] = 1.25
+    plan["sequences"][0]["shots"][1]["cinematic_direction"] = direction
+
+    errors = _validator_module().validate_visual_plan(
+        plan, _load("evidence_registry.valid.json")
+    )
+
+    assert "SHOT_002: cinematic timed beats overlap" in errors
+
+
+def test_cinematic_beat_cannot_exceed_shot_duration() -> None:
+    plan = _load("visual_plan.valid.json")
+    direction = _material_direction()
+    direction["timed_beats"][1]["end_seconds"] = 4.25
+    plan["sequences"][0]["shots"][1]["cinematic_direction"] = direction
+
+    errors = _validator_module().validate_visual_plan(
+        plan, _load("evidence_registry.valid.json")
+    )
+
+    assert "SHOT_002: cinematic timed beat exceeds shot duration" in errors
+
+
+def test_generation_references_require_exact_role_bindings() -> None:
+    plan = _load("visual_plan.valid.json")
+    shot = plan["sequences"][0]["shots"][1]
+    shot["generation_brief"]["reference_paths"] = ["references/archive-frame.png"]
+    shot["cinematic_direction"] = _material_direction()
+
+    errors = _validator_module().validate_visual_plan(
+        plan, _load("evidence_registry.valid.json")
+    )
+
+    assert "SHOT_002: generation references and reference_bindings must match" in errors
+
+
+def test_material_only_direction_without_performance_is_valid() -> None:
+    plan = _load("visual_plan.valid.json")
+    plan["sequences"][0]["shots"][1]["cinematic_direction"].pop(
+        "performance", None
+    )
+
+    errors = _validator_module().validate_visual_plan(
+        plan, _load("evidence_registry.valid.json")
+    )
+
+    assert errors == []
 
 
 def test_shot_techniques_must_be_selected_at_sequence_level() -> None:

@@ -34,15 +34,22 @@
         "query_intents": [
           "evidence_first",
           "exact_fact",
-          "photo_to_motion",
+          "opening_frame",
+          "spatial_blocking",
+          "optical_result",
+          "physical_causality",
+          "reference_role",
           "semantic_transition"
         ],
         "provider_scopes": ["GENERIC", "TOPVIEW_MANUAL"],
         "render_runtimes": ["HYPERFRAMES"],
         "include_on_demand": false,
         "selected_ids": [
-          "direction.sequence_meaning_first",
-          "camera.variable_velocity_push",
+          "direction.opening_frame_intent",
+          "continuity.explicit_spatial_blocking",
+          "camera.observable_optical_result",
+          "direction.physical_causality",
+          "continuity.reference_role_binding",
           "transition.semantic_match_cut",
           "typography.exact_fact_overlay"
         ],
@@ -134,9 +141,10 @@
           "factual_precision": "medium",
           "evidence_ids": ["SRC_ARCHIVE", "CLAIM_DATE"],
           "technique_ids": [
-            "direction.sequence_meaning_first",
-            "camera.variable_velocity_push",
-            "transition.semantic_match_cut"
+            "direction.opening_frame_intent",
+            "continuity.explicit_spatial_blocking",
+            "camera.observable_optical_result",
+            "continuity.reference_role_binding"
           ],
           "provider_route": {
             "mode": "TOPVIEW_HANDOFF",
@@ -147,9 +155,72 @@
           "prompt_intent": "기록 사진의 공간 배치를 존중한 절제된 AI 재현 장면.",
           "generation_brief": {
             "negative_prompt": "과장된 파괴, 왜곡된 구조, 읽을 수 없는 문자",
-            "reference_paths": [],
+            "reference_paths": ["references/archive-frame.png"],
             "model_recommendation": "TopView에서 사용자가 현재 제공 모델을 선택",
             "operator_notes": "한 번에 세 후보를 비교하고 카메라 이동이 가장 절제된 결과를 선택한다."
+          },
+          "cinematic_direction": {
+            "opening_frame": {
+              "description": "기록 사진의 작업장 전체와 장인, 작업대, 유기 그릇이 먼저 읽힌다.",
+              "subjects_visible": ["장인", "작업대", "유기 그릇"],
+              "environment_state": "흐린 자연광이 드는 작업장",
+              "action_state": "장인이 망치를 내리기 직전 정지해 있다.",
+              "deliberate_empty_opening": false
+            },
+            "spatial_blocking": [
+              {
+                "subject": "장인",
+                "screen_position": "화면 중앙 오른쪽",
+                "world_anchor": "작업대 뒤편",
+                "distance_relation": "유기 그릇에서 팔 길이 거리",
+                "body_orientation": "몸은 왼쪽 45도",
+                "attention_target": "유기 그릇 표면",
+                "movement_path": "제자리에서 망치를 수직으로 내린다."
+              }
+            ],
+            "optical_result": {
+              "camera_distance": "작업장과 손동작이 함께 보이는 중원경",
+              "perspective_behavior": "공간 깊이는 자연스럽고 가장자리 왜곡은 없다.",
+              "background_behavior": "배경 작업 도구의 간격과 위치가 유지된다.",
+              "focus_behavior": "장인과 그릇이 읽히고 배경만 부드럽게 분리된다.",
+              "subject_scale": "장인의 상반신이 프레임 높이의 절반을 차지한다."
+            },
+            "timed_beats": [
+              {
+                "start_seconds": 0,
+                "end_seconds": 1.5,
+                "visible_action": "정지 사진의 질감이 살아나며 장인이 숨을 들이쉰다.",
+                "camera_behavior": "중심축을 유지한 채 아주 느리게 전진한다.",
+                "physical_result": "옷자락과 손목만 미세하게 움직인다."
+              },
+              {
+                "start_seconds": 1.5,
+                "end_seconds": 4,
+                "visible_action": "망치가 내려가 그릇 표면에 닿고 다시 멈춘다.",
+                "camera_behavior": "접촉 직전에 감속하고 결과를 유지한다.",
+                "physical_result": "접촉점의 진동이 금속 표면으로 짧게 퍼진다."
+              }
+            ],
+            "physical_cues": [
+              "망치의 무게가 손목과 팔꿈치에 전달된다.",
+              "금속 접촉 뒤 작은 진동이 감쇠한다."
+            ],
+            "reference_bindings": [
+              {
+                "path": "references/archive-frame.png",
+                "role": "ENVIRONMENT_REFERENCE",
+                "controls": [
+                  "workspace geometry",
+                  "material character",
+                  "light direction"
+                ],
+                "excludes": [
+                  "camera framing",
+                  "subject identity",
+                  "new objects"
+                ]
+              }
+            ]
           },
           "camera": {
             "framing": "wide",
