@@ -1,0 +1,246 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://youtube-factory.local/schemas/orca-model-routing.schema.json",
+  "title": "YouTube Factory Orca model routing contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "control_plane",
+    "auto_dispatch",
+    "orchestrator",
+    "workspace",
+    "handoff",
+    "roles",
+    "local_models",
+    "resource_lanes",
+    "provider_policy",
+    "topview",
+    "human_gates",
+    "secrets",
+    "global_prohibitions"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "control_plane": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_of_truth", "coordinator_role", "pilot_stop_gate"],
+      "properties": {
+        "source_of_truth": {"const": "openmontage"},
+        "coordinator_role": {"const": "control"},
+        "pilot_stop_gate": {"const": "proposal"}
+      }
+    },
+    "auto_dispatch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled", "trigger_action", "stages", "max_retries", "stop_gate"],
+      "properties": {
+        "enabled": {"const": true},
+        "trigger_action": {"const": "approve_topic"},
+        "stages": {
+          "type": "array",
+          "const": ["research", "media_collection", "media_relevance_review", "evidence_lock", "proposal"]
+        },
+        "max_retries": {"const": 1},
+        "stop_gate": {"const": "proposal"}
+      }
+    },
+    "orchestrator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "base_ref", "reuse_existing_runs", "reuse_existing_worktrees"],
+      "properties": {
+        "name": {"const": "orca"},
+        "base_ref": {"type": "string", "minLength": 1},
+        "reuse_existing_runs": {"const": false},
+        "reuse_existing_worktrees": {"const": false}
+      }
+    },
+    "workspace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repo_root_kind", "factory_cwd_suffix", "canonical_projects_env", "canonical_projects_root"],
+      "properties": {
+        "repo_root_kind": {"const": "parent_git_repository"},
+        "factory_cwd_suffix": {"const": "유튜브공장"},
+        "canonical_projects_env": {"const": "OPENMONTAGE_PROJECTS_DIR"},
+        "canonical_projects_root": {"const": "유튜브공장/projects"}
+      }
+    },
+    "handoff": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required_fields", "verification_required_fields", "merge_requires_exact_match"],
+      "properties": {
+        "required_fields": {
+          "const": ["source_commit", "artifact_path", "artifact_sha256"]
+        },
+        "verification_required_fields": {
+          "const": ["verdict", "source_commit", "input_sha256", "verified_at", "source_urls"]
+        },
+        "merge_requires_exact_match": {"const": true}
+      }
+    },
+    "roles": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["control", "research", "verification", "story_visual", "production", "qa"],
+      "properties": {
+        "control": {"$ref": "#/$defs/role"},
+        "research": {"$ref": "#/$defs/role"},
+        "verification": {"$ref": "#/$defs/role"},
+        "story_visual": {"$ref": "#/$defs/role"},
+        "production": {"$ref": "#/$defs/role"},
+        "qa": {"$ref": "#/$defs/role"}
+      }
+    },
+    "local_models": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["endpoint", "primary", "second_opinion", "silent_switch"],
+      "properties": {
+        "endpoint": {"type": "string", "pattern": "^http://127\\.0\\.0\\.1:[0-9]+/v1$"},
+        "primary": {"const": "qwen3.6-35b-a3b-mlx"},
+        "second_opinion": {"const": "gemma-4-31b-it-mlx"},
+        "silent_switch": {"const": false}
+      }
+    },
+    "resource_lanes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cloud", "local_text", "local_media", "manual", "mutex"],
+      "properties": {
+        "cloud": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["parallel_allowed"],
+          "properties": {"parallel_allowed": {"const": true}}
+        },
+        "local_text": {"$ref": "#/$defs/singleLane"},
+        "local_media": {"$ref": "#/$defs/singleLane"},
+        "manual": {"$ref": "#/$defs/singleLane"},
+        "mutex": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "array",
+            "prefixItems": [{"const": "local_text"}, {"const": "local_media"}],
+            "items": false,
+            "minItems": 2,
+            "maxItems": 2
+          }
+        }
+      }
+    },
+    "provider_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["silent_fallback", "silent_model_switch", "paid_calls_require_gate"],
+      "properties": {
+        "silent_fallback": {"const": false},
+        "silent_model_switch": {"const": false},
+        "paid_calls_require_gate": {"const": "budget_approval"}
+      }
+    },
+    "topview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "api_enabled", "automatic_dispatch", "result_ingest_requires_manifest"],
+      "properties": {
+        "mode": {"const": "manual_semi_automatic"},
+        "api_enabled": {"const": false},
+        "automatic_dispatch": {"const": false},
+        "result_ingest_requires_manifest": {"const": true}
+      }
+    },
+    "human_gates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "topic_approval",
+        "animatic_approval",
+        "budget_approval",
+        "asset_selection",
+        "final_edit_approval",
+        "publish_approval"
+      ],
+      "properties": {
+        "topic_approval": {"$ref": "#/$defs/humanGate"},
+        "animatic_approval": {"$ref": "#/$defs/humanGate"},
+        "budget_approval": {"$ref": "#/$defs/humanGate"},
+        "asset_selection": {"$ref": "#/$defs/humanGate"},
+        "final_edit_approval": {"$ref": "#/$defs/humanGate"},
+        "publish_approval": {"$ref": "#/$defs/humanGate"}
+      }
+    },
+    "secrets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["default_deny", "role_allowlists"],
+      "properties": {
+        "default_deny": {"const": true},
+        "role_allowlists": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["control", "research", "verification", "story_visual", "production", "qa"],
+          "properties": {
+            "control": {"$ref": "#/$defs/secretList"},
+            "research": {"$ref": "#/$defs/secretList"},
+            "verification": {"$ref": "#/$defs/secretList"},
+            "story_visual": {"$ref": "#/$defs/secretList"},
+            "production": {"$ref": "#/$defs/secretList"},
+            "qa": {"$ref": "#/$defs/secretList"}
+          }
+        }
+      }
+    },
+    "global_prohibitions": {
+      "type": "array",
+      "minItems": 5,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    }
+  },
+  "$defs": {
+    "role": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["runtime", "model", "effort", "profile", "resource_lane", "writes"],
+      "properties": {
+        "runtime": {"enum": ["codex", "claude", "hermes"]},
+        "model": {"type": "string", "minLength": 1},
+        "effort": {"type": ["string", "null"]},
+        "profile": {"type": ["string", "null"]},
+        "resource_lane": {"enum": ["cloud", "local_text", "local_media", "manual"]},
+        "writes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "singleLane": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["max_concurrent"],
+      "properties": {"max_concurrent": {"const": 1}}
+    },
+    "humanGate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authority", "automatic_approval"],
+      "properties": {
+        "authority": {"const": "user"},
+        "automatic_approval": {"const": false}
+      }
+    },
+    "secretList": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]+$"}
+    }
+  }
+}

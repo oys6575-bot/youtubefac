@@ -1,33 +1,42 @@
 # MK Visual Director
 
-LLM 교체가 가능하고, 실제 자료·AI 재현·정밀 모션그래픽을 결합하는 시네마틱 다큐멘터리 제작 시스템의 최종 설계 검수 저장소입니다.
+LLM 교체가 가능하고, 실제 자료·AI 재현·정밀 모션그래픽을 결합하는 시네마틱 다큐멘터리 제작 시스템의 설계 기록과 독립 실행 프로젝트입니다.
 
-현재 상태는 **DESIGN_READY_FOR_CROSS_REVIEW**입니다.
+현재 설계 기록은 보존돼 있으며, 실제 실행 시스템은 [`유튜브공장/`](유튜브공장/)에 독립 구축됐습니다.
 
-이 저장소는 아직 구현 승인을 의미하지 않습니다. Claude 독립검수, Codex 독립검수, 상호 교차검수, 최종 합의, 사용자 Human Gate가 끝나기 전에는 구현·유료 API 대량 호출·최종 렌더·외부 공개를 시작하지 않습니다.
+구축 완료는 유료 생성·최종 영상·외부 공개에 대한 승인을 의미하지 않습니다. TopView 결제, 모델 다운로드의 라이선스 동의, 최종 렌더 채택, 게시에는 각각 사용자 Human Gate가 필요합니다.
+
+## 실행 프로젝트
+
+1. [`유튜브공장 시작 안내`](유튜브공장/docs/operations/START-HERE.md)
+2. [`도구·스킬·TopView·GitHub·Hugging Face·Reddit 전수 검수`](유튜브공장/docs/research/2026-08-11-tool-skill-capability-audit.md)
+3. [`TopView 수동 운용 안내`](유튜브공장/docs/operations/TOPVIEW-MANUAL-RUNBOOK.md)
+
+`유튜브공장/`은 자체 OpenMontage 소스, Python·Node lock, Remotion, HyperFrames 스킬, ComfyUI 안정판, 로컬 모델 리비전 장부를 포함한다. 기존 OpenMontage 프로젝트·환경파일·캐시·모델은 포함하지 않는다.
 
 ## 최종 결정
 
 - 주력 클라우드 생성 provider: **TopView**
-- 시각 감독: **MK Visual Director**
+- 최상위 총괄 감독·진실원: **OpenMontage**
+- 전문 장면 감독: **OpenMontage 내부의 MK Visual Director**
 - 정밀 타이포·수치·도면·자료 전환 contract: **HyperFrames 우선 권고**
-- 편집·오디오·출처·비용·QC·납품: **OpenMontage**
+- 편집·오디오·출처·비용·QC·납품: **OpenMontage가 Remotion·HyperFrames·FFmpeg를 지휘**
 - 로컬 초안·fallback: **LTX 계열 로컬 provider**
+- TopView 운용: **API 없이 사용자 수동 UI handoff**
 - Newtake: 주력 시스템이 아니라 수동 연출 UX와 방짜유기 레퍼런스의 학습 대상
 
 ## 문서 읽는 순서
 
-1. [최종 설계안](docs/MK_VISUAL_DIRECTOR_FINAL_DESIGN_v1.md)
-2. [TopView 채택 결정 기록](docs/ADR-001-TOPVIEW-PRIMARY-PROVIDER.md)
-3. [OpenMontage 통합 결정 기록](docs/ADR-002-OPENMONTAGE-INTEGRATION.md)
-4. [방짜유기 영상·Newtake 분석](docs/REFERENCE-BANGJJA-NEWTake-ANALYSIS.md)
-5. [VisualPlan JSON Schema](schemas/visual-plan.schema.json)
-6. [Source Registry Schema](schemas/source-registry.schema.json)
+1. [유튜브공장 시작 안내](유튜브공장/docs/operations/START-HERE.md)
+2. [최종 설계안 v2](docs/MK_VISUAL_DIRECTOR_FINAL_DESIGN_v2.md)
+3. [TopView 채택 결정 기록](docs/ADR-001-TOPVIEW-PRIMARY-PROVIDER.md)
+4. [OpenMontage 통합 결정 기록](docs/ADR-002-OPENMONTAGE-INTEGRATION.md)
+5. [방짜유기 영상·Newtake 분석](docs/REFERENCE-BANGJJA-NEWTake-ANALYSIS.md)
+6. [VisualPlan v2 JSON Schema](schemas/visual-plan.v2.schema.json)
 7. [Hyatt Golden Sequence](golden-tests/HYATT-60-90S-GOLDEN-SEQUENCE.md)
 8. [방짜유기 스타일 검증](golden-tests/BANGJJA-STYLE-ACCEPTANCE-TEST.md)
-9. [Claude 독립검수 프롬프트](reviews/CLAUDE-INDEPENDENT-REVIEW-PROMPT.md)
-10. [Claude↔Codex 교차검수 Runbook](reviews/CROSS-REVIEW-RUNBOOK.md)
-11. [Codex 독립검수 결과](reviews/codex-independent-review.md) — Claude 독립검수가 끝난 뒤 읽기
+9. [최종 교차검수 합의](reviews/final-consensus.md)
+10. [Codex v2 검증](reviews/codex-v2-verification.md)
 
 ## 교차검수 순서
 

@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openmontage/artifacts/topview_operator_result",
+  "title": "TopView Manual Operator Result",
+  "description": "Human-recorded settings and cost provenance accompanying files downloaded from the TopView web UI.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "batch_id", "recorded_at", "results"],
+  "properties": {
+    "schema_version": { "const": "1.1.0" },
+    "batch_id": { "$ref": "#/$defs/id" },
+    "recorded_at": { "type": "string", "format": "date-time" },
+    "results": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/result" }
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[A-Z][A-Z0-9_-]{2,63}$" },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "shot_id",
+        "filename",
+        "actual_ui_workspace",
+        "actual_tool_label",
+        "actual_model_display_name",
+        "queue_mode",
+        "plan_tier",
+        "credits_estimated_before_submit",
+        "credits_charged",
+        "attempt_number",
+        "submitted_at",
+        "completed_at",
+        "provider_project_reference",
+        "settings_capture",
+        "generation_notes"
+      ],
+      "properties": {
+        "shot_id": { "$ref": "#/$defs/id" },
+        "filename": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9_-]{2,63}__candidate_[A-Z]\\.(mp4|mov|webm)$"
+        },
+        "actual_ui_workspace": {
+          "enum": ["BOARD", "CANVAS", "SHOT_COMPOSER_3D", "FILM_STUDIO", "DRAMA_STUDIO"]
+        },
+        "actual_tool_label": { "type": "string", "minLength": 1 },
+        "actual_model_display_name": { "type": "string", "minLength": 1 },
+        "queue_mode": { "enum": ["STANDARD", "FAST", "RELAXED", "OFF_PEAK", "UNKNOWN"] },
+        "plan_tier": { "type": "string", "minLength": 1 },
+        "credits_estimated_before_submit": { "type": ["number", "null"], "minimum": 0 },
+        "credits_charged": { "type": ["number", "null"], "minimum": 0 },
+        "attempt_number": { "type": "integer", "minimum": 1 },
+        "submitted_at": { "type": "string", "format": "date-time" },
+        "completed_at": { "type": "string", "format": "date-time" },
+        "provider_project_reference": { "type": ["string", "null"] },
+        "settings_capture": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["path", "sha256"],
+          "properties": {
+            "path": { "type": "string", "minLength": 1 },
+            "sha256": { "$ref": "#/$defs/sha256" }
+          }
+        },
+        "generation_notes": { "type": "string" }
+      }
+    }
+  }
+}

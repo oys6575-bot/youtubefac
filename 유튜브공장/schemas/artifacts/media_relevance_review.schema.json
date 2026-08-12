@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openmontage/artifacts/media_relevance_review",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "project_id", "review_status", "generated_at", "base_manifest_sha256", "supplement_manifest", "topic_identity", "decisions", "coverage", "counts"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "project_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{1,95}$"},
+    "review_status": {"enum": ["completed", "partial", "failed"]},
+    "generated_at": {"type": "string", "format": "date-time"},
+    "base_manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "supplement_manifest": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/supplementManifest"}
+      ]
+    },
+    "topic_identity": {"$ref": "#/$defs/topicIdentity"},
+    "decisions": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/decision"}
+    },
+    "coverage": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/coverage"}
+    },
+    "counts": {"$ref": "#/$defs/counts"}
+  },
+  "$defs": {
+    "nonEmptyStrings": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "supplementManifest": {
+      "type": "object",
+      "description": "Embedded rights-cleared supplement manifest. The pipeline also validates it against media_collection_manifest.schema.json before accepting the review.",
+      "required": ["schema_version", "project_id", "collection_status", "generated_at", "queries", "source_summary", "items"],
+      "properties": {
+        "schema_version": {"const": "1.0.0"},
+        "project_id": {"type": "string", "minLength": 1},
+        "collection_status": {"enum": ["completed", "partial"]},
+        "generated_at": {"type": "string", "format": "date-time"},
+        "queries": {"type": "array"},
+        "source_summary": {"type": "object"},
+        "items": {"type": "array"}
+      }
+    },
+    "topicIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canonical_name", "aliases", "locations", "dates"],
+      "properties": {
+        "canonical_name": {"type": "string", "minLength": 1},
+        "aliases": {"$ref": "#/$defs/nonEmptyStrings"},
+        "locations": {"$ref": "#/$defs/nonEmptyStrings"},
+        "dates": {"$ref": "#/$defs/nonEmptyStrings"}
+      }
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["media_id", "media_sha256", "category", "eligibility", "relevance_score", "identity_evidence", "mismatch_evidence", "visual_summary", "usefulness", "review_method", "reviewed_at"],
+      "properties": {
+        "media_id": {"type": "string", "minLength": 1},
+        "media_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "category": {"enum": ["event_direct", "news_report", "official_record", "explanatory", "generic_broll", "unrelated", "unknown"]},
+        "eligibility": {"enum": ["eligible", "excluded", "held"]},
+        "relevance_score": {"type": "integer", "minimum": 0, "maximum": 100},
+        "identity_evidence": {"$ref": "#/$defs/nonEmptyStrings"},
+        "mismatch_evidence": {"$ref": "#/$defs/nonEmptyStrings"},
+        "visual_summary": {"type": "string"},
+        "usefulness": {"type": "string", "minLength": 1},
+        "review_method": {"$ref": "#/$defs/nonEmptyStrings"},
+        "reviewed_at": {"type": "string", "format": "date-time"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"category": {"enum": ["event_direct", "news_report"]}}, "required": ["category"]},
+          "then": {"properties": {"identity_evidence": {"minItems": 1}, "eligibility": {"const": "eligible"}}}
+        },
+        {
+          "if": {"properties": {"category": {"enum": ["unrelated", "generic_broll"]}}, "required": ["category"]},
+          "then": {"properties": {"eligibility": {"const": "excluded"}}}
+        },
+        {
+          "if": {"properties": {"category": {"const": "unknown"}}, "required": ["category"]},
+          "then": {"properties": {"eligibility": {"const": "held"}}}
+        }
+      ]
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lane", "status", "eligible_media_ids"],
+      "properties": {
+        "lane": {"enum": ["event_site", "warning_cracks", "aftermath_rescue", "factory_context", "news_newspaper", "official_record", "map_structure"]},
+        "status": {"enum": ["covered", "partial", "missing"]},
+        "eligible_media_ids": {"$ref": "#/$defs/nonEmptyStrings"}
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["total", "eligible", "excluded", "held", "by_category"],
+      "properties": {
+        "total": {"type": "integer", "minimum": 0},
+        "eligible": {"type": "integer", "minimum": 0},
+        "excluded": {"type": "integer", "minimum": 0},
+        "held": {"type": "integer", "minimum": 0},
+        "by_category": {
+          "type": "object",
+          "propertyNames": {"enum": ["event_direct", "news_report", "official_record", "explanatory", "generic_broll", "unrelated", "unknown"]},
+          "additionalProperties": {"type": "integer", "minimum": 0}
+        }
+      }
+    }
+  }
+}

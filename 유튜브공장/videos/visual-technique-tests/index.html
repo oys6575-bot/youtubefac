@@ -1,0 +1,590 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>MK Visual Technique Tests</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Apple SD Gothic Neo";
+        src: local("Apple SD Gothic Neo");
+      }
+
+      @font-face {
+        font-family: "SFMono-Regular";
+        src: local("SFMono-Regular");
+      }
+
+      :root {
+        --ink: #11100d;
+        --paper: #e9e1cf;
+        --brass: #b8873d;
+        --sage: #6f8f86;
+        --muted: #b9ae99;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--ink);
+        color: var(--paper);
+        font-family: "Apple SD Gothic Neo", system-ui, sans-serif;
+      }
+
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+      }
+
+      .clip {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+      }
+
+      #canvas-bg {
+        position: absolute;
+        inset: 0;
+        background: var(--ink);
+      }
+
+      #photo-stage {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+      }
+
+      #photo-world {
+        position: absolute;
+        inset: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        transform-origin: 50% 50%;
+        will-change: transform;
+      }
+
+      #source-photo {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 5760px;
+        height: 2160px;
+        max-width: none;
+        object-fit: fill;
+      }
+
+      #photo-shade {
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(circle at 72% 46%, transparent 0 18%, rgba(17, 16, 13, 0.28) 55%),
+          linear-gradient(90deg, rgba(17, 16, 13, 0.74), transparent 43%, rgba(17, 16, 13, 0.3));
+      }
+
+      #depth-grid {
+        position: absolute;
+        inset: 0;
+        opacity: 0.48;
+        background-image:
+          linear-gradient(rgba(233, 225, 207, 0.14) 2px, transparent 2px),
+          linear-gradient(90deg, rgba(233, 225, 207, 0.14) 2px, transparent 2px);
+        background-size: 160px 160px;
+        will-change: transform, opacity;
+      }
+
+      #target-ring {
+        position: absolute;
+        left: 1240px;
+        top: 430px;
+        width: 360px;
+        height: 360px;
+        border: 4px solid var(--brass);
+        border-radius: 50%;
+        box-shadow: 0 0 0 18px rgba(184, 135, 61, 0.16);
+        will-change: transform, opacity;
+      }
+
+      #target-ring::after {
+        content: "FOCUS / 03";
+        position: absolute;
+        left: 38px;
+        bottom: 34px;
+        font-family: ui-monospace, "SFMono-Regular", monospace;
+        font-size: 21px;
+        letter-spacing: 0.15em;
+        color: var(--paper);
+      }
+
+      #top-rule,
+      #bottom-rule {
+        position: absolute;
+        left: 80px;
+        width: 1760px;
+        height: 2px;
+        background: rgba(233, 225, 207, 0.46);
+        transform-origin: left center;
+      }
+
+      #top-rule {
+        top: 68px;
+      }
+
+      #bottom-rule {
+        bottom: 68px;
+      }
+
+      #test-label {
+        position: absolute;
+        left: 82px;
+        top: 98px;
+        width: 780px;
+      }
+
+      .eyebrow {
+        margin: 0 0 20px;
+        color: #e2b768;
+        font-family: ui-monospace, "SFMono-Regular", monospace;
+        font-size: 24px;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+      }
+
+      #test-label h1 {
+        margin: 0;
+        max-width: 760px;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 104px;
+        font-weight: 600;
+        line-height: 0.96;
+        letter-spacing: -0.055em;
+        text-shadow: 0 12px 34px rgba(17, 16, 13, 0.52);
+      }
+
+      #test-label p {
+        margin: 30px 0 0;
+        max-width: 590px;
+        font-size: 30px;
+        font-weight: 500;
+        line-height: 1.42;
+        color: #e7decc;
+      }
+
+      #phase-chip {
+        position: absolute;
+        right: 82px;
+        top: 94px;
+        width: 360px;
+        min-height: 96px;
+        padding: 20px 24px;
+        border: 2px solid rgba(233, 225, 207, 0.4);
+        background: rgba(17, 16, 13, 0.72);
+      }
+
+      .phase-line {
+        position: absolute;
+        inset: 20px 24px;
+        margin: 0;
+        font-family: ui-monospace, "SFMono-Regular", monospace;
+        font-size: 23px;
+        line-height: 1.2;
+        letter-spacing: 0.08em;
+        opacity: 0;
+      }
+
+      .phase-line strong {
+        display: block;
+        margin-top: 8px;
+        color: #e2b768;
+        font-size: 30px;
+        letter-spacing: 0.02em;
+      }
+
+      #speed-curve {
+        position: absolute;
+        left: 82px;
+        bottom: 108px;
+        width: 750px;
+        min-height: 150px;
+        padding: 24px 30px;
+        border-left: 4px solid var(--brass);
+        background: rgba(17, 16, 13, 0.78);
+        opacity: 0;
+      }
+
+      #speed-curve header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: ui-monospace, "SFMono-Regular", monospace;
+        font-size: 21px;
+        letter-spacing: 0.12em;
+      }
+
+      #speed-track {
+        position: relative;
+        width: 650px;
+        height: 4px;
+        margin-top: 38px;
+        background: rgba(233, 225, 207, 0.28);
+      }
+
+      #speed-fill {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 4px;
+        background: var(--brass);
+        transform-origin: left center;
+      }
+
+      #speed-dot {
+        position: absolute;
+        left: -14px;
+        top: -12px;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--paper);
+        box-shadow: 0 0 0 8px rgba(184, 135, 61, 0.28);
+        will-change: transform;
+      }
+
+      #speed-captions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+        color: var(--muted);
+        font-size: 20px;
+      }
+
+      #morph-card {
+        position: absolute;
+        left: 1240px;
+        top: 430px;
+        width: 360px;
+        height: 360px;
+        overflow: hidden;
+        border: 3px solid var(--brass);
+        border-radius: 180px;
+        background: #17150f;
+        box-shadow: 0 26px 100px rgba(17, 16, 13, 0.5);
+        opacity: 0;
+        transform-origin: 50% 50%;
+        will-change: transform, opacity, border-radius, background-color;
+      }
+
+      .morph-content {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+      }
+
+      #morph-old .carried-photo {
+        position: absolute;
+        left: -180px;
+        top: -56px;
+        width: 960px;
+        height: 360px;
+        background-image: url("assets/source.jpg");
+        background-position: center;
+        background-size: cover;
+      }
+
+      #morph-new {
+        display: grid;
+        place-items: center;
+        padding: 44px;
+        background: #17150f;
+        opacity: 0;
+      }
+
+      #final-copy {
+        position: relative;
+        width: 286px;
+        text-align: left;
+      }
+
+      #final-copy .micro {
+        display: block;
+        margin-bottom: 14px;
+        color: #d2a353;
+        font-family: ui-monospace, "SFMono-Regular", monospace;
+        font-size: 7px;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+      }
+
+      #final-copy .final-line {
+        display: block;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 25px;
+        font-weight: 600;
+        line-height: 1.03;
+        letter-spacing: -0.045em;
+      }
+
+      #final-copy .final-line.accent {
+        color: #e2b768;
+      }
+
+      #final-rule {
+        display: block;
+        width: 100%;
+        height: 2px;
+        margin-top: 18px;
+        background: var(--brass);
+        transform-origin: left center;
+      }
+
+      #final-sheen {
+        position: absolute;
+        left: 76px;
+        top: 45px;
+        width: 210px;
+        height: 2px;
+        background: rgba(233, 225, 207, 0.5);
+        will-change: transform, opacity;
+      }
+
+      #footer-meta {
+        position: absolute;
+        right: 82px;
+        bottom: 88px;
+        margin: 0;
+        color: rgba(233, 225, 207, 0.72);
+        font-family: ui-monospace, "SFMono-Regular", monospace;
+        font-size: 20px;
+        letter-spacing: 0.1em;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="9"
+      data-width="1920"
+      data-height="1080"
+    >
+      <section
+        id="technique-reel"
+        class="clip"
+        data-start="0"
+        data-duration="9"
+        data-track-index="1"
+      >
+        <div id="canvas-bg" data-layout-ignore></div>
+
+        <div id="photo-stage" data-layout-allow-overflow>
+          <div id="photo-world">
+            <img id="source-photo" src="assets/source.jpg" alt="Cinematic city still used for local motion testing" />
+          </div>
+          <div id="photo-shade" data-layout-ignore></div>
+          <div id="depth-grid" data-layout-ignore></div>
+          <div id="target-ring" data-layout-ignore></div>
+        </div>
+
+        <div id="top-rule" data-layout-ignore></div>
+        <div id="bottom-rule" data-layout-ignore></div>
+
+        <div id="test-label">
+          <p class="eyebrow">MK VISUAL DIRECTOR / LOCAL TEST 01</p>
+          <h1>정지 이미지에<br />의도를 부여한다</h1>
+          <p>천천히 관찰하고, 정보가 없는 구간은 빠르게 지나, 초점에서 다시 멈춘다.</p>
+        </div>
+
+        <div id="phase-chip">
+          <p id="phase-one" class="phase-line">01 / STILL → MOTION<strong>깊이와 시선</strong></p>
+          <p id="phase-two" class="phase-line">02 / VELOCITY CURVE<strong>빠름 → 느림</strong></p>
+        </div>
+
+        <aside id="speed-curve">
+          <header><span>CAMERA VELOCITY</span><span>SLOW / FAST / LAND</span></header>
+          <div id="speed-track">
+            <div id="speed-fill"></div>
+            <div id="speed-dot"></div>
+          </div>
+          <div id="speed-captions"><span>관찰</span><span>이동</span><span>착지</span></div>
+        </aside>
+
+        <div id="morph-card" data-layout-allow-overflow data-layout-allow-overlap>
+          <div id="morph-old" class="morph-content">
+            <div class="carried-photo" role="img" aria-label="Photo detail carried into the transition anchor"></div>
+          </div>
+          <div id="morph-new" class="morph-content">
+            <div id="final-copy">
+              <span class="micro">03 / AUTHORED TYPOGRAPHY</span>
+              <span class="final-line">정확한 정보는</span>
+              <span class="final-line accent">생성하지 않고</span>
+              <span class="final-line">합성한다</span>
+              <span id="final-rule"></span>
+            </div>
+            <div id="final-sheen" data-layout-ignore></div>
+          </div>
+        </div>
+
+        <p id="footer-meta">HYPERFRAMES · 1920×1080 · 30 FPS · NO PROVIDER CALL</p>
+      </section>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      const camera = document.getElementById("photo-world");
+      const cameraState = { x: 0, y: 0, scale: 1.02 };
+      const drift = { p: 0 };
+
+      tl.fromTo(
+        "#photo-stage",
+        { opacity: 0 },
+        { opacity: 1, duration: 0.5, ease: "power2.out" },
+        0.08,
+      );
+      tl.fromTo(
+        "#test-label",
+        { x: -70, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.72, ease: "power4.out" },
+        0.24,
+      );
+      tl.fromTo(
+        "#top-rule, #bottom-rule",
+        { scaleX: 0, opacity: 0 },
+        { scaleX: 1, opacity: 1, duration: 0.8, ease: "expo.out", stagger: 0.12 },
+        0.18,
+      );
+      tl.fromTo(
+        "#phase-one",
+        { x: 34, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.48, ease: "power3.out" },
+        0.42,
+      );
+      tl.fromTo(
+        "#target-ring",
+        { scale: 0.74, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.9, ease: "power2.out" },
+        0.52,
+      );
+
+      // Slow → fast → slow: the camera crosses empty space quickly and lands gently.
+      tl.to(cameraState, { x: -18, y: -4, scale: 1.028, duration: 0.5, ease: "power3.in" }, 0.28);
+      tl.to(cameraState, { x: -172, y: -24, scale: 1.12, duration: 0.18, ease: "none" }, 0.78);
+      tl.to(cameraState, { x: -238, y: -32, scale: 1.17, duration: 1.62, ease: "power4.out" }, 0.96);
+      tl.to(cameraState, { x: -258, y: -36, scale: 1.19, duration: 2.25, ease: "sine.inOut" }, 2.58);
+
+      // One deterministic writer owns the camera transform and adds restrained micro-drift.
+      tl.to(
+        drift,
+        {
+          p: Math.PI * 2 * 1.4,
+          duration: 5.7,
+          ease: "none",
+          onUpdate: () => {
+            const dx = Math.sin(drift.p) * 4;
+            const dy = Math.sin(drift.p * 1.31) * 2;
+            camera.style.transform = `translate(${cameraState.x + dx}px, ${cameraState.y + dy}px) scale(${cameraState.scale})`;
+          },
+        },
+        0,
+      );
+
+      // A foreground grid travels less than the image, giving the still a restrained parallax cue.
+      tl.fromTo(
+        "#depth-grid",
+        { x: 0, opacity: 0.18 },
+        { x: -74, opacity: 0.48, duration: 4.8, ease: "sine.inOut" },
+        0.3,
+      );
+
+      tl.to("#phase-one", { x: -30, opacity: 0, duration: 0.26, ease: "power2.in" }, 2.58);
+      tl.fromTo(
+        "#phase-two",
+        { x: 30, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.42, ease: "power3.out", immediateRender: false },
+        2.72,
+      );
+      tl.fromTo(
+        "#speed-curve",
+        { x: -54, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.48, ease: "expo.out", immediateRender: false },
+        2.78,
+      );
+      tl.fromTo(
+        "#speed-fill",
+        { scaleX: 0 },
+        { scaleX: 1, duration: 1.95, ease: "power2.out", immediateRender: false },
+        2.95,
+      );
+      tl.fromTo(
+        "#speed-dot",
+        { x: 0 },
+        { x: 58, duration: 0.42, ease: "power3.in", immediateRender: false },
+        2.98,
+      );
+      tl.to("#speed-dot", { x: 494, duration: 0.16, ease: "none" }, 3.4);
+      tl.to("#speed-dot", { x: 650, duration: 1.28, ease: "power4.out" }, 3.56);
+
+      tl.to("#speed-curve", { y: 24, opacity: 0, duration: 0.32, ease: "power2.in" }, 4.82);
+      tl.to("#phase-two", { x: -28, opacity: 0, duration: 0.28, ease: "power2.in" }, 4.88);
+      tl.to("#test-label", { x: -70, opacity: 0, duration: 0.34, ease: "power3.in" }, 5.0);
+
+      // The photo's circular target becomes the transition anchor, then becomes the exact type field.
+      tl.fromTo(
+        "#morph-card",
+        { scale: 0.82, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.42, ease: "power3.out", immediateRender: false },
+        4.92,
+      );
+      tl.to(
+        "#morph-card",
+        {
+          x: -460,
+          y: -70,
+          scale: 5.35,
+          borderRadius: 0,
+          backgroundColor: "#17150f",
+          duration: 1.18,
+          ease: "power2.inOut",
+        },
+        5.35,
+      );
+      tl.to("#morph-old", { opacity: 0, duration: 0.44, ease: "power1.in" }, 5.35);
+      tl.to("#photo-stage", { opacity: 0, duration: 0.72, ease: "power1.in" }, 5.42);
+      tl.to("#top-rule, #bottom-rule, #footer-meta", { opacity: 0, duration: 0.36, ease: "power1.in" }, 5.28);
+      tl.to("#morph-new", { opacity: 1, duration: 0.48, ease: "power1.out" }, 6.02);
+      tl.fromTo(
+        "#final-copy",
+        { y: 18, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.58, ease: "power3.out", immediateRender: false },
+        6.14,
+      );
+      tl.fromTo(
+        "#final-rule",
+        { scaleX: 0 },
+        { scaleX: 1, duration: 0.62, ease: "expo.out", immediateRender: false },
+        6.52,
+      );
+      tl.fromTo(
+        "#final-sheen",
+        { x: -110, opacity: 0.12 },
+        { x: 110, opacity: 0.72, duration: 2.15, ease: "sine.inOut", immediateRender: false },
+        6.6,
+      );
+      tl.to("#final-sheen", { opacity: 0.18, duration: 0.6, ease: "power2.out" }, 8.75);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

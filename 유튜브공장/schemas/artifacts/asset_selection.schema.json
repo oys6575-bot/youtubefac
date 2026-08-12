@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openmontage/artifacts/asset_selection",
+  "title": "YouTube Factory Asset Selection Packet",
+  "description": "Candidate comparison and proposed selection for GATE_ASSET_SELECTION. The checkpoint owns approval.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "project_id", "state", "candidates", "selected_asset_ids", "gate_ref"],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "project_id": { "$ref": "#/$defs/id" },
+    "state": { "enum": ["draft", "ready_for_gate", "needs_revision"] },
+    "candidates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["asset_id", "shot_id", "path", "sha256"],
+        "properties": {
+          "asset_id": { "$ref": "#/$defs/id" },
+          "shot_id": { "$ref": "#/$defs/id" },
+          "path": { "type": "string", "minLength": 1 },
+          "sha256": { "$ref": "#/$defs/sha256" },
+          "review_note": { "type": "string" }
+        }
+      }
+    },
+    "selected_asset_ids": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/id" },
+      "uniqueItems": true
+    },
+    "gate_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gate", "checkpoint_path"],
+      "properties": {
+        "gate": { "const": "GATE_ASSET_SELECTION" },
+        "checkpoint_path": { "type": "string", "minLength": 1 }
+      }
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[A-Z][A-Z0-9_-]{2,63}$" },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

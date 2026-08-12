@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0.0",
+  "repository": "https://github.com/Comfy-Org/ComfyUI.git",
+  "release": "v0.31.0",
+  "commit": "43cb4fffc89bba20ab7bd61467a36d0339338dab",
+  "captured_at": "2026-08-11T23:10:00+09:00",
+  "path": "vendor/comfyui/src",
+  "import_method": "git archive",
+  "archive_sha256": "d92b6476dcf0a8a578843f30c8e6054f1cfa1821e48ca1b688a53d3bb288de5d",
+  "file_count": 1006,
+  "license": "GPL-3.0",
+  "models_included": false,
+  "custom_nodes_included": false,
+  "required_blueprints": {
+    "Text to Video (LTX-2.3).json": "5fe6e26fcc09a87990af2df4fce75c39353621f60a810a79428aeea506a76267",
+    "Image to Video (LTX-2.3).json": "21bb2952ab60ed42c5c4f49f8b48af52d934513889cba1b00615293451b723d0",
+    "First-Last-Frame to Video (LTX-2.3).json": "0e2bb5c2ef15e3fd4e029552238e8378c466b353c2ab0c524e95a58578fc03bf",
+    "Image to Video (Wan 2.2).json": "622eb56473d7c21dc0e6ffae0b34b7ce0d941cc28b6a516868ebab7092050029",
+    "Text to Video (Wan 2.2).json": "4e47296590111743d29aa695203c65511e2d96cdb4c4c80611cdb1b91ffbdd11"
+  }
+}

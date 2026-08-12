@@ -1,0 +1,13 @@
+{
+  "duration": 9,
+  "maxStaticSec": 1.5,
+  "assertions": [
+    {"kind": "appearsBy", "selector": "#test-label", "bySec": 0.5},
+    {"kind": "appearsBy", "selector": "#speed-curve", "bySec": 3.3},
+    {"kind": "appearsBy", "selector": "#final-copy", "bySec": 7.0},
+    {"kind": "before", "a": "#test-label", "b": "#final-copy"},
+    {"kind": "staysInFrame", "selector": "#test-label"},
+    {"kind": "staysInFrame", "selector": "#final-copy"},
+    {"kind": "keepsMoving", "withinSelector": "#root"}
+  ]
+}

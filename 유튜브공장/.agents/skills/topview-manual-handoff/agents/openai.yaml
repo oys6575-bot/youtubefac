@@ -1,0 +1,4 @@
+interface:
+  display_name: "TopView Manual Handoff"
+  short_description: "Prepare and recover human-run TopView jobs"
+  default_prompt: "Use $topview-manual-handoff to prepare approved shots for manual TopView work and validate the returned files."

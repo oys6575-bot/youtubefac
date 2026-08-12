@@ -1,0 +1,3 @@
+# The runnable factory is imported from its independently tested source commit.
+# Preserve its upstream whitespace instead of mechanically rewriting snapshots.
+유튜브공장/** -whitespace

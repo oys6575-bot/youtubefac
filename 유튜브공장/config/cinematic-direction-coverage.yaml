@@ -1,0 +1,117 @@
+schema_version: "1.0.0"
+retrieved_at: "2026-08-12"
+policy:
+  status: REFERENCE_ONLY
+  activation_status: REFERENCE_ONLY
+  copyright_mode: paraphrase_only
+  normal_pack_inclusion: false
+  provider_claims_require_live_verification: true
+
+sources:
+  - id: source.cinedance_mirror
+    url: https://www.all-ai.de/media/textfiles/cinedance-skill.md
+    sha256: 7b0e4f8dad1515631f54b6b6401b333adbdbbe3b8832a71c6ac78fe5d20b95f8
+    evidence_class: THIRD_PARTY_MIRROR
+  - id: source.acting_mirror
+    url: https://www.all-ai.de/media/textfiles/acting-skill.md
+    sha256: 8841c5d1155ee9347d5fc302a2f0fdac76fed21070c94bf01741821ea1c42365
+    evidence_class: THIRD_PARTY_MIRROR
+  - id: source.lira_mirror
+    url: https://www.all-ai.de/media/textfiles/lira-skill.md
+    sha256: 329240f47888689e16576682c5de52dd2c1075b1fe5482068c647dad9f03544a
+    evidence_class: THIRD_PARTY_MIRROR
+
+notes:
+  - card_id: research.cinematic.camera_spatial_physics
+    title: 카메라·공간·물리 연출 원리
+    domain: camera_spatial_physics
+    path: knowledge/10-RESEARCH/cinematic-direction/Camera-Spatial-Physics-Direction.md
+    source_ids: [source.cinedance_mirror]
+    coverage_ids:
+      - CIN-001
+      - CIN-002
+      - CIN-003
+      - CIN-004
+      - CIN-005
+      - CIN-006
+      - CIN-007
+      - CIN-008
+      - CIN-009
+      - CIN-010
+      - CIN-011
+      - CIN-012
+      - CIN-013
+      - CIN-014
+      - CIN-015
+      - CIN-016
+      - CIN-017
+      - CIN-018
+      - CIN-019
+      - CIN-020
+      - CIN-021
+      - CIN-022
+      - CIN-023
+      - CIN-024
+      - CIN-025
+      - CIN-026
+      - CIN-027
+      - CIN-028
+
+  - card_id: research.cinematic.behavioral_performance
+    title: 행동 기반 연기 연출 원리
+    domain: behavioral_performance
+    path: knowledge/10-RESEARCH/cinematic-direction/Behavioral-Performance-Direction.md
+    source_ids: [source.acting_mirror]
+    coverage_ids:
+      - ACT-001
+      - ACT-002
+      - ACT-003
+      - ACT-004
+      - ACT-005
+      - ACT-006
+      - ACT-007
+      - ACT-008
+      - ACT-009
+      - ACT-010
+      - ACT-011
+      - ACT-012
+      - ACT-013
+      - ACT-014
+      - ACT-015
+      - ACT-016
+      - ACT-017
+      - ACT-018
+      - ACT-019
+      - ACT-020
+
+  - card_id: research.cinematic.image_reference_asset
+    title: 이미지·레퍼런스·에셋 연출 원리
+    domain: image_reference_asset
+    path: knowledge/10-RESEARCH/cinematic-direction/Image-Reference-Asset-Direction.md
+    source_ids: [source.lira_mirror, source.cinedance_mirror]
+    coverage_ids:
+      - IMG-001
+      - IMG-002
+      - IMG-003
+      - IMG-004
+      - IMG-005
+      - IMG-006
+      - IMG-007
+      - IMG-008
+      - IMG-009
+      - IMG-010
+      - IMG-011
+      - IMG-012
+      - IMG-013
+      - IMG-014
+      - IMG-015
+      - IMG-016
+      - IMG-017
+      - IMG-018
+
+  - card_id: research.cinematic.direction_map
+    title: 시네마틱 연출 연구 지도
+    domain: direction_map
+    path: knowledge/10-RESEARCH/cinematic-direction/Cinematic-Direction-Map.md
+    source_ids: [source.cinedance_mirror, source.acting_mirror, source.lira_mirror]
+    coverage_ids: []

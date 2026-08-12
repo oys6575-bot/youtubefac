@@ -1,0 +1,291 @@
+{
+  "schema_version": "2.1.0",
+  "project_id": "PROJECT_DEMO",
+  "plan_id": "PLAN_DEMO",
+  "status": "drafting",
+  "generated_by": {
+    "adapter": "mk-visual-director",
+    "model": "manual-fixture",
+    "created_at": "2026-08-11T20:10:00+09:00"
+  },
+  "script_ref": "artifacts/script.json",
+  "script_sha256": "0000000000000000000000000000000000000000000000000000000000000001",
+  "evidence_lock": {
+    "registry_version": "EVIDENCE_V1",
+    "status": "approved"
+  },
+  "global_style": {
+    "aspect_ratio": "16:9",
+    "resolution": "1280x720",
+    "fps": 30,
+    "grammar_ids": ["HERITAGE_FORGE"]
+  },
+  "sequences": [
+    {
+      "sequence_id": "SEQ_INTRO",
+      "purpose": "실제 기록에서 AI 재현으로 전환한다.",
+      "narration_range": {
+        "start_seconds": 0,
+        "end_seconds": 7
+      },
+      "evidence_ids": ["SRC_ARCHIVE", "CLAIM_DATE"],
+      "technique_selection": {
+        "registry_version": "2026-08-12",
+        "query_intents": [
+          "evidence_first",
+          "exact_fact",
+          "opening_frame",
+          "spatial_blocking",
+          "optical_result",
+          "physical_causality",
+          "reference_role",
+          "semantic_transition"
+        ],
+        "provider_scopes": ["GENERIC", "TOPVIEW_MANUAL"],
+        "render_runtimes": ["HYPERFRAMES"],
+        "include_on_demand": false,
+        "selected_ids": [
+          "direction.opening_frame_intent",
+          "continuity.explicit_spatial_blocking",
+          "camera.observable_optical_result",
+          "direction.physical_causality",
+          "continuity.reference_role_binding",
+          "transition.semantic_match_cut",
+          "typography.exact_fact_overlay"
+        ],
+        "rejected_provider_specific_ids": [
+          "provider.higgsfield.camera_preset",
+          "provider.seedance.multishot_continuity"
+        ],
+        "selection_reason": "증거에서 재현으로 넘어가는 의미를 유지하면서 정확한 날짜와 절제된 움직임을 분리해 설계한다."
+      },
+      "selected_grammar": "HERITAGE_FORGE",
+      "pacing_profile": "steady",
+      "entry_transition": {
+        "type": "cut",
+        "duration_seconds": 0
+      },
+      "exit_transition": {
+        "type": "sound_bridge",
+        "duration_seconds": 0.4
+      },
+      "target_duration_seconds": 7,
+      "shots": [
+        {
+          "shot_id": "SHOT_001",
+          "narrative_function": "evidence",
+          "representation": "HYBRID",
+          "contains_ai": false,
+          "coverage_role": "evidence_insert",
+          "factual_precision": "exact",
+          "evidence_ids": ["SRC_ARCHIVE", "CLAIM_DATE"],
+          "technique_ids": [
+            "typography.exact_fact_overlay",
+            "transition.semantic_match_cut"
+          ],
+          "provider_route": {
+            "mode": "HYPERFRAMES",
+            "cost_tier": "zero"
+          },
+          "prompt_intent": "공식 기록 사진 위에 검증된 날짜를 표시한다.",
+          "continuity_bindings": ["DATE_TO_RECONSTRUCTION"],
+          "edit_trigger": "narration_clause",
+          "transition_in": {
+            "type": "cut",
+            "duration_seconds": 0
+          },
+          "transition_out": {
+            "type": "graphic_match",
+            "duration_seconds": 0.3
+          },
+          "audio_layers": [
+            {
+              "type": "narration",
+              "intent": "검증된 날짜를 말한다.",
+              "sync_event": "BEAT_DATE"
+            }
+          ],
+          "overlay": {
+            "mode": "COMPOSITED_BY_HYPERFRAMES",
+            "items": [
+              {
+                "overlay_id": "OVL_DATE",
+                "module": "TYPOGRAPHY",
+                "claim_id": "CLAIM_DATE",
+                "source_id": null,
+                "text_key": "demo.date",
+                "literal": "1991년 7월 17일",
+                "locale": "ko-KR",
+                "position_hint": "upper_left",
+                "safe_area": "title",
+                "exact_text_from_claims": true
+              }
+            ]
+          },
+          "disclosure": {
+            "required": true,
+            "label": "실제 자료 + 설명 그래픽"
+          },
+          "duration_seconds": 3,
+          "fallback": {
+            "mode": "REAL",
+            "description": "정지 기록 사진과 날짜 타이포만 사용한다."
+          }
+        },
+        {
+          "shot_id": "SHOT_002",
+          "narrative_function": "reveal",
+          "representation": "AI_RECONSTRUCTION",
+          "contains_ai": true,
+          "coverage_role": "hero",
+          "factual_precision": "medium",
+          "evidence_ids": ["SRC_ARCHIVE", "CLAIM_DATE"],
+          "technique_ids": [
+            "direction.opening_frame_intent",
+            "continuity.explicit_spatial_blocking",
+            "camera.observable_optical_result",
+            "continuity.reference_role_binding"
+          ],
+          "provider_route": {
+            "mode": "TOPVIEW_HANDOFF",
+            "model_requirements": ["image-to-video", "reference-consistency"],
+            "cost_tier": "standard",
+            "estimated_credits": 40
+          },
+          "prompt_intent": "기록 사진의 공간 배치를 존중한 절제된 AI 재현 장면.",
+          "generation_brief": {
+            "negative_prompt": "과장된 파괴, 왜곡된 구조, 읽을 수 없는 문자",
+            "reference_paths": ["references/archive-frame.png"],
+            "model_recommendation": "TopView에서 사용자가 현재 제공 모델을 선택",
+            "operator_notes": "한 번에 세 후보를 비교하고 카메라 이동이 가장 절제된 결과를 선택한다."
+          },
+          "cinematic_direction": {
+            "opening_frame": {
+              "description": "기록 사진의 작업장 전체와 장인, 작업대, 유기 그릇이 먼저 읽힌다.",
+              "subjects_visible": ["장인", "작업대", "유기 그릇"],
+              "environment_state": "흐린 자연광이 드는 작업장",
+              "action_state": "장인이 망치를 내리기 직전 정지해 있다.",
+              "deliberate_empty_opening": false
+            },
+            "spatial_blocking": [
+              {
+                "subject": "장인",
+                "screen_position": "화면 중앙 오른쪽",
+                "world_anchor": "작업대 뒤편",
+                "distance_relation": "유기 그릇에서 팔 길이 거리",
+                "body_orientation": "몸은 왼쪽 45도",
+                "attention_target": "유기 그릇 표면",
+                "movement_path": "제자리에서 망치를 수직으로 내린다."
+              }
+            ],
+            "optical_result": {
+              "camera_distance": "작업장과 손동작이 함께 보이는 중원경",
+              "perspective_behavior": "공간 깊이는 자연스럽고 가장자리 왜곡은 없다.",
+              "background_behavior": "배경 작업 도구의 간격과 위치가 유지된다.",
+              "focus_behavior": "장인과 그릇이 읽히고 배경만 부드럽게 분리된다.",
+              "subject_scale": "장인의 상반신이 프레임 높이의 절반을 차지한다."
+            },
+            "timed_beats": [
+              {
+                "start_seconds": 0,
+                "end_seconds": 1.5,
+                "visible_action": "정지 사진의 질감이 살아나며 장인이 숨을 들이쉰다.",
+                "camera_behavior": "중심축을 유지한 채 아주 느리게 전진한다.",
+                "physical_result": "옷자락과 손목만 미세하게 움직인다."
+              },
+              {
+                "start_seconds": 1.5,
+                "end_seconds": 4,
+                "visible_action": "망치가 내려가 그릇 표면에 닿고 다시 멈춘다.",
+                "camera_behavior": "접촉 직전에 감속하고 결과를 유지한다.",
+                "physical_result": "접촉점의 진동이 금속 표면으로 짧게 퍼진다."
+              }
+            ],
+            "physical_cues": [
+              "망치의 무게가 손목과 팔꿈치에 전달된다.",
+              "금속 접촉 뒤 작은 진동이 감쇠한다."
+            ],
+            "reference_bindings": [
+              {
+                "path": "references/archive-frame.png",
+                "role": "ENVIRONMENT_REFERENCE",
+                "controls": [
+                  "workspace geometry",
+                  "material character",
+                  "light direction"
+                ],
+                "excludes": [
+                  "camera framing",
+                  "subject identity",
+                  "new objects"
+                ]
+              }
+            ]
+          },
+          "camera": {
+            "framing": "wide",
+            "angle": "three_quarter",
+            "height": "eye",
+            "lens_intent": "environmental",
+            "movement": "slow_push",
+            "direction": "toward"
+          },
+          "lighting": {
+            "family": "natural overcast",
+            "key_direction": "side",
+            "contrast": "medium"
+          },
+          "composition": "실제 기록 사진과 같은 중심축을 유지한다.",
+          "negative_space": "좌측 상단 공개 라벨 영역을 비운다.",
+          "continuity_bindings": ["DATE_TO_RECONSTRUCTION"],
+          "edit_trigger": "sound_bridge",
+          "transition_in": {
+            "type": "graphic_match",
+            "duration_seconds": 0.3
+          },
+          "transition_out": {
+            "type": "cut",
+            "duration_seconds": 0
+          },
+          "audio_layers": [
+            {
+              "type": "ambience",
+              "intent": "절제된 현장 공간감을 만든다.",
+              "sync_event": null
+            }
+          ],
+          "overlay": {
+            "mode": "SEPARATE_OVERLAY",
+            "items": [
+              {
+                "overlay_id": "OVL_AI_LABEL",
+                "module": "RECONSTRUCTION_LABEL",
+                "claim_id": null,
+                "source_id": null,
+                "text_key": "common.ai_reconstruction",
+                "literal": "AI 재현",
+                "locale": "ko-KR",
+                "position_hint": "upper_left",
+                "safe_area": "title",
+                "exact_text_from_claims": false
+              }
+            ]
+          },
+          "disclosure": {
+            "required": true,
+            "label": "AI 재현"
+          },
+          "duration_seconds": 4,
+          "fallback": {
+            "mode": "STILL_2_5D",
+            "description": "기록 사진을 이용한 느린 2.5D 패럴랙스로 대체한다."
+          }
+        }
+      ]
+    }
+  ],
+  "gate_ref": {
+    "gate": "GATE_ANIMATIC",
+    "checkpoint_path": "checkpoints/scene_plan.json"
+  }
+}

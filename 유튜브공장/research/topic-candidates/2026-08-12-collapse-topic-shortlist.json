@@ -1,0 +1,370 @@
+{
+  "version": "1.0",
+  "project_id": "collapse-topic-pilot-2026-08-12",
+  "generated_at": "2026-08-12T07:55:34Z",
+  "provisional": true,
+  "scope_definition": "physical collapse of a human-made building or structure",
+  "scorecard_ref": "config/topic-selection-scorecard.yaml",
+  "candidates": [
+    {
+      "id": "hyatt-regency-walkways",
+      "title": "하얏트 리젠시 보행로 붕괴",
+      "location": "Kansas City, Missouri, United States",
+      "collapse_date": "1981-07-17",
+      "structure_type": "suspended hotel walkways",
+      "collapse_extent": "partial",
+      "one_line_question": "한 번의 연결부 설계 변경은 어떻게 두 개의 보행로를 동시에 떨어뜨렸나?",
+      "provisional": true,
+      "scope": {"human_made_structure": true, "physical_collapse": true, "scope_verified": true},
+      "sources": [{
+        "title": "Walkway Collapse, Kansas City, Missouri, 1981",
+        "institution": "National Institute of Standards and Technology",
+        "class": "official_or_primary",
+        "url": "https://www.nist.gov/el/walkway-collapse-kansas-city-missouri-1981",
+        "supports": "NIST records the July 17, 1981 physical collapse of the second- and fourth-floor suspended walkways."
+      }],
+      "korean_youtube_landscape": {"query": "하얏트 리젠시 보행로 붕괴 원인", "checked_at": "2026-08-12T07:37:20Z", "assessment": "한국어 경쟁도와 중복도는 YouTube Data 후속 검증 전인 잠정 평가다."},
+      "scores": {"event_pull": 4, "causal_depth": 5, "belief_reversal": 4, "evidence_verifiability": 5, "narrative_expandability": 4, "visual_explainability": 5, "meaning_and_lessons": 5, "korean_content_scarcity": 3},
+      "score_reasons": {
+        "event_pull": "호텔 내부의 대형 인명 참사로 도입 흡인력이 크다.",
+        "causal_depth": "설계 변경·검토·시공 책임이 연쇄적으로 연결된다.",
+        "belief_reversal": "작은 연결 상세가 전체 하중 경로를 바꾼다.",
+        "evidence_verifiability": "NIST 공식 조사와 구조 계산 근거가 명확하다.",
+        "narrative_expandability": "설계부터 붕괴와 제도 변화까지 확장 가능하다.",
+        "visual_explainability": "행어로드와 박스빔 하중을 단면도로 설명하기 쉽다.",
+        "meaning_and_lessons": "설계 변경 검토와 책임 체계의 교훈이 선명하다.",
+        "korean_content_scarcity": "한국어 심층 다큐 경쟁도는 아직 잠정치다."
+      }
+    },
+    {
+      "id": "champlain-towers-south",
+      "title": "챔플레인 타워 사우스 붕괴",
+      "location": "Surfside, Florida, United States",
+      "collapse_date": "2021-06-24",
+      "structure_type": "12-story reinforced-concrete condominium",
+      "collapse_extent": "partial",
+      "one_line_question": "사람들이 살던 해안 콘도는 왜 새벽에 예고 없이 무너졌나?",
+      "provisional": true,
+      "scope": {"human_made_structure": true, "physical_collapse": true, "scope_verified": true},
+      "sources": [{
+        "title": "Champlain Towers South Collapse",
+        "institution": "National Institute of Standards and Technology",
+        "class": "official_or_primary",
+        "url": "https://www.nist.gov/disaster-and-failure-studies/champlain-towers-south-collapse",
+        "supports": "NIST records the sudden partial collapse of the 12-story condominium on June 24, 2021."
+      }],
+      "korean_youtube_landscape": {"query": "챔플레인 타워 붕괴 원인", "checked_at": "2026-08-12T07:37:20Z", "assessment": "최근 사건이라 알려졌지만 한국어 심층 경쟁도는 후속 정량 검증이 필요하다."},
+      "scores": {"event_pull": 5, "causal_depth": 4, "belief_reversal": 4, "evidence_verifiability": 4, "narrative_expandability": 5, "visual_explainability": 4, "meaning_and_lessons": 5, "korean_content_scarcity": 4},
+      "score_reasons": {
+        "event_pull": "현대 주거 건물이 새벽에 붕괴한 충격이 매우 크다.",
+        "causal_depth": "설계·열화·유지관리 가설을 층별로 다룰 수 있다.",
+        "belief_reversal": "평범한 주거 공간의 안전 신뢰를 뒤집는다.",
+        "evidence_verifiability": "NIST 조사가 진행 중이라 일부 결론은 유보해야 한다.",
+        "narrative_expandability": "건물 생애주기와 경고 신호까지 서사를 넓힐 수 있다.",
+        "visual_explainability": "주차장·수영장 데크·기둥 관계를 공간적으로 보여줄 수 있다.",
+        "meaning_and_lessons": "노후 건물 점검과 보수 의사결정의 교훈이 크다.",
+        "korean_content_scarcity": "심층 구조 분석형 한국어 콘텐츠는 잠정적으로 드물다."
+      }
+    },
+    {
+      "id": "fiu-pedestrian-bridge",
+      "title": "FIU 보행교 붕괴",
+      "location": "Miami, Florida, United States",
+      "collapse_date": "2018-03-15",
+      "structure_type": "pedestrian bridge under construction",
+      "collapse_extent": "partial",
+      "one_line_question": "균열이 보였는데도 왜 보행교 아래의 도로는 계속 열려 있었나?",
+      "provisional": true,
+      "scope": {"human_made_structure": true, "physical_collapse": true, "scope_verified": true},
+      "sources": [{
+        "title": "Pedestrian Bridge Collapse Over SW 8th Street, Miami, Florida",
+        "institution": "National Transportation Safety Board",
+        "class": "official_or_primary",
+        "url": "https://www.ntsb.gov/investigations/pages/hwy18mh009.aspx",
+        "supports": "NTSB records the March 15, 2018 structural failure and collapse of the bridge span onto the roadway."
+      }],
+      "korean_youtube_landscape": {"query": "FIU 보행교 붕괴 원인", "checked_at": "2026-08-12T07:37:20Z", "assessment": "국내 토목 요약물과의 중복 여부는 후속 YouTube 검색으로 확인해야 한다."},
+      "scores": {"event_pull": 4, "causal_depth": 5, "belief_reversal": 4, "evidence_verifiability": 5, "narrative_expandability": 3, "visual_explainability": 5, "meaning_and_lessons": 4, "korean_content_scarcity": 4},
+      "score_reasons": {
+        "event_pull": "운행 중 도로 위 신설 교량 붕괴라는 긴박감이 크다.",
+        "causal_depth": "설계 계산·균열 판단·현장 통제 실패가 겹친다.",
+        "belief_reversal": "혁신 공법 홍보와 실제 위험의 대비가 강하다.",
+        "evidence_verifiability": "NTSB 공개 조사 기록과 계산 근거가 풍부하다.",
+        "narrative_expandability": "사건 범위는 선명하지만 장기 서사는 비교적 짧다.",
+        "visual_explainability": "트러스 절점과 균열 진행을 도식화하기 좋다.",
+        "meaning_and_lessons": "위험 신호 발견 뒤 통제 결정의 중요성을 보여준다.",
+        "korean_content_scarcity": "한국어 심층 분석의 희소성은 잠정적으로 높다."
+      }
+    },
+    {
+      "id": "i35w-mississippi-bridge",
+      "title": "I-35W 미시시피강 교량 붕괴",
+      "location": "Minneapolis, Minnesota, United States",
+      "collapse_date": "2007-08-01",
+      "structure_type": "deck-truss highway bridge",
+      "collapse_extent": "partial",
+      "one_line_question": "수십 년을 버틴 고속도로 교량은 왜 저녁 교통량 속에서 한꺼번에 내려앉았나?",
+      "provisional": true,
+      "scope": {"human_made_structure": true, "physical_collapse": true, "scope_verified": true},
+      "sources": [{
+        "title": "Collapse of I-35W Highway Bridge, Minneapolis, Minnesota",
+        "institution": "National Transportation Safety Board",
+        "class": "official_or_primary",
+        "url": "https://www.ntsb.gov/investigations/Pages/HWY07MH024.aspx",
+        "supports": "NTSB records the August 1, 2007 collapse of the deck-truss bridge main span and identifies undersized gusset plates."
+      }],
+      "korean_youtube_landscape": {"query": "I-35W 교량 붕괴 원인", "checked_at": "2026-08-12T07:37:20Z", "assessment": "사건 인지도 대비 한국어 장편 분석 경쟁도는 후속 확인이 필요하다."},
+      "scores": {"event_pull": 4, "causal_depth": 5, "belief_reversal": 4, "evidence_verifiability": 5, "narrative_expandability": 4, "visual_explainability": 5, "meaning_and_lessons": 5, "korean_content_scarcity": 3},
+      "score_reasons": {
+        "event_pull": "도심 고속도로가 교통 중 붕괴해 즉각적 긴장이 높다.",
+        "causal_depth": "원설계·증가 하중·점검 체계를 함께 분석할 수 있다.",
+        "belief_reversal": "겉보기 부식보다 원래 설계 상세가 핵심이었다.",
+        "evidence_verifiability": "NTSB 보고서와 시험 자료가 체계적으로 남아 있다.",
+        "narrative_expandability": "건설부터 유지관리와 제도 개선까지 연결 가능하다.",
+        "visual_explainability": "거셋플레이트 좌굴과 하중 경로를 명확히 시각화할 수 있다.",
+        "meaning_and_lessons": "기존 인프라의 원설계 재검증 필요성을 보여준다.",
+        "korean_content_scarcity": "국내에 알려진 사건이라 희소성은 잠정 중간이다."
+      }
+    },
+    {
+      "id": "wtc-7",
+      "title": "세계무역센터 7번 건물 붕괴",
+      "location": "New York City, New York, United States",
+      "collapse_date": "2001-09-11",
+      "structure_type": "47-story steel-framed office building",
+      "collapse_extent": "whole",
+      "one_line_question": "항공기 충돌이 없던 47층 건물은 왜 그날 오후 완전히 붕괴했나?",
+      "provisional": true,
+      "scope": {"human_made_structure": true, "physical_collapse": true, "scope_verified": true},
+      "sources": [{
+        "title": "Final Report on the Collapse of World Trade Center Building 7",
+        "institution": "National Institute of Standards and Technology",
+        "class": "official_or_primary",
+        "url": "https://www.nist.gov/publications/final-report-collapse-world-trade-center-building-7-federal-building-and-fire-safety-0",
+        "supports": "NIST concludes that uncontrolled fires led to progressive structural collapse of WTC 7 on September 11, 2001."
+      }],
+      "korean_youtube_landscape": {"query": "WTC 7 붕괴 NIST 원인", "checked_at": "2026-08-12T07:37:20Z", "assessment": "관련 영상은 많지만 근거 중심 한국어 설명의 경쟁도는 별도 확인이 필요하다."},
+      "scores": {"event_pull": 5, "causal_depth": 4, "belief_reversal": 5, "evidence_verifiability": 4, "narrative_expandability": 5, "visual_explainability": 4, "meaning_and_lessons": 4, "korean_content_scarcity": 2},
+      "score_reasons": {
+        "event_pull": "세계적으로 알려진 사건과 미해결 인식이 강하게 끈다.",
+        "causal_depth": "화재·열팽창·기둥 손실의 연쇄를 다룰 수 있다.",
+        "belief_reversal": "항공기 충돌이 없었다는 통념과 화재 붕괴가 충돌한다.",
+        "evidence_verifiability": "NIST 근거는 풍부하지만 논쟁적 주장 분리가 필수다.",
+        "narrative_expandability": "사건·조사·오해 검증을 장편 서사로 펼칠 수 있다.",
+        "visual_explainability": "내부 열팽창과 진행성 붕괴는 세심한 3D 설명이 필요하다.",
+        "meaning_and_lessons": "장시간 화재와 구조 시스템 상호작용의 교훈이 있다.",
+        "korean_content_scarcity": "한국어 관련 콘텐츠가 많아 희소성은 낮을 가능성이 크다."
+      }
+    },
+    {
+      "id": "silver-bridge",
+      "title": "실버 브리지 붕괴",
+      "location": "Point Pleasant, West Virginia–Gallipolis, Ohio, United States",
+      "collapse_date": "1967-12-15",
+      "structure_type": "eyebar-chain suspension bridge",
+      "collapse_extent": "whole",
+      "one_line_question": "눈에 보이지 않던 작은 균열은 어떻게 다리 전체를 연쇄 붕괴시켰나?",
+      "provisional": true,
+      "scope": {"human_made_structure": true, "physical_collapse": true, "scope_verified": true},
+      "sources": [{
+        "title": "Collapse of U.S. 35 Highway Bridge, Point Pleasant, West Virginia",
+        "institution": "National Transportation Safety Board",
+        "class": "official_or_primary",
+        "url": "https://www.ntsb.gov/investigations/Pages/80267.aspx",
+        "supports": "NTSB records the December 15, 1967 chain failure and progressive collapse of the bridge spans and towers."
+      }],
+      "korean_youtube_landscape": {"query": "실버 브리지 붕괴 원인 아이바", "checked_at": "2026-08-12T07:37:20Z", "assessment": "괴담형 언급과 공학형 심층물의 구분을 포함한 후속 검색이 필요하다."},
+      "scores": {"event_pull": 3, "causal_depth": 4, "belief_reversal": 3, "evidence_verifiability": 4, "narrative_expandability": 3, "visual_explainability": 4, "meaning_and_lessons": 5, "korean_content_scarcity": 4},
+      "score_reasons": {
+        "event_pull": "러시아워 전면 붕괴지만 국내 인지도는 낮다.",
+        "causal_depth": "재료 결함·검사 한계·중복성 부족이 맞물린다.",
+        "belief_reversal": "작은 아이바 균열 하나가 전체 붕괴로 번진다.",
+        "evidence_verifiability": "공식 사고조사 기록이 있으나 오래된 자료다.",
+        "narrative_expandability": "기술 원인은 깊지만 인물·기록 확장은 제한적이다.",
+        "visual_explainability": "체인형 아이바와 연쇄 파괴를 도식화하기 좋다.",
+        "meaning_and_lessons": "파괴 허용 설계와 검사 제도 변화의 교훈이 크다.",
+        "korean_content_scarcity": "공학 중심 한국어 장편은 잠정적으로 드물다."
+      }
+    },
+    {
+      "id": "tacoma-narrows-bridge",
+      "title": "타코마 내로스 브리지 붕괴",
+      "location": "Tacoma, Washington, United States",
+      "collapse_date": "1940-11-07",
+      "structure_type": "suspension bridge",
+      "collapse_extent": "partial",
+      "one_line_question": "바람은 어떻게 거대한 현수교 상판을 비틀어 떨어뜨렸나?",
+      "provisional": true,
+      "scope": {"human_made_structure": true, "physical_collapse": true, "scope_verified": true},
+      "sources": [{
+        "title": "Tacoma Narrows Bridge: The Collapse",
+        "institution": "Washington State Department of Transportation",
+        "class": "official_or_primary",
+        "url": "https://wsdot.wa.gov/TNBhistory/collapse.htm",
+        "supports": "WSDOT records the November 7, 1940 torsional motion and collapse of the center span into Puget Sound."
+      }],
+      "korean_youtube_landscape": {"query": "타코마 내로스 다리 붕괴 원인", "checked_at": "2026-08-12T07:37:20Z", "assessment": "교육 영상이 많은 대표 사례라 한국어 희소성은 낮을 가능성이 높다."},
+      "scores": {"event_pull": 5, "causal_depth": 3, "belief_reversal": 4, "evidence_verifiability": 5, "narrative_expandability": 4, "visual_explainability": 5, "meaning_and_lessons": 5, "korean_content_scarcity": 2},
+      "score_reasons": {
+        "event_pull": "거대한 상판이 비틀리다 추락하는 사건 자체가 강렬하다.",
+        "causal_depth": "공기탄성 플러터가 핵심이라 원인 축은 비교적 집중된다.",
+        "belief_reversal": "단순 공진이라는 대중적 오해를 바로잡을 수 있다.",
+        "evidence_verifiability": "공식 역사 기록과 영상·공학 연구가 풍부하다.",
+        "narrative_expandability": "설계 경쟁과 풍동 실험의 발전까지 이어진다.",
+        "visual_explainability": "비틀림과 바람 흐름을 영상으로 직관화하기 쉽다.",
+        "meaning_and_lessons": "교량 공기역학 설계의 전환점이라는 의미가 크다.",
+        "korean_content_scarcity": "이미 널리 다뤄져 희소성은 낮을 가능성이 크다."
+      }
+    },
+    {
+      "id": "sunshine-skyway-bridge",
+      "title": "선샤인 스카이웨이 브리지 붕괴",
+      "location": "Tampa Bay, Florida, United States",
+      "collapse_date": "1980-05-09",
+      "structure_type": "cantilever highway bridge",
+      "collapse_extent": "partial",
+      "one_line_question": "짙은 비 속 화물선 한 척은 어떻게 고속도로 상판을 바다로 떨어뜨렸나?",
+      "provisional": true,
+      "scope": {"human_made_structure": true, "physical_collapse": true, "scope_verified": true},
+      "sources": [{
+        "title": "Collision of the Summit Venture with the Sunshine Skyway Bridge",
+        "institution": "National Transportation Safety Board",
+        "class": "official_or_primary",
+        "url": "https://www.ntsb.gov/investigations/Pages/DCA80AM050.aspx",
+        "supports": "NTSB records the May 9, 1980 vessel collision, pier destruction, and fall of about 1,297 feet of bridge deck and superstructure."
+      }],
+      "korean_youtube_landscape": {"query": "선샤인 스카이웨이 다리 붕괴 화물선", "checked_at": "2026-08-12T07:37:20Z", "assessment": "한국어 사건 소개와 심층 원인 분석의 양은 후속 확인이 필요하다."},
+      "scores": {"event_pull": 3, "causal_depth": 4, "belief_reversal": 3, "evidence_verifiability": 5, "narrative_expandability": 3, "visual_explainability": 4, "meaning_and_lessons": 4, "korean_content_scarcity": 4},
+      "score_reasons": {
+        "event_pull": "선박 충돌과 차량 추락 장면은 강하지만 원인이 즉각 보인다.",
+        "causal_depth": "기상·항해·교각 보호·도로 통제가 함께 작용한다.",
+        "belief_reversal": "교량보다 외부 충돌 방호의 중요성을 드러낸다.",
+        "evidence_verifiability": "NTSB 공식 해양 사고조사가 상세하다.",
+        "narrative_expandability": "사건과 재설계는 분명하지만 원인 축은 비교적 짧다.",
+        "visual_explainability": "선박 궤적과 교각 충돌을 공간적으로 설명하기 좋다.",
+        "meaning_and_lessons": "선박 충돌 방호와 교통 인프라 설계 교훈이 있다.",
+        "korean_content_scarcity": "국내 심층 다큐는 잠정적으로 드문 편이다."
+      }
+    },
+    {
+      "id": "lambiance-plaza",
+      "title": "L’Ambiance Plaza 붕괴",
+      "location": "Bridgeport, Connecticut, United States",
+      "collapse_date": "1987-04-23",
+      "structure_type": "lift-slab residential building under construction",
+      "collapse_extent": "whole",
+      "one_line_question": "층을 들어 올려 만드는 공법은 왜 건물 전체를 연쇄적으로 무너뜨렸나?",
+      "provisional": true,
+      "scope": {"human_made_structure": true, "physical_collapse": true, "scope_verified": true},
+      "sources": [{
+        "title": "Lift-Slab Operations; L'Ambiance Plaza",
+        "institution": "Occupational Safety and Health Administration",
+        "class": "official_or_primary",
+        "url": "https://www.osha.gov/enforcement/directives/std-03-15-003",
+        "supports": "OSHA records the April 23, 1987 collapse of the lift-slab building under construction and the deaths of 28 workers."
+      }],
+      "korean_youtube_landscape": {"query": "L'Ambiance Plaza 붕괴 리프트 슬래브", "checked_at": "2026-08-12T07:37:20Z", "assessment": "국문 표기 변형을 포함한 YouTube 경쟁도 검사가 아직 필요한 잠정 평가다."},
+      "scores": {"event_pull": 4, "causal_depth": 4, "belief_reversal": 3, "evidence_verifiability": 5, "narrative_expandability": 4, "visual_explainability": 5, "meaning_and_lessons": 4, "korean_content_scarcity": 4},
+      "score_reasons": {
+        "event_pull": "공사 중 건물 전체 연쇄 붕괴의 충격이 크다.",
+        "causal_depth": "공법·임시 지지·작업 절차와 감독을 함께 볼 수 있다.",
+        "belief_reversal": "효율적 시공법이 취약한 임시 상태를 만들 수 있다.",
+        "evidence_verifiability": "OSHA 공식 지침과 사고 기반 안전 규정이 남아 있다.",
+        "narrative_expandability": "공법 원리부터 구조 구난과 규정 변화까지 확장된다.",
+        "visual_explainability": "슬래브 인양과 연쇄 낙하를 단계별로 설명하기 쉽다.",
+        "meaning_and_lessons": "시공 단계 구조 안정성의 독립 검토 교훈이 크다.",
+        "korean_content_scarcity": "한국어 심층 콘텐츠는 잠정적으로 드문 편이다."
+      }
+    },
+    {
+      "id": "schoharie-creek-bridge",
+      "title": "쇼하리 크리크 브리지 붕괴",
+      "location": "Fort Hunter, New York, United States",
+      "collapse_date": "1987-04-05",
+      "structure_type": "highway bridge over a creek",
+      "collapse_extent": "partial",
+      "one_line_question": "보이지 않는 강바닥의 변화는 어떻게 멀쩡해 보이던 교각을 쓰러뜨렸나?",
+      "provisional": true,
+      "scope": {"human_made_structure": true, "physical_collapse": true, "scope_verified": true},
+      "sources": [{
+        "title": "Collapse of New York Thruway Bridge over Schoharie Creek",
+        "institution": "National Transportation Safety Board",
+        "class": "official_or_primary",
+        "url": "https://www.ntsb.gov/investigations/Pages/DCA87MH005.aspx",
+        "supports": "NTSB records the April 5, 1987 pier failure from scour and the collapse of multiple bridge spans."
+      }],
+      "korean_youtube_landscape": {"query": "쇼하리 크리크 교량 붕괴 세굴", "checked_at": "2026-08-12T07:37:20Z", "assessment": "세굴 공학을 설명하는 한국어 장편 경쟁도는 후속 검사가 필요하다."},
+      "scores": {"event_pull": 3, "causal_depth": 4, "belief_reversal": 3, "evidence_verifiability": 5, "narrative_expandability": 3, "visual_explainability": 4, "meaning_and_lessons": 5, "korean_content_scarcity": 4},
+      "score_reasons": {
+        "event_pull": "수면 아래 원인이라 즉각적 장면 흡인력은 중간이다.",
+        "causal_depth": "홍수·세굴·기초·점검 한계를 연결할 수 있다.",
+        "belief_reversal": "상부가 아니라 보이지 않는 강바닥이 교량을 무너뜨린다.",
+        "evidence_verifiability": "NTSB 공식 조사와 교량 기록이 구체적이다.",
+        "narrative_expandability": "사건은 선명하지만 인물·시간축 확장은 제한적이다.",
+        "visual_explainability": "수중 세굴과 교각 지지 상실을 단면으로 설명할 수 있다.",
+        "meaning_and_lessons": "수중 기초 점검과 세굴 대응의 대표 교훈이다.",
+        "korean_content_scarcity": "한국어 심층물은 잠정적으로 드문 분야다."
+      }
+    },
+    {
+      "id": "rana-plaza",
+      "title": "라나 플라자 붕괴",
+      "location": "Savar, Dhaka, Bangladesh",
+      "collapse_date": "2013-04-24",
+      "structure_type": "eight-story commercial and garment-factory building",
+      "collapse_extent": "whole",
+      "one_line_question": "균열을 본 노동자들은 왜 다음 날 다시 무너질 건물 안으로 들어가야 했나?",
+      "provisional": true,
+      "scope": {"human_made_structure": true, "physical_collapse": true, "scope_verified": true},
+      "sources": [{
+        "title": "Employment injury insurance in Bangladesh: bridging the social security gap",
+        "institution": "International Labour Organization",
+        "class": "official_or_primary",
+        "url": "https://www.ilo.org/resource/statement/employment-injury-insurance-bangladesh-bridging-social-security-cases",
+        "supports": "ILO records the April 24, 2013 collapse of the eight-story Rana Plaza building containing five garment factories."
+      }],
+      "korean_youtube_landscape": {"query": "라나 플라자 붕괴 원인 의류공장", "checked_at": "2026-08-12T07:37:20Z", "assessment": "사회 문제 영상은 있으나 구조·의사결정 통합 다큐 경쟁도는 후속 확인이 필요하다."},
+      "scores": {"event_pull": 5, "causal_depth": 5, "belief_reversal": 4, "evidence_verifiability": 5, "narrative_expandability": 5, "visual_explainability": 4, "meaning_and_lessons": 5, "korean_content_scarcity": 3},
+      "score_reasons": {
+        "event_pull": "대규모 인명 피해와 사전 균열 경고가 강한 도입을 만든다.",
+        "causal_depth": "불법 증축·용도 변경·권력·공급망이 겹친다.",
+        "belief_reversal": "단순 건물 사고가 세계 의류 공급망 문제로 확장된다.",
+        "evidence_verifiability": "ILO와 국제기관의 공식 기록이 풍부하다.",
+        "narrative_expandability": "구조 원인부터 노동·기업 책임까지 장편 전개가 가능하다.",
+        "visual_explainability": "증축과 기계 진동은 도식화 가능하나 사실 고정이 필요하다.",
+        "meaning_and_lessons": "건축 안전과 노동 선택권의 관계를 분명히 보여준다.",
+        "korean_content_scarcity": "사건은 알려졌지만 통합 심층물 희소성은 잠정 중간이다."
+      }
+    },
+    {
+      "id": "quebec-bridge-first-collapse",
+      "title": "퀘벡 브리지 1차 붕괴",
+      "location": "Québec City–Lévis, Quebec, Canada",
+      "collapse_date": "1907-08-29",
+      "structure_type": "cantilever bridge under construction",
+      "collapse_extent": "partial",
+      "one_line_question": "계산 오류와 현장 변형 경고는 왜 1907년의 거대한 교량 공사를 멈추지 못했나?",
+      "provisional": true,
+      "scope": {"human_made_structure": true, "physical_collapse": true, "scope_verified": true},
+      "sources": [{
+        "title": "The history of the Québec Bridge",
+        "institution": "Government of Canada",
+        "class": "official_or_primary",
+        "url": "https://www.canada.ca/en/housing-infrastructure-communities/news/2019/08/the-history-of-the-quebec-bridge.html",
+        "supports": "The Government of Canada records the collapse of the south arm under construction on August 29, 1907."
+      }],
+      "korean_youtube_landscape": {"query": "퀘벡 브리지 1907 붕괴 원인", "checked_at": "2026-08-12T07:37:20Z", "assessment": "한국어 장편 다큐와 공학 강의 중복도는 후속 정량 검색이 필요하다."},
+      "scores": {"event_pull": 4, "causal_depth": 5, "belief_reversal": 4, "evidence_verifiability": 4, "narrative_expandability": 4, "visual_explainability": 3, "meaning_and_lessons": 5, "korean_content_scarcity": 4},
+      "score_reasons": {
+        "event_pull": "거대한 건설 현장이 순식간에 무너진 역사적 충격이 있다.",
+        "causal_depth": "계산·조직 권한·현장 경고 무시를 함께 추적할 수 있다.",
+        "belief_reversal": "당대 최고 규모 도전이 기본 하중 추정에서 흔들렸다.",
+        "evidence_verifiability": "정부 기록은 확실하지만 세부 원자료 접근성이 낮다.",
+        "narrative_expandability": "1차 붕괴와 재건, 2차 사고까지 역사 서사가 이어진다.",
+        "visual_explainability": "캔틸레버 압축부 좌굴은 정교한 단계 도식이 필요하다.",
+        "meaning_and_lessons": "독립 검토와 현장 우려 전달 체계의 교훈이 크다.",
+        "korean_content_scarcity": "한국어 심층 다큐는 잠정적으로 드문 사건이다."
+      }
+    }
+  ]
+}

@@ -1,0 +1,567 @@
+name: youtube-factory
+version: "1.0"
+description: >
+  Evidence-led long-form YouTube production controlled by OpenMontage. MK Visual Director
+  translates approved script and evidence into sequence-first VisualPlan and scene_plan
+  artifacts. Real media, local generation, HyperFrames, and a human-operated TopView UI
+  are combined without allowing generated candidates to bypass Human Gates.
+category: documentary
+stability: beta
+default_checkpoint_policy: guided
+
+reference_input:
+  supported: true
+  analysis_depth: deep
+  analysis_tools:
+    - video_analyzer
+    - transcript_fetcher
+    - video_downloader
+    - scene_detect
+    - frame_sampler
+
+orchestration:
+  mode: executive-producer
+  skill: pipelines/youtube-factory/executive-producer
+  budget_default_usd: 0.00
+  max_revisions_per_stage: 3
+  max_send_backs: 3
+  max_wall_time_minutes: 120
+
+extensions:
+  custom_scripts: true
+  custom_playbooks: true
+  custom_skills: true
+  custom_tools: true
+
+metadata:
+  control_plane: openmontage
+  scene_director: mk-visual-director
+  visual_technique_registry: config/visual-technique-registry.yaml
+  visual_technique_selection:
+    minimum_recommended: 3
+    maximum: 7
+    provider_isolation_required: true
+    on_demand_requires_explicit_selection: true
+  knowledge_vault:
+    root: knowledge
+    start_page: knowledge/00-START-HERE.md
+    catalog: knowledge/.factory-catalog.json
+    audit_before_selection: true
+    pack_after_selection: true
+    technique_budget:
+      minimum: 3
+      maximum: 7
+    per_entity_budget: 7
+    authority: canonical_registries
+    network_access: false
+    provider_execution: false
+    human_gate_authority: false
+  topview_integration_mode: manual_ui
+  network_publish_enabled: false
+  router_modes:
+    - REAL_INGEST
+    - TOPVIEW_HANDOFF
+    - LOCAL_LTX
+    - HYPERFRAMES
+  manual_external_checkpoint_status: in_progress
+  manual_external_checkpoint_metadata: awaiting_manual_external
+
+required_skills:
+  - pipelines/youtube-factory/executive-producer
+  - pipelines/youtube-factory/topic-director
+  - pipelines/youtube-factory/evidence-director
+  - pipelines/youtube-factory/media-collection-director
+  - pipelines/youtube-factory/media-relevance-review-director
+  - pipelines/youtube-factory/proposal-director
+  - pipelines/youtube-factory/script-director
+  - pipelines/youtube-factory/mk-visual-director
+  - pipelines/youtube-factory/animatic-director
+  - pipelines/youtube-factory/budget-director
+  - pipelines/youtube-factory/asset-director
+  - pipelines/youtube-factory/edit-director
+  - pipelines/youtube-factory/compose-director
+  - pipelines/youtube-factory/publish-director
+  - meta/reviewer
+  - meta/checkpoint-protocol
+  - meta/taste-direction
+  - meta/animation-runtime-selector
+  - meta/video-reference-analyst
+
+compatible_playbooks:
+  recommended:
+    - heritage-forge
+  also_works:
+    - clean-professional
+    - premium-minimalist
+  custom_allowed: true
+
+stages:
+  - name: topic_search
+    skill: pipelines/youtube-factory/topic-director
+    produces:
+      - topic_shortlist
+    tools_available:
+      - transcript_fetcher
+    checkpoint_required: true
+    human_approval_default: false
+    review_focus:
+      - Every candidate is an actual physical collapse of a human-made structure
+      - Every candidate has at least one official or primary source
+      - Production tools, footage quantity, and generation cost do not affect scores
+    success_criteria:
+      - Schema-valid topic_shortlist with deterministic provisional scores
+      - Research handoff records source commit, artifact path, and SHA-256
+
+  - name: topic_verification
+    skill: pipelines/youtube-factory/topic-director
+    required_artifacts_in:
+      - topic_shortlist
+    produces:
+      - topic_verification
+    tools_available: []
+    checkpoint_required: true
+    human_approval_default: false
+    review_focus:
+      - Scope, dates, official sources, and score evidence are independently checked
+      - Verdict is bound to the exact source commit and artifact SHA-256
+      - Unsupported candidates are blocked rather than silently repaired
+    success_criteria:
+      - Schema-valid topic_verification with exact-byte input binding
+      - Every accepted candidate has a traceable verification record
+
+  - name: topic_approval
+    skill: pipelines/youtube-factory/topic-director
+    required_artifacts_in:
+      - topic_shortlist
+      - topic_verification
+    produces:
+      - topic_selection
+    tools_available: []
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      - Ranked choices and remaining evidence limits are visible to the user
+      - No deep research, script, or production begins before the user chooses
+    success_criteria:
+      - Checkpoint is awaiting_human with human_approved false
+      - GATE_TOPIC_SELECTION completes only after explicit user approval
+
+  - name: research
+    skill: pipelines/youtube-factory/evidence-director
+    produces:
+      - research_brief
+      - evidence_registry
+    tools_available:
+      - video_analyzer
+      - transcript_fetcher
+      - video_downloader
+      - frame_sampler
+      - scene_detect
+    checkpoint_required: true
+    human_approval_default: false
+    review_focus:
+      - Every factual claim has at least one source and pinpoint
+      - Rights status is explicit for every source asset
+      - Reference-video style observations are separated from factual evidence
+    success_criteria:
+      - Schema-valid research_brief and evidence_registry artifacts
+      - Exact dates, numbers, and quotations are represented as claims
+
+  - name: media_collection
+    skill: pipelines/youtube-factory/media-collection-director
+    required_artifacts_in:
+      - research_brief
+      - evidence_registry
+    produces:
+      - media_collection_manifest
+    tools_available:
+      - rights_cleared_media_collection
+    checkpoint_required: true
+    human_approval_default: false
+    review_focus:
+      - Rights are decided before any candidate bytes are downloaded
+      - Unknown, restricted, permission-required, paid, preview-only, and watermarked material is discarded
+      - Accepted files have stable provenance, checksums, and technical metadata
+      - Collection does not make a creative edit selection
+    success_criteria:
+      - Schema-valid media_collection_manifest contains accepted real files only
+      - Every manifest SHA-256 matches a file beneath assets/source
+      - Retrying is idempotent and does not duplicate accepted bytes
+      - No Gemini, paid API, TopView, generation, upload, or publish call occurs
+
+  - name: media_relevance_review
+    skill: pipelines/youtube-factory/media-relevance-review-director
+    required_artifacts_in:
+      - media_collection_manifest
+      - research_brief
+    produces:
+      - media_relevance_review
+    tools_available:
+      - rights_cleared_media_collection
+      - frame_sampler
+    checkpoint_required: true
+    human_approval_default: false
+    review_focus:
+      - Every collected file is classified against positive event identity evidence
+      - Query text and inherited claim labels never count as event identity
+      - Wrong-event, generic, and unresolved material is kept but excluded from automatic selection
+      - Missing event, news, and official lanes use only reusable archive sources for supplementation
+    success_criteria:
+      - Review is SHA-256-bound to the immutable base collection manifest
+      - Every base and supplement media ID has exactly one hash-bound decision
+      - Event-direct and news-report candidates contain positive identity evidence
+      - No Gemini, paid API, restricted download, Human Gate mutation, or stock fallback occurs
+
+  - name: evidence_lock
+    skill: pipelines/youtube-factory/evidence-director
+    required_artifacts_in:
+      - evidence_registry
+      - research_brief
+    produces:
+      - evidence_registry
+      - decision_log
+    tools_available: []
+    checkpoint_required: true
+    human_approval_default: false
+    review_focus:
+      - Verified and disputed claims are clearly separated
+      - Exact overlay candidates have verified claim records
+      - Restricted and unknown-rights media are visibly marked
+    success_criteria:
+      - Independent verification returns PASS against the exact research artifact bytes
+      - Checkpoint records verifier identity, source commit, and artifact SHA-256 bindings
+
+  - name: proposal
+    skill: pipelines/youtube-factory/proposal-director
+    required_artifacts_in:
+      - research_brief
+      - evidence_registry
+    optional_artifacts_in:
+      - video_analysis_brief
+      - source_media_review
+    produces:
+      - proposal_packet
+      - decision_log
+    tools_available:
+      - cost_tracker
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      - Topic, audience, runtime, narrative promise, and source mix are clear
+      - Remotion and HyperFrames runtime options are presented before locking
+      - No paid or manual generation has started
+    success_criteria:
+      - Schema-valid proposal_packet and decision_log
+      - GATE_TOPIC records the chosen concept and runtime family
+
+  - name: script
+    skill: pipelines/youtube-factory/script-director
+    required_artifacts_in:
+      - proposal_packet
+      - evidence_registry
+    produces:
+      - script
+    optional_tools:
+      - transcriber
+      - transcript_fetcher
+    tools_available:
+      - transcriber
+      - transcript_fetcher
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      - Narration assertions resolve to evidence claims
+      - Fact, interpretation, and reconstruction language are distinguishable
+      - Hook and sequence pacing fit the approved runtime
+    success_criteria:
+      - Schema-valid script artifact
+      - GATE_SCRIPT completes only after user approval
+
+  - name: visual_plan
+    skill: pipelines/youtube-factory/mk-visual-director
+    required_artifacts_in:
+      - script
+      - evidence_registry
+      - proposal_packet
+    optional_artifacts_in:
+      - source_media_review
+      - video_analysis_brief
+    produces:
+      - visual_plan
+      - scene_plan
+    optional_tools:
+      - frame_sampler
+      - scene_detect
+    tools_available:
+      - frame_sampler
+      - scene_detect
+    checkpoint_required: true
+    human_approval_default: false
+    review_focus:
+      - Knowledge-vault audit passes before technique selection
+      - Meaning and sequence are resolved before camera decoration
+      - Selected technique IDs are recorded per sequence and per shot
+      - No more than seven relevant techniques are active in one sequence
+      - Provider-specific guidance matches the approved route
+      - Every shot has exactly one route and a fallback
+      - Exact overlay text is claim-bound
+      - AI content and disclosure fields are internally consistent
+    success_criteria:
+      - VisualPlan passes schema and semantic validation
+      - Bounded knowledge pack is recorded with its load order and exclusions
+      - Provider-specific technique exclusions are recorded
+      - Compiled scene_plan passes the OpenMontage schema
+
+  - name: animatic
+    skill: pipelines/youtube-factory/animatic-director
+    required_artifacts_in:
+      - visual_plan
+      - scene_plan
+      - script
+    produces:
+      - animatic_review
+    tools_available:
+      - video_compose
+      - hyperframes_compose
+      - subtitle_gen
+      - audio_mixer
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      - Narrative comprehension works before expensive asset production
+      - Sequence pacing, overlays, transitions, and disclosure positions are readable
+      - Placeholders honestly indicate REAL, AI reconstruction, and graphics
+    success_criteria:
+      - Local review build exists and passes ffprobe
+      - GATE_ANIMATIC completes only after user approval
+
+  - name: budget
+    skill: pipelines/youtube-factory/budget-director
+    required_artifacts_in:
+      - visual_plan
+      - animatic_review
+    produces:
+      - budget_approval
+      - cost_log
+    tools_available:
+      - cost_tracker
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      - Route counts and fallback costs are visible
+      - TopView credits are estimates entered for manual decision-making
+      - Local and free alternatives are shown before paid work
+    success_criteria:
+      - Schema-valid budget_approval and cost_log
+      - GATE_BUDGET completes before any paid manual generation
+
+  - name: assets
+    skill: pipelines/youtube-factory/asset-director
+    required_artifacts_in:
+      - visual_plan
+      - scene_plan
+      - budget_approval
+    optional_artifacts_in:
+      - evidence_registry
+      - script
+    produces:
+      - topview_job_pack
+      - asset_manifest
+    optional_tools:
+      - direct_clip_search
+      - image_selector
+      - video_selector
+      - comfyui_image
+      - comfyui_video
+      - ltx_video_local
+      - diagram_gen
+      - hyperframes_compose
+      - subtitle_gen
+      - tts_selector
+      - pixabay_music
+      - freesound_music
+    tools_available:
+      - topview_manual_handoff
+      - topview_manual_ingest
+      - direct_clip_search
+      - image_selector
+      - video_selector
+      - comfyui_image
+      - comfyui_video
+      - ltx_video_local
+      - diagram_gen
+      - hyperframes_compose
+      - subtitle_gen
+      - tts_selector
+      - pixabay_music
+      - freesound_music
+    checkpoint_required: true
+    human_approval_default: false
+    review_focus:
+      - Each asset traces back to a VisualPlan shot and route
+      - TopView files have operator metadata, checksum, and ffprobe evidence
+      - TopView downloads remain candidates rather than selected assets
+    success_criteria:
+      - Manual waits use in_progress with metadata.manual_external_state
+      - Completed assets stage has a schema-valid asset_manifest
+
+  - name: asset_selection
+    skill: pipelines/youtube-factory/asset-director
+    required_artifacts_in:
+      - visual_plan
+      - asset_manifest
+    produces:
+      - asset_selection
+    tools_available:
+      - frame_sampler
+      - visual_qa
+      - video_analyzer
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      - Every selected asset is compared against alternatives and the animatic
+      - Unselected candidates cannot enter edit or compose
+      - AI disclosure and evidence continuity remain intact
+    success_criteria:
+      - Schema-valid asset_selection packet
+      - GATE_ASSET_SELECTION completes only after user approval
+
+  - name: edit
+    skill: pipelines/youtube-factory/edit-director
+    required_artifacts_in:
+      - scene_plan
+      - asset_manifest
+      - asset_selection
+      - script
+    produces:
+      - edit_decisions
+    tools_available: []
+    checkpoint_required: true
+    human_approval_default: false
+    review_focus:
+      - Only selected assets are referenced
+      - Cut triggers, sound bridges, title timing, and disclosure timing follow VisualPlan
+      - Real evidence remains visually primary where planned
+    success_criteria:
+      - Schema-valid edit_decisions covering the full runtime
+      - Render runtime matches the approved proposal
+
+  - name: compose
+    skill: pipelines/youtube-factory/compose-director
+    required_artifacts_in:
+      - edit_decisions
+      - asset_manifest
+      - asset_selection
+    optional_artifacts_in:
+      - visual_plan
+      - scene_plan
+    produces:
+      - render_report
+      - final_review
+    required_tools:
+      - video_compose
+      - audio_mixer
+    optional_tools:
+      - hyperframes_compose
+      - video_stitch
+      - video_trimmer
+      - color_grade
+      - audio_enhance
+      - remotion_caption_burn
+    tools_available:
+      - video_compose
+      - hyperframes_compose
+      - audio_mixer
+      - video_stitch
+      - video_trimmer
+      - color_grade
+      - audio_enhance
+      - remotion_caption_burn
+    checkpoint_required: true
+    human_approval_default: false
+    review_focus:
+      - Picture, narration, music, effects, captions, and disclosure layers are synchronized
+      - Render uses only asset-selection-approved files
+      - Output passes media and factual QC
+    success_criteria:
+      - Schema-valid render_report and final_review
+      - Render exists and passes ffprobe validation
+
+  - name: final_review
+    skill: pipelines/youtube-factory/compose-director
+    required_artifacts_in:
+      - render_report
+      - final_review
+      - evidence_registry
+    produces:
+      - final_review
+    tools_available:
+      - visual_qa
+      - composition_validator
+      - audio_probe
+      - frame_sampler
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      - User watches the complete review build
+      - Exact text, AI labels, audio, captions, and visual continuity are checked
+      - Remaining issues are explicit rather than silently waived
+    success_criteria:
+      - GATE_FINAL_EDIT completes only after user approval
+
+  - name: package
+    skill: pipelines/youtube-factory/publish-director
+    required_artifacts_in:
+      - render_report
+      - final_review
+    produces:
+      - publish_log
+    required_tools:
+      - export_bundle
+    tools_available:
+      - export_bundle
+    checkpoint_required: true
+    human_approval_default: false
+    review_focus:
+      - Video, captions, description, chapters, sources, and disclosure notes are packaged
+      - No upload or platform mutation occurs
+    success_criteria:
+      - Schema-valid publish_log with status exported or pending_review
+
+  - name: title_thumbnail
+    skill: pipelines/youtube-factory/publish-director
+    required_artifacts_in:
+      - publish_log
+      - final_review
+    produces:
+      - decision_log
+    optional_tools:
+      - image_selector
+      - hyperframes_compose
+    tools_available:
+      - image_selector
+      - hyperframes_compose
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      - Title and thumbnail are accurate, legible, and consistent with the final video
+      - No unsupported claim or undisclosed reconstruction appears in packaging
+    success_criteria:
+      - GATE_TITLE_THUMBNAIL completes only after user approval
+
+  - name: publish
+    skill: pipelines/youtube-factory/publish-director
+    required_artifacts_in:
+      - publish_log
+      - decision_log
+    produces:
+      - publish_log
+    tools_available: []
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      - Target account, visibility, scheduled time, and final metadata are shown
+      - Network publishing remains a separate user-authorized action
+    success_criteria:
+      - GATE_PUBLISH completes only after explicit user authorization
+      - Default factory dry run stops before any network publish action

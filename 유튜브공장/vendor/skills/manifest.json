@@ -1,0 +1,1002 @@
+{
+  "schema_version": "1.0",
+  "captured_at": "2026-08-11T23:10:00+09:00",
+  "policy": {
+    "project_local_only": true,
+    "symlinks_allowed": false,
+    "topview_api_skill_included": false
+  },
+  "integration_modes": {
+    "openmontage": "control_plane",
+    "mk_visual_director": "scene_direction",
+    "hyperframes": "local_cli",
+    "remotion": "local_node_runtime",
+    "local_ltx": "local_comfyui",
+    "topview": "manual_ui",
+    "topview_submission": "human_only"
+  },
+  "sources": {
+    "openmontage_baseline": {
+      "repository": "https://github.com/calesthio/OpenMontage.git",
+      "commit": "4eab34c5cfcccaa4f1970554928feccce73ee930",
+      "license": "AGPL-3.0"
+    },
+    "hyperframes_current": {
+      "repository": "https://github.com/heygen-com/hyperframes.git",
+      "commit": "896bc336a2eb058fa7cd21e6686b3c6a23879d28",
+      "npm_package": "hyperframes@0.7.106",
+      "installer": "skills add --copy",
+      "license": "Apache-2.0"
+    },
+    "user_existing_openmontage": {
+      "source_root": "/Users/mk-macbook/Desktop/openmontage/.agents/skills",
+      "source_repository_head": "a9f1417ab4a9770bb6ebe24f51aa948a98aaa238",
+      "tracked_in_source_repository": false,
+      "runtime_dependency_on_source_root": false,
+      "license_status": "No explicit license metadata in copied skill directories; keep project-local until ownership and redistribution terms are confirmed."
+    },
+    "remotion_bits_upstream": {
+      "repository": "https://github.com/av/remotion-bits.git",
+      "commit": "6c71169aa061f15313fadbdc6e29a3a3a87f2c03",
+      "license_status": "No detected repository license; keep project-local."
+    },
+    "youtube_factory": {
+      "path": ".agents/skills/topview-manual-handoff",
+      "purpose": "Manual-only TopView work-order and result-recovery contract",
+      "runtime_dependency_on_topview_api": false
+    },
+    "remotion_official_current": {
+      "repository": "https://github.com/remotion-dev/skills.git",
+      "commit": "b12104ef5f1b1ca2ca5590fcc7c1804fbc85556f",
+      "license_status": "No detected repository license file; copied as a project-local instruction snapshot.",
+      "runtime_version": "4.0.508"
+    }
+  },
+  "required_groups": {
+    "factory_core": [
+      "ai-video-gen",
+      "beat-sync-editing",
+      "color-motion",
+      "comfyui",
+      "embedded-captions",
+      "faceless-explainer",
+      "ffmpeg",
+      "flux-best-practices",
+      "general-video",
+      "hyperframes",
+      "hyperframes-animation",
+      "hyperframes-cli",
+      "hyperframes-core",
+      "hyperframes-creative",
+      "hyperframes-keyframes",
+      "hyperframes-registry",
+      "kinetic-typography",
+      "ltx2",
+      "media-use",
+      "motion-art-direction",
+      "motion-graphics",
+      "remotion",
+      "remotion-best-practices",
+      "remotion-bits",
+      "remotion-captions",
+      "remotion-markup",
+      "remotion-multimedia",
+      "remotion-render",
+      "remotion-upgrade",
+      "shot-composition",
+      "sound-effects",
+      "speech-to-text",
+      "text-to-speech",
+      "topview-manual-handoff",
+      "video-download",
+      "video-edit",
+      "video-understand",
+      "visual-style"
+    ],
+    "hyperframes_current": [
+      "embedded-captions",
+      "faceless-explainer",
+      "general-video",
+      "hyperframes",
+      "hyperframes-animation",
+      "hyperframes-cli",
+      "hyperframes-core",
+      "hyperframes-creative",
+      "hyperframes-keyframes",
+      "hyperframes-registry",
+      "media-use",
+      "motion-graphics",
+      "music-to-video",
+      "remotion-to-hyperframes"
+    ],
+    "imported_user_skills": [
+      "beat-sync-editing",
+      "color-motion",
+      "diagram-animation",
+      "isometric-animation",
+      "kinetic-typography",
+      "map-animation",
+      "motion-art-direction",
+      "remotion-bits",
+      "shot-composition"
+    ],
+    "remotion_official_current": [
+      "remotion-best-practices",
+      "remotion-captions",
+      "remotion-create",
+      "remotion-docs",
+      "remotion-interactivity",
+      "remotion-maps",
+      "remotion-markup",
+      "remotion-multimedia",
+      "remotion-render",
+      "remotion-saas",
+      "remotion-studio",
+      "remotion-upgrade"
+    ]
+  },
+  "skills": [
+    {
+      "name": "acestep",
+      "path": ".agents/skills/acestep",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "507d773bac131d8db976894bcca03a887436ad7429ea62c0c51024fcf4c6c0da",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "agents",
+      "path": ".agents/skills/agents",
+      "origin": "openmontage_baseline",
+      "file_count": 6,
+      "tree_sha256": "bad08caa2337b7d6d562a7ef748ef2a46cb473d004df07586fa15985f16b313d",
+      "license_status": "declared in skill: MIT"
+    },
+    {
+      "name": "ai-video-gen",
+      "path": ".agents/skills/ai-video-gen",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "b5b4079accb87a572b67c9ca7271e6c1234e6de32bc54eb3ebfa59ed14bcc6e6",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "avatar-video",
+      "path": ".agents/skills/avatar-video",
+      "origin": "openmontage_baseline",
+      "file_count": 16,
+      "tree_sha256": "edf9f358372a97a218b9d7760757c22ae07461719671338fadc40e22f2b25114",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "azure-speech-to-text",
+      "path": ".agents/skills/azure-speech-to-text",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "cd444b93dbe865c0148371f1bf89b14cbd6a34927b63278386f43ae19a8e6a6f",
+      "license_status": "declared in skill: MIT"
+    },
+    {
+      "name": "beat-sync-editing",
+      "path": ".agents/skills/beat-sync-editing",
+      "origin": "user_existing_openmontage",
+      "file_count": 3,
+      "tree_sha256": "db475fbc56ffe81542581a7da1f1e95420e05d6e50a73afbdcf9d6d5d1122be0",
+      "license_status": "project-local; explicit license not found"
+    },
+    {
+      "name": "beautiful-mermaid",
+      "path": ".agents/skills/beautiful-mermaid",
+      "origin": "openmontage_baseline",
+      "file_count": 4,
+      "tree_sha256": "5c6bbed71190c3cfb01fd9f4473bc7dbf4ded3274d81a0483392b5a6a312a525",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "bfl-api",
+      "path": ".agents/skills/bfl-api",
+      "origin": "openmontage_baseline",
+      "file_count": 10,
+      "tree_sha256": "443e0aec53b93f72ead36f25a4f70d8b2276640d16be655d686a652d1fbd1cb7",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "canvas-procedural-animation",
+      "path": ".agents/skills/canvas-procedural-animation",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "1c529ac68ae77df1be1073dada19f0a62caa3784057cb71d36d2bba5ed7efd61",
+      "license_status": "declared in skill: MIT"
+    },
+    {
+      "name": "character-animation-qa",
+      "path": ".agents/skills/character-animation-qa",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "3691e91cb3fb924149c974c9d6e92845ae87638aec316b864e0374c121dc12f9",
+      "license_status": "declared in skill: MIT"
+    },
+    {
+      "name": "character-rigging",
+      "path": ".agents/skills/character-rigging",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "6900eeed18760b652af1e2ee914db3183579c68fea1d267689e2f443c76adb4f",
+      "license_status": "declared in skill: MIT"
+    },
+    {
+      "name": "color-motion",
+      "path": ".agents/skills/color-motion",
+      "origin": "user_existing_openmontage",
+      "file_count": 4,
+      "tree_sha256": "d8c1b16c6872906903287cf0b600d64738e204b7d96e6f4f70037069d37f50a5",
+      "license_status": "project-local; explicit license not found"
+    },
+    {
+      "name": "comfyui",
+      "path": ".agents/skills/comfyui",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "2c9e8a2caf2d731f00079590b52091893112eb83d7c9cecf061697d32d9146f0",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "create-video",
+      "path": ".agents/skills/create-video",
+      "origin": "openmontage_baseline",
+      "file_count": 10,
+      "tree_sha256": "89ccd6226e96a8b2c4042a60b5f75fe43f9c5382d833dd2592a57527d3cff194",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "d3-viz",
+      "path": ".agents/skills/d3-viz",
+      "origin": "openmontage_baseline",
+      "file_count": 7,
+      "tree_sha256": "6f6fec65a15d7ae18d31ba03f1e2dc9990ef4d0df3e83030ca164866848949a0",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "dashscope",
+      "path": ".agents/skills/dashscope",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "dc93c729150666c36cbcdc5f455df0a304cbe4eb063012a787b24e08d723bb00",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "diagram-animation",
+      "path": ".agents/skills/diagram-animation",
+      "origin": "user_existing_openmontage",
+      "file_count": 3,
+      "tree_sha256": "58ffe64122c78ceefdbe16d1a097b665d244b8339bce45f1d563777e72e3b54d",
+      "license_status": "project-local; explicit license not found"
+    },
+    {
+      "name": "doubao-tts",
+      "path": ".agents/skills/doubao-tts",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "4b3f6da27f6e41ccf1791030f9db1e28a680c385214c2d2aeef804b61265dd28",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "elevenlabs",
+      "path": ".agents/skills/elevenlabs",
+      "origin": "openmontage_baseline",
+      "file_count": 2,
+      "tree_sha256": "970929622ce8038474fe26f07fc10cac6832e28494a3f6bcd2062c474c6c093c",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "embedded-captions",
+      "path": ".agents/skills/embedded-captions",
+      "origin": "hyperframes_current",
+      "file_count": 140,
+      "tree_sha256": "113e3489d59b9ec65fb33fecbc8651f2a8c22288fc6e4823b07ea1618a87855e",
+      "license_status": "Apache-2.0"
+    },
+    {
+      "name": "faceless-explainer",
+      "path": ".agents/skills/faceless-explainer",
+      "origin": "hyperframes_current",
+      "file_count": 24,
+      "tree_sha256": "d0e7663e5f1eded947bb0a18389d08fd18d26ca7d6cc0c05c5484fbb27c52949",
+      "license_status": "Apache-2.0"
+    },
+    {
+      "name": "faceswap",
+      "path": ".agents/skills/faceswap",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "e765493bc4485131f5cf2658b69a6dd0b02cab8148acbc82d36fe03661fa1e35",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "ffmpeg",
+      "path": ".agents/skills/ffmpeg",
+      "origin": "openmontage_baseline",
+      "file_count": 2,
+      "tree_sha256": "bd35c110b1e29513ffdb1a5ac85696a6134ec3d2cab7e335f10f5d5430735847",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "flux-best-practices",
+      "path": ".agents/skills/flux-best-practices",
+      "origin": "openmontage_baseline",
+      "file_count": 14,
+      "tree_sha256": "d8ae91c09f12c3898d058c44233bdcebb7847475bd4eddbfdc6db55d243f8955",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "framer-motion",
+      "path": ".agents/skills/framer-motion",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "bbc70b1165ea17f3afdfe9e4e82f1b7b590a8662f51842d5e1c3d456a3171d72",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "gemini-omni",
+      "path": ".agents/skills/gemini-omni",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "da60dfae5a7d72ef6d2a692016a24a84f9e15cc9edc0ed9ffecb20879109c890",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "general-video",
+      "path": ".agents/skills/general-video",
+      "origin": "hyperframes_current",
+      "file_count": 4,
+      "tree_sha256": "75f5db40aae21d6978cfbdbfd5d90ad195a7fd05e3a0a70157ba408bd57491bc",
+      "license_status": "Apache-2.0"
+    },
+    {
+      "name": "grok-media",
+      "path": ".agents/skills/grok-media",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "423774f686303544e778956585eb57687991130339400cd71adf0ab61da2a1c1",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "gsap-core",
+      "path": ".agents/skills/gsap-core",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "e21b6ea38a87db00a2dfcd07dbe4992f64b4e7d5253f20eff9be33325845fcc7",
+      "license_status": "declared in skill: MIT"
+    },
+    {
+      "name": "gsap-frameworks",
+      "path": ".agents/skills/gsap-frameworks",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "9f1cb27e0d3303b823b23965ffdca7a79c3ae101ea9fc7efde213030e9fa43e1",
+      "license_status": "declared in skill: MIT"
+    },
+    {
+      "name": "gsap-performance",
+      "path": ".agents/skills/gsap-performance",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "6c6972e67a7e6db840fe49fd948baca55099e134dd56222dfa236e4af365b32f",
+      "license_status": "declared in skill: MIT"
+    },
+    {
+      "name": "gsap-plugins",
+      "path": ".agents/skills/gsap-plugins",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "aa42358c0d5c05eaaf572d57d83649cab91aa26af2aaa924d84d1b08f88bc945",
+      "license_status": "declared in skill: MIT"
+    },
+    {
+      "name": "gsap-react",
+      "path": ".agents/skills/gsap-react",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "f999fb66f9b974df639cdf77e813615bb1e2e05e34421f913e020c1cfe8dcb92",
+      "license_status": "declared in skill: MIT"
+    },
+    {
+      "name": "gsap-scrolltrigger",
+      "path": ".agents/skills/gsap-scrolltrigger",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "6a0b5bc7066f521382b03e23b95019dd469059e486b050a5d489e59acc619f87",
+      "license_status": "declared in skill: MIT"
+    },
+    {
+      "name": "gsap-timeline",
+      "path": ".agents/skills/gsap-timeline",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "619e1bb92da73c0d3c4612cb008d7edeb5489db44a0d724cd4b6f263e2c73220",
+      "license_status": "declared in skill: MIT"
+    },
+    {
+      "name": "gsap-utils",
+      "path": ".agents/skills/gsap-utils",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "d30c566bacbf7220bb65e1974d86bdc24ac4f9648edf0809c220c0328a564223",
+      "license_status": "declared in skill: MIT"
+    },
+    {
+      "name": "heygen",
+      "path": ".agents/skills/heygen",
+      "origin": "openmontage_baseline",
+      "file_count": 21,
+      "tree_sha256": "7a25b65c2d69c7687cbfcd11e671bf9a609fe1cd7a492668e86e22736b0b7f3f",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "hyperframes",
+      "path": ".agents/skills/hyperframes",
+      "origin": "hyperframes_current",
+      "file_count": 17,
+      "tree_sha256": "248a14334f930739566de17188567ba5baeaf8da45aaa7e1a5a78bbb8bca46ae",
+      "license_status": "Apache-2.0"
+    },
+    {
+      "name": "hyperframes-animation",
+      "path": ".agents/skills/hyperframes-animation",
+      "origin": "hyperframes_current",
+      "file_count": 121,
+      "tree_sha256": "fd789755460affd42dd4b6942217a0924be6ad62d86ea14ad59ca311d0c5ed39",
+      "license_status": "Apache-2.0"
+    },
+    {
+      "name": "hyperframes-cli",
+      "path": ".agents/skills/hyperframes-cli",
+      "origin": "hyperframes_current",
+      "file_count": 11,
+      "tree_sha256": "01f36d6d3d91471e950a641547405534056b7db60b90c19094a3a0912deb6596",
+      "license_status": "Apache-2.0"
+    },
+    {
+      "name": "hyperframes-core",
+      "path": ".agents/skills/hyperframes-core",
+      "origin": "hyperframes_current",
+      "file_count": 19,
+      "tree_sha256": "a49d0db9ccd926d2d51ed66e4859148e43e66ce168d0044840344bcd2d6a68dc",
+      "license_status": "Apache-2.0"
+    },
+    {
+      "name": "hyperframes-creative",
+      "path": ".agents/skills/hyperframes-creative",
+      "origin": "hyperframes_current",
+      "file_count": 78,
+      "tree_sha256": "b536a0517b74c6456ae553546b9a8df152d142cfd75f940b727eb44dedb724ca",
+      "license_status": "Apache-2.0"
+    },
+    {
+      "name": "hyperframes-keyframes",
+      "path": ".agents/skills/hyperframes-keyframes",
+      "origin": "hyperframes_current",
+      "file_count": 3,
+      "tree_sha256": "7937e5674b7ca4c1256de495d60bd9d8c50b12e61699a677b177c170b4fb9046",
+      "license_status": "Apache-2.0"
+    },
+    {
+      "name": "hyperframes-media",
+      "path": ".agents/skills/hyperframes-media",
+      "origin": "openmontage_baseline",
+      "file_count": 40,
+      "tree_sha256": "dd1825c52c0436493ee64200f2f059f161a04bd112e553bb0403d8715fecf474",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "hyperframes-registry",
+      "path": ".agents/skills/hyperframes-registry",
+      "origin": "hyperframes_current",
+      "file_count": 12,
+      "tree_sha256": "bf51c53a9c8c874826585c4f88c9d3880f550103ca315215f2063619a244f77d",
+      "license_status": "Apache-2.0"
+    },
+    {
+      "name": "isometric-animation",
+      "path": ".agents/skills/isometric-animation",
+      "origin": "user_existing_openmontage",
+      "file_count": 3,
+      "tree_sha256": "fb96f6fc7fd198be8e356533c4538ff1c4d0ec081914ad510aff9fd2fb928c0b",
+      "license_status": "project-local; explicit license not found"
+    },
+    {
+      "name": "kinetic-typography",
+      "path": ".agents/skills/kinetic-typography",
+      "origin": "user_existing_openmontage",
+      "file_count": 3,
+      "tree_sha256": "34caf20ca590cd16dbf6f8c5e7a5bd30eeda51187ee0752f9097825d228f91af",
+      "license_status": "project-local; explicit license not found"
+    },
+    {
+      "name": "kling-official",
+      "path": ".agents/skills/kling-official",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "870b75f5bb58cdb20da368c2857b30fc85069d430f47c1c43dfe790c606ef6b2",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "lottie-bodymovin",
+      "path": ".agents/skills/lottie-bodymovin",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "2657a8e1d1a5509dd81a332c8303d9f2b01880422690df9302ac41db90aa3521",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "ltx2",
+      "path": ".agents/skills/ltx2",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "521d94fa686a5e3d22a5047d95d54dbcc1527589cd930bf191593e84bbb6cd46",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "lyria",
+      "path": ".agents/skills/lyria",
+      "origin": "openmontage_baseline",
+      "file_count": 3,
+      "tree_sha256": "d1157cbe8f5940ce592ace9395756af7bc995bc382c9bcf256c41b2ed0708b79",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "manim-composer",
+      "path": ".agents/skills/manim-composer",
+      "origin": "openmontage_baseline",
+      "file_count": 5,
+      "tree_sha256": "72e2e594fe86bbcbb9a1bbe84a9affa4aed537bfec1dda7babb879b82cb93adf",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "manimce-best-practices",
+      "path": ".agents/skills/manimce-best-practices",
+      "origin": "openmontage_baseline",
+      "file_count": 37,
+      "tree_sha256": "b74ebe7cfa85878601c99ed50aaec60a070c6a6eb5e98624f18093b973094981",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "manimgl-best-practices",
+      "path": ".agents/skills/manimgl-best-practices",
+      "origin": "openmontage_baseline",
+      "file_count": 107,
+      "tree_sha256": "68994b1f851be7c0e3e00915b413b45e882666020782c18a3ca735ffaf785ff4",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "map-animation",
+      "path": ".agents/skills/map-animation",
+      "origin": "user_existing_openmontage",
+      "file_count": 4,
+      "tree_sha256": "05b702af00835b6e6c83433b85bb39e2f15e3cc21b1e28fc48721f434960b33e",
+      "license_status": "project-local; explicit license not found"
+    },
+    {
+      "name": "media-use",
+      "path": ".agents/skills/media-use",
+      "origin": "hyperframes_current",
+      "file_count": 152,
+      "tree_sha256": "7ac13b319724422c362462715377045a6d1a237ffff32fba9a71d857fc4d8c5a",
+      "license_status": "Apache-2.0"
+    },
+    {
+      "name": "motion-art-direction",
+      "path": ".agents/skills/motion-art-direction",
+      "origin": "user_existing_openmontage",
+      "file_count": 3,
+      "tree_sha256": "6f8d900de4a49920b129f61733818685f6ab04ca29543c4d8cbb8cf2a38b9789",
+      "license_status": "project-local; explicit license not found"
+    },
+    {
+      "name": "motion-graphics",
+      "path": ".agents/skills/motion-graphics",
+      "origin": "hyperframes_current",
+      "file_count": 23,
+      "tree_sha256": "e4c39f63224f59f97d0c97ee1ff91b5842f3259ddbbf7a8b4d1f7715139c9b80",
+      "license_status": "Apache-2.0"
+    },
+    {
+      "name": "music",
+      "path": ".agents/skills/music",
+      "origin": "openmontage_baseline",
+      "file_count": 3,
+      "tree_sha256": "3856fd9d7457bcf1890ce1da59a44f1f63136b8be0e61062e9e063e934fda99d",
+      "license_status": "declared in skill: MIT"
+    },
+    {
+      "name": "music-to-video",
+      "path": ".agents/skills/music-to-video",
+      "origin": "hyperframes_current",
+      "file_count": 132,
+      "tree_sha256": "eef269dac9347a29ab000e4b1d097a34286ee1a53d645c000fcf19241457a80b",
+      "license_status": "Apache-2.0"
+    },
+    {
+      "name": "playwright-recording",
+      "path": ".agents/skills/playwright-recording",
+      "origin": "openmontage_baseline",
+      "file_count": 2,
+      "tree_sha256": "d5b7850c386c490b36db88b1b639605838d003566cf0927a10002b9504ac33bb",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "pose-library-design",
+      "path": ".agents/skills/pose-library-design",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "907168ed5181d47e1a49021d89d6af6243c2e2d0163a99604ba819f0aaa7e59c",
+      "license_status": "declared in skill: MIT"
+    },
+    {
+      "name": "remotion",
+      "path": ".agents/skills/remotion",
+      "origin": "openmontage_baseline",
+      "file_count": 2,
+      "tree_sha256": "d5202e5f596b6820aaa63b042c54990f28a10d8db7e3cccab58bf561f94d0c78",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "remotion-best-practices",
+      "path": ".agents/skills/remotion-best-practices",
+      "origin": "remotion_official_current",
+      "file_count": 137,
+      "tree_sha256": "19636f1ea207c9a91d033f020d1ed7c5033d16c55ce79ac0a900ac44e390fe56",
+      "license_status": "project-local skill snapshot; upstream skills repository has no detected license"
+    },
+    {
+      "name": "remotion-bits",
+      "path": ".agents/skills/remotion-bits",
+      "origin": "remotion_bits_upstream",
+      "file_count": 4,
+      "tree_sha256": "d0075b3b9dad670f9bc101349a59aee70d3909fb31581a355b52ba2b691c0a88",
+      "license_status": "project-local; upstream repository has no detected license"
+    },
+    {
+      "name": "remotion-captions",
+      "path": ".agents/skills/remotion-captions",
+      "origin": "remotion_official_current",
+      "file_count": 6,
+      "tree_sha256": "2616c7ebbb780b962985b9615d6a2071f0ac13da5b83f7420a8ac4e1565bb2da",
+      "license_status": "project-local skill snapshot; upstream skills repository has no detected license"
+    },
+    {
+      "name": "remotion-create",
+      "path": ".agents/skills/remotion-create",
+      "origin": "remotion_official_current",
+      "file_count": 5,
+      "tree_sha256": "106acb183fbaa99de0fccb75f9cf3fcdf044cd858b6b23070e56384028b840a3",
+      "license_status": "project-local skill snapshot; upstream skills repository has no detected license"
+    },
+    {
+      "name": "remotion-docs",
+      "path": ".agents/skills/remotion-docs",
+      "origin": "remotion_official_current",
+      "file_count": 3,
+      "tree_sha256": "10d02baf3635335d55b4c985705285198fdd7314c1a36a22a817b411ca4b4c59",
+      "license_status": "project-local skill snapshot; upstream skills repository has no detected license"
+    },
+    {
+      "name": "remotion-interactivity",
+      "path": ".agents/skills/remotion-interactivity",
+      "origin": "remotion_official_current",
+      "file_count": 3,
+      "tree_sha256": "63210d548cd732842d2caabe71de61fe377d4192e304387c2bd8865c113f6303",
+      "license_status": "project-local skill snapshot; upstream skills repository has no detected license"
+    },
+    {
+      "name": "remotion-maps",
+      "path": ".agents/skills/remotion-maps",
+      "origin": "remotion_official_current",
+      "file_count": 32,
+      "tree_sha256": "b43173838dc68b5d88f4006e309ace6b25d946725931581570ea60d32945994a",
+      "license_status": "project-local skill snapshot; upstream skills repository has no detected license"
+    },
+    {
+      "name": "remotion-markup",
+      "path": ".agents/skills/remotion-markup",
+      "origin": "remotion_official_current",
+      "file_count": 63,
+      "tree_sha256": "023287e1bdd2298d0c18c7c8cf6619eb4b68276864af16043d42ee6e18268fa1",
+      "license_status": "project-local skill snapshot; upstream skills repository has no detected license"
+    },
+    {
+      "name": "remotion-multimedia",
+      "path": ".agents/skills/remotion-multimedia",
+      "origin": "remotion_official_current",
+      "file_count": 6,
+      "tree_sha256": "4e50a7cc4120daa769eca2722a139a742427189103b83c9a1c45b7e6df420140",
+      "license_status": "project-local skill snapshot; upstream skills repository has no detected license"
+    },
+    {
+      "name": "remotion-render",
+      "path": ".agents/skills/remotion-render",
+      "origin": "remotion_official_current",
+      "file_count": 4,
+      "tree_sha256": "41e790e8b6a7f23ef85ac9be3dc555777bd62d6f4dbefa8252fb2e547605852d",
+      "license_status": "project-local skill snapshot; upstream skills repository has no detected license"
+    },
+    {
+      "name": "remotion-saas",
+      "path": ".agents/skills/remotion-saas",
+      "origin": "remotion_official_current",
+      "file_count": 6,
+      "tree_sha256": "531f82d41c2ef835f4154993e1b18678bc6149687e15e98bfddb6f3c598b1548",
+      "license_status": "project-local skill snapshot; upstream skills repository has no detected license"
+    },
+    {
+      "name": "remotion-studio",
+      "path": ".agents/skills/remotion-studio",
+      "origin": "remotion_official_current",
+      "file_count": 3,
+      "tree_sha256": "e29ecb0ced8191ef9c1cecfa3f252cdf6e4fd0a188252a5694fa3ffc161f9a9c",
+      "license_status": "project-local skill snapshot; upstream skills repository has no detected license"
+    },
+    {
+      "name": "remotion-to-hyperframes",
+      "path": ".agents/skills/remotion-to-hyperframes",
+      "origin": "hyperframes_current",
+      "file_count": 70,
+      "tree_sha256": "615ba06bd3a97329a8c1269ce18962ec23419730d25c3daa4877c14ce94c619c",
+      "license_status": "Apache-2.0"
+    },
+    {
+      "name": "remotion-upgrade",
+      "path": ".agents/skills/remotion-upgrade",
+      "origin": "remotion_official_current",
+      "file_count": 3,
+      "tree_sha256": "b7ed0c04d8b40050beca672b526696010e1fb56862daf90bf8340dfccc5c2aef",
+      "license_status": "project-local skill snapshot; upstream skills repository has no detected license"
+    },
+    {
+      "name": "seedance-2-0",
+      "path": ".agents/skills/seedance-2-0",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "8dedc3abebd9e674f1f3a0e791001477ad143bc203bcb5410bbe81e804d996d5",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "setup-api-key",
+      "path": ".agents/skills/setup-api-key",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "3f228f94a7dcff4b14709561cc00253eddb0ee1eacce87b92225fdc56804005e",
+      "license_status": "declared in skill: MIT"
+    },
+    {
+      "name": "shot-composition",
+      "path": ".agents/skills/shot-composition",
+      "origin": "user_existing_openmontage",
+      "file_count": 3,
+      "tree_sha256": "107f67ec1975ef1bb3b1a2093323af9a14928722160e5b80db5979214b325194",
+      "license_status": "project-local; explicit license not found"
+    },
+    {
+      "name": "sound-effects",
+      "path": ".agents/skills/sound-effects",
+      "origin": "openmontage_baseline",
+      "file_count": 2,
+      "tree_sha256": "a465c532d23b15ea3280d8d2d2b7825e115fe26d4504d0e33c573f3c1c08ad9f",
+      "license_status": "declared in skill: MIT"
+    },
+    {
+      "name": "speech-to-text",
+      "path": ".agents/skills/speech-to-text",
+      "origin": "openmontage_baseline",
+      "file_count": 7,
+      "tree_sha256": "428f301d286f10f868c74b843126ec666b75479fefe57442fb697c53f3ca3a3f",
+      "license_status": "declared in skill: MIT"
+    },
+    {
+      "name": "svg-character-animation",
+      "path": ".agents/skills/svg-character-animation",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "17465f1b59e4db3d0f3d3c5db4a7d4f72bf8c7b3ef9fac7db2bc32201b51d8cb",
+      "license_status": "declared in skill: MIT"
+    },
+    {
+      "name": "synthetic-screen-recording",
+      "path": ".agents/skills/synthetic-screen-recording",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "bc6c768877665a213ae15fdf2e8ddb43506350d0910c866387ed37a6b5100638",
+      "license_status": "declared in skill: MIT"
+    },
+    {
+      "name": "tailwind-design-system",
+      "path": ".agents/skills/tailwind-design-system",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "e56ef35d0b2266ec913acf557d6fa8d790d9d203f050f1fdab88670c0d6b6865",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "text-to-speech",
+      "path": ".agents/skills/text-to-speech",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "c33f717d50b60197e891a2d7ab2d26c59d60672700a7b7922a6e8ce7996e4697",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "threejs-animation",
+      "path": ".agents/skills/threejs-animation",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "24dbd0902a6e9686f00acaa54b9247f4ebd8754e8d839f2b5a2748f0d9ebee9b",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "threejs-fundamentals",
+      "path": ".agents/skills/threejs-fundamentals",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "fa7e40d252db7682bfc653a9b0adc698dfc7cf73e596ba5cbf7858203c900b97",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "threejs-geometry",
+      "path": ".agents/skills/threejs-geometry",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "96dfd7c9f63b9cf2a841d473478326d75ef6f7fe54d2ac4e6be274ae16845038",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "threejs-interaction",
+      "path": ".agents/skills/threejs-interaction",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "4275c8c240a30edb35150be443ecae92ea5c88e88155a45aa07053a0c519b3fb",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "threejs-lighting",
+      "path": ".agents/skills/threejs-lighting",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "20d70feedbedf1215faadf247cf52dc13d6d848cbd1e57afe178e77b3c98a148",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "threejs-loaders",
+      "path": ".agents/skills/threejs-loaders",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "edb6c7402bb7b54fdd8bbde5e94b99aa3dfc66f8f4081a20648904b4837ecef0",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "threejs-materials",
+      "path": ".agents/skills/threejs-materials",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "eb3d32907c786d67b8223745d9c678d9803603c6492d18c92d59f2d4c55b8bba",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "threejs-postprocessing",
+      "path": ".agents/skills/threejs-postprocessing",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "66a155eada55bd876d10c7c2947ae83c27bde3ad265b288ad2771e14660a7a40",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "threejs-shaders",
+      "path": ".agents/skills/threejs-shaders",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "77be9c05f11fd410e909ed0fa6a193da2a0a50a5b6366ea7579ed4f52ead0380",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "threejs-textures",
+      "path": ".agents/skills/threejs-textures",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "75fb513c6f5bfbdb1aa72097582851132163fad0991ffe2a39ee6a4653ab47f0",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "topview-manual-handoff",
+      "path": ".agents/skills/topview-manual-handoff",
+      "origin": "youtube_factory",
+      "file_count": 3,
+      "tree_sha256": "82bacbf61375a12beac6ce56063ceb9b43d7ea0d58c66e480b206b0977d0ce5b",
+      "license_status": "project-owned under repository license"
+    },
+    {
+      "name": "vercel-composition-patterns",
+      "path": ".agents/skills/vercel-composition-patterns",
+      "origin": "openmontage_baseline",
+      "file_count": 13,
+      "tree_sha256": "d220d210caa01e2a6b0b86517fc485f7d1ddf8d58651248384a32cbe32a4f895",
+      "license_status": "declared in skill: MIT"
+    },
+    {
+      "name": "vercel-react-best-practices",
+      "path": ".agents/skills/vercel-react-best-practices",
+      "origin": "openmontage_baseline",
+      "file_count": 71,
+      "tree_sha256": "7e4fe90427da5bc2dac41c6ca129fb70eb4969702a31c4d4b9acabb4d9c8a52e",
+      "license_status": "declared in skill: MIT"
+    },
+    {
+      "name": "video-download",
+      "path": ".agents/skills/video-download",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "697e6d7d3569694eea21d2adc7959f6d90d85306a892b82a5ba3fecfa7c8fabe",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "video-edit",
+      "path": ".agents/skills/video-edit",
+      "origin": "openmontage_baseline",
+      "file_count": 2,
+      "tree_sha256": "af42e1b097a20a37936bc38d9903476ce7f6fa5f57708385ca99168b7ea10f8c",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "video-toolkit",
+      "path": ".agents/skills/video-toolkit",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "1d68a89344a1e23664ad56cde02ddca8d327680a9b3f9b1c69c4f66e2b9b3e4b",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "video-translate",
+      "path": ".agents/skills/video-translate",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "9527411dd3cc96f1c9c1b3cb55e325277b516f9a5d8d38d72f45c0e9b77fa760",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "video-understand",
+      "path": ".agents/skills/video-understand",
+      "origin": "openmontage_baseline",
+      "file_count": 3,
+      "tree_sha256": "8213f01736845be04cdeece16ec018888cfece1e1fe993e696b49064a61bdb97",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "visual-style",
+      "path": ".agents/skills/visual-style",
+      "origin": "openmontage_baseline",
+      "file_count": 16,
+      "tree_sha256": "3d8e17fca536ff967ab10881410a9164e3e3459585977b06dc6e8125cdc74152",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "web-design-guidelines",
+      "path": ".agents/skills/web-design-guidelines",
+      "origin": "openmontage_baseline",
+      "file_count": 1,
+      "tree_sha256": "b6849640846e0e39a09629c4cebfd25529b67a1174eb4d3d86f49783094669f9",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    },
+    {
+      "name": "website-to-video",
+      "path": ".agents/skills/website-to-video",
+      "origin": "openmontage_baseline",
+      "file_count": 32,
+      "tree_sha256": "48c1f6a6029a2484014781251ccac2074950a1f8b620bb378b79baf2b792d865",
+      "license_status": "OpenMontage AGPL-3.0 snapshot; upstream skill terms not individually asserted"
+    }
+  ],
+  "audit_notes": [
+    "The HyperFrames copy is detached from the installer cache and stored as regular files inside this repository.",
+    "The nine user-existing skills were copied exactly from the prior OpenMontage folder; that folder is never imported at runtime.",
+    "Some user-existing skills mention animation-principles as optional shared vocabulary, but inline rules make them usable without that absent skill.",
+    "No TopView provider skill is installed because this factory uses a manual UI handoff and ingest boundary."
+  ]
+}

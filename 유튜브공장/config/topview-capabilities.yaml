@@ -1,0 +1,165 @@
+catalog_version: "2026-08-11"
+captured_at: "2026-08-11T23:10:00+09:00"
+scope: "TopView public web product, official guides, official API documentation, and official skill repository"
+
+policy:
+  integration_mode: manual_ui
+  prohibited:
+    - api_submission
+    - mcp_submission
+    - browser_click_automation
+    - automatic_billing
+    - automatic_asset_approval
+  rule: "OpenMontage produces the work order; a human operates TopView; OpenMontage only validates returned files."
+
+evidence_sources:
+  - id: official_home
+    url: https://www.topview.ai/
+    use: "Canvas, Drama Studio, Board, and 3D Shot Composer overview"
+  - id: official_guide
+    url: https://www.topview.ai/guides/topview-official-guide
+    use: "Current product-family inventory"
+  - id: official_board_guide
+    url: https://www.topview.ai/guides/ai-board
+    use: "Board collaboration, review, filters, batch actions, and quick tools"
+  - id: official_models
+    url: https://www.topview.ai/models
+    use: "Model families and Board workflow"
+  - id: official_video_constraints
+    url: https://docs.topview.ai/reference/image-to-video-v2-text-to-video-omni-reference-api-usage
+    use: "Model-mode capabilities; manual UI must be checked because UI labels can differ"
+  - id: official_skill
+    url: https://github.com/topviewai/skill/tree/5e0fa64642cd732ad18382e91195171f2957453d
+    use: "Official capability vocabulary only; skill is not installed"
+
+operator_requirements:
+  record_exact_ui_model_label: true
+  capture_cost_before_submit: true
+  capture_settings_before_submit: true
+  capture_queue_mode: true
+  record_attempt_number: true
+  record_submit_and_completion_time: true
+  stop_if_budget_would_be_exceeded: true
+  compare_candidates_before_asset_gate: true
+  generated_factual_text_allowed: false
+
+capability_groups:
+  workspaces:
+    - id: canvas
+      official_name: Canvas
+      capability: "Agent-assisted free-form multi-scene planning and production"
+      factory_status: OPTIONAL_MANUAL
+      use_for: "Long or multi-scene exploration after VisualPlan and animatic approval"
+      do_not_use_for: "Replacing MK Visual Director or OpenMontage approval state"
+    - id: drama_studio
+      official_name: Drama Studio
+      capability: "Script breakdown, characters, locations, props, and episodic continuity"
+      factory_status: NOT_DEFAULT
+      use_for: "Future dramatized series pilots"
+      do_not_use_for: "Evidence-led documentary episodes by default"
+    - id: board
+      official_name: Board
+      capability: "Multi-model asset generation, grouping, rating, comments, comparison, and batch actions"
+      factory_status: PRIMARY_MANUAL
+      use_for: "Normal TopView candidate generation and side-by-side comparison"
+      do_not_use_for: "Final editorial timeline or approval truth"
+    - id: shot_composer_3d
+      official_name: 3D Shot Composer
+      capability: "Place characters, props, and virtual camera before generating angles"
+      factory_status: OPTIONAL_MANUAL
+      use_for: "Complex spatial continuity or repeatable camera-angle exploration"
+      do_not_use_for: "Ordinary single-reference shots where setup time exceeds value"
+    - id: film_studio_storyboard
+      official_name: Film Studio / Storyboard
+      capability: "Script-to-storyboard and shot planning"
+      factory_status: OPTIONAL_MANUAL
+      use_for: "Alternative storyboard candidates after the approved internal shot plan"
+      do_not_use_for: "Writing or approving the canonical VisualPlan"
+
+  video:
+    - {id: text_to_video, official_name: "Text to Video", factory_status: USE_MANUALLY}
+    - {id: image_to_video, official_name: "Image to Video", factory_status: PRIMARY_MANUAL}
+    - {id: first_last_frame, official_name: "First and Last Frame", factory_status: USE_MANUALLY}
+    - {id: omni_reference, official_name: "Omni Reference", factory_status: PRIMARY_MANUAL}
+    - {id: multi_shot, official_name: "Multi-shot generation", factory_status: CONDITIONAL_MANUAL}
+    - {id: native_audio, official_name: "Native audio generation", factory_status: CONDITIONAL_MANUAL}
+    - {id: video_edit, official_name: "AI Video Editor / video edit", factory_status: OPTIONAL_MANUAL}
+    - {id: motion_control, official_name: "Motion Control", factory_status: OPTIONAL_MANUAL}
+    - {id: video_repair, official_name: "AI Video Repair", factory_status: OPTIONAL_MANUAL}
+    - {id: video_upscale, official_name: "Video Upscale", factory_status: OPTIONAL_MANUAL}
+    - {id: video_inpaint, official_name: "Inpaint / object removal", factory_status: OPTIONAL_MANUAL}
+    - {id: relighting, official_name: "AI Relighting", factory_status: OPTIONAL_MANUAL}
+    - {id: expression_control, official_name: "Expression Control", factory_status: NOT_DEFAULT}
+    - {id: video_character_swap, official_name: "Video Character Swap", factory_status: NOT_DEFAULT}
+    - {id: subtitle_removal, official_name: "Subtitle Remover", factory_status: NOT_DEFAULT}
+    - {id: watermark_removal, official_name: "Watermark Remover", factory_status: RIGHTS_REVIEW_REQUIRED}
+
+  image:
+    - {id: text_to_image, official_name: "Text to Image", factory_status: USE_MANUALLY}
+    - {id: image_edit, official_name: "Image Edit / Remix", factory_status: USE_MANUALLY}
+    - {id: image_inpaint, official_name: "Inpaint", factory_status: USE_MANUALLY}
+    - {id: character_swap, official_name: "Image Character Swap", factory_status: CONDITIONAL_MANUAL}
+    - {id: face_swap, official_name: "Image Face Swap", factory_status: RIGHTS_REVIEW_REQUIRED}
+    - {id: image_upscale, official_name: "Image Upscale", factory_status: USE_MANUALLY}
+    - {id: photo_angle_editor, official_name: "Photo Angle Editor", factory_status: PRIMARY_MANUAL}
+    - {id: virtual_try_on, official_name: "Virtual Try-on", factory_status: NOT_DEFAULT}
+    - {id: product_photography, official_name: "Product Photography", factory_status: NOT_DEFAULT}
+    - {id: background_removal, official_name: "Remove Background", factory_status: OPTIONAL_MANUAL}
+    - {id: image_to_prompt, official_name: "Image to Prompt", factory_status: OPTIONAL_MANUAL}
+    - {id: color_palette, official_name: "Extract Color Palette", factory_status: OPTIONAL_MANUAL}
+
+  audio:
+    - {id: voiceover, official_name: "AI Voiceover", factory_status: OPTIONAL_MANUAL}
+    - {id: voice_clone, official_name: "Instant Voice Clone", factory_status: CONSENT_REQUIRED}
+    - {id: music, official_name: "AI Music", factory_status: OPTIONAL_MANUAL}
+    - {id: seed_audio, official_name: "Seed Audio speech, music, dialogue, SFX and ambience", factory_status: EXPERIMENTAL_MANUAL}
+
+  avatar:
+    - {id: avatar_4, official_name: "Avatar 4", factory_status: NOT_DEFAULT}
+    - {id: product_avatar, official_name: "Product Avatar", factory_status: NOT_DEFAULT}
+    - {id: design_my_avatar, official_name: "Design My Avatar", factory_status: NOT_DEFAULT}
+    - {id: video_lip_sync, official_name: "Video Lip-Sync", factory_status: OPTIONAL_MANUAL}
+
+  three_d:
+    - {id: world_generator, official_name: "3D World Generator", factory_status: EXPERIMENTAL_MANUAL}
+    - {id: gaussian_splat, official_name: "Gaussian Splat Generator", factory_status: EXPERIMENTAL_MANUAL}
+    - {id: image_to_3d, official_name: "Image to 3D", factory_status: EXPERIMENTAL_MANUAL}
+
+  collaboration:
+    - {id: realtime_multiplayer, official_name: "Real-time collaboration", factory_status: OPTIONAL_MANUAL}
+    - {id: board_share, official_name: "Board link review", factory_status: OPTIONAL_MANUAL}
+    - {id: ratings_and_pin, official_name: "Ratings and pin", factory_status: PRIMARY_MANUAL}
+    - {id: comments_and_todos, official_name: "Comments and to-do tasks", factory_status: OPTIONAL_MANUAL}
+    - {id: filters_and_batch, official_name: "Filters, sorting, and batch operations", factory_status: USE_MANUALLY}
+    - {id: version_history, official_name: "Version history and rollback", factory_status: OPTIONAL_MANUAL}
+
+  marketing:
+    - {id: video_agent, official_name: "Video Agent", factory_status: NOT_DEFAULT}
+    - {id: reference_style_recreation, official_name: "Reference video recreation", factory_status: RIGHTS_REVIEW_REQUIRED}
+    - {id: url_to_video, official_name: "URL / Link to Video", factory_status: NOT_DEFAULT}
+    - {id: ugc_ads, official_name: "UGC and ad generators", factory_status: NOT_DEFAULT}
+    - {id: localization, official_name: "Multi-language voiceover and subtitles", factory_status: OPTIONAL_MANUAL}
+
+  automation_surfaces:
+    - {id: topview_api, official_name: "TopView API", factory_status: PROHIBITED}
+    - {id: topview_mcp, official_name: "TopView MCP", factory_status: PROHIBITED}
+    - {id: topview_official_skill, official_name: "TopView official agent skill 0.2.0", factory_status: REFERENCE_ONLY}
+    - {id: topview_codex_plugin, official_name: "TopView Codex plugin", factory_status: PROHIBITED}
+
+model_families:
+  video:
+    - {family: Seedance, use_hint: "general cinematic and reference-rich shots", exact_ui_label_required: true}
+    - {family: Kling, use_hint: "first/last frame, references, controlled motion and supported multi-shot", exact_ui_label_required: true}
+    - {family: Veo, use_hint: "high-resolution and native-audio candidates when shown", exact_ui_label_required: true}
+    - {family: Sora, use_hint: "alternative cinematic candidate", exact_ui_label_required: true}
+    - {family: Hailuo_MiniMax, use_hint: "motion and short cinematic alternatives", exact_ui_label_required: true}
+    - {family: Wan, use_hint: "alternative open-model family in hosted UI", exact_ui_label_required: true}
+    - {family: Vidu, use_hint: "reference and short-form alternatives", exact_ui_label_required: true}
+    - {family: Runway, use_hint: "video generation or edit alternatives", exact_ui_label_required: true}
+  image:
+    - {family: GPT_Image, use_hint: "text rendering and general image creation", exact_ui_label_required: true}
+    - {family: Nano_Banana, use_hint: "high-fidelity image edit and generation", exact_ui_label_required: true}
+    - {family: Seedream, use_hint: "image generation and edit alternatives", exact_ui_label_required: true}
+    - {family: Kontext, use_hint: "reference-aware image editing", exact_ui_label_required: true}
+
+version_warning: "Marketing pages and generation configuration change quickly. Never infer availability, price, duration, resolution, or audio support from a family name; the operator records the exact option visible in the UI before each charge."

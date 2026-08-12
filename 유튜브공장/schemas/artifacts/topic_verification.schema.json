@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openmontage/artifacts/topic_verification",
+  "title": "Exact-byte-bound topic shortlist verification",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "project_id",
+    "verdict",
+    "source_commit",
+    "input_path",
+    "input_sha256",
+    "verified_at",
+    "source_urls",
+    "candidate_results",
+    "findings",
+    "verifier"
+  ],
+  "properties": {
+    "version": {"const": "1.0"},
+    "project_id": {"type": "string", "minLength": 1},
+    "verdict": {"enum": ["PASS", "FAIL"]},
+    "source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "input_path": {"type": "string", "minLength": 1},
+    "input_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "verified_at": {"type": "string", "format": "date-time"},
+    "source_urls": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "format": "uri", "pattern": "^https?://"}
+    },
+    "candidate_results": {
+      "type": "array",
+      "minItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "verdict", "notes"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "verdict": {"enum": ["PASS", "FAIL"]},
+          "notes": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    },
+    "verifier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["runtime", "model"],
+      "properties": {
+        "runtime": {"const": "codex"},
+        "model": {"const": "gpt-5.6-sol"}
+      }
+    }
+  }
+}
+

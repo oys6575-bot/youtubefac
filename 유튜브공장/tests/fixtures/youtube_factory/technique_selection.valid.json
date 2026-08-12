@@ -1,0 +1,39 @@
+{
+  "query": {
+    "intents": [
+      "variable_camera_speed",
+      "exact_fact",
+      "semantic_transition",
+      "material_macro",
+      "evidence_hold"
+    ],
+    "phase": "visual_plan",
+    "provider_scope": "TOPVIEW_MANUAL",
+    "render_runtime": "HYPERFRAMES",
+    "include_on_demand": false,
+    "limit": 5
+  },
+  "selected": [
+    {
+      "id": "camera.variable_velocity_push",
+      "matched_intents": ["variable_camera_speed"]
+    },
+    {
+      "id": "typography.exact_fact_overlay",
+      "matched_intents": ["exact_fact"]
+    },
+    {
+      "id": "transition.semantic_match_cut",
+      "matched_intents": ["semantic_transition"]
+    },
+    {
+      "id": "camera.material_macro_parallax",
+      "matched_intents": ["material_macro"]
+    },
+    {
+      "id": "camera.static_evidence_hold",
+      "matched_intents": ["evidence_hold"]
+    }
+  ],
+  "excluded": []
+}

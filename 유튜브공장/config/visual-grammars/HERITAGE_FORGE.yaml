@@ -1,0 +1,157 @@
+identity:
+  name: HERITAGE_FORGE
+  version: "1.0.1"
+  purpose: "Evidence-led cinematic documentary grammar for craft, industry, material, and heritage stories"
+  owner: "MK Visual Director"
+
+hierarchy:
+  control_plane: OpenMontage
+  scene_direction: MK Visual Director
+  execution:
+    real_media: source ingest and rights/provenance freeze
+    typography_and_graphics: HyperFrames
+    local_ai_motion: LTX on the local ComfyUI path
+    premium_ai_motion: TopView manual UI handoff
+
+narrative:
+  sequence_contract:
+    required_fields:
+      - viewer_question
+      - dramatic_turn
+      - evidence_payload
+      - visual_motif
+      - sound_motif
+      - exit_condition
+  preferred_arc:
+    - sensory_hook
+    - orientation
+    - process_or_mechanism
+    - stakes_and_context
+    - transformation
+    - meaning_and_afterimage
+  rule: "Resolve the sequence's meaning before choosing camera decoration or provider."
+
+routing:
+  allowed_modes:
+    - REAL_INGEST
+    - TOPVIEW_HANDOFF
+    - LOCAL_LTX
+    - HYPERFRAMES
+  selection_order:
+    - "Use REAL_INGEST when the audience needs proof, identity, ownership, or physical authenticity."
+    - "Use HYPERFRAMES for exact text, evidence overlays, diagrams, maps, timelines, and deterministic motion."
+    - "Use LOCAL_LTX for low-cost organic motion tests and non-critical reconstructions."
+    - "Use TOPVIEW_HANDOFF only when a high-value shot benefits materially from external model quality or consistency."
+  fallback_required: true
+  topview:
+    integration_mode: manual_ui
+    automation_allowed: false
+    api_allowed: false
+    browser_click_automation_allowed: false
+    handoff_tool: topview_manual_handoff
+    ingest_tool: topview_manual_ingest
+    result_status_before_gate: candidate
+    approval_gate: GATE_ASSET_SELECTION
+
+shot_language:
+  families:
+    sensory_macro:
+      purpose: "Reveal material, tool marks, heat, liquid, grain, patina, or hand pressure."
+      constraints:
+        - "One tactile fact per close-up."
+        - "Do not repeat macro imagery without new information."
+    process_wide:
+      purpose: "Explain spatial relationship among maker, tool, material, and workspace."
+      constraints:
+        - "Establish geography before fragmented detail."
+    evidence_insert:
+      purpose: "Show document, artifact, date, measurement, location, or source-backed comparison."
+      constraints:
+        - "Real evidence or authored graphics must remain primary."
+    reconstruction:
+      purpose: "Visualize an unavailable historical or internal view without claiming it is archive."
+      constraints:
+        - "Plan visible disclosure."
+        - "Never render exact factual text inside a generative model."
+    human_consequence:
+      purpose: "Return process and history to lived scale, labor, memory, or present-day stakes."
+
+camera:
+  movement_priority:
+    - motivated_subject_motion
+    - slow_observational_push
+    - lateral_process_reveal
+    - static_evidence_hold
+  avoid:
+    - unmotivated_orbit
+    - constant_dolly
+    - impossible_macro_without_disclosure
+    - dramatic_camera_motion_that_outweighs_the_fact
+  continuity:
+    - "Preserve screen direction across process actions."
+    - "Match eye line, tool direction, material flow, or light vector at transitions."
+
+transitions:
+  semantic_priority:
+    - gesture_match
+    - shape_match
+    - material_state_match
+    - light_or_heat_bridge
+    - sound_bridge
+    - causal_hard_cut
+  rules:
+    - "A transition must carry meaning, time, causality, material, or rhythm."
+    - "Use decorative morphing only when it does not imply a false factual continuity."
+    - "Reserve long dissolves for memory, elapsed time, or material transformation."
+    - "Cut directly into evidence when the narration makes a verifiable claim."
+
+typography:
+  renderer: HyperFrames_or_Remotion
+  exact_text_source: evidence_registry_verified_claim
+  generative_text_allowed: false
+  max_primary_overlay_lines: 2
+  minimum_hold_seconds:
+    short_label: 1.5
+    date_or_name: 2.0
+    sentence: 3.2
+  hierarchy:
+    title: "Warm ivory or charcoal, restrained serif, never over live evidence."
+    exact_fact: "High-contrast sans, tabular numerals for dates and quantities."
+    source_label: "Small but persistent enough to read at 1080p."
+    ai_disclosure: "Plain-language label, visually distinct from source labels."
+
+motion_graphics:
+  principles:
+    - "Reveal structure in the order the narration explains it."
+    - "Animate data position and relationship, not ornamental noise."
+    - "Keep no more than two informational overlay layers active at once."
+    - "Freeze final factual state long enough for verification and reading."
+  material_motifs:
+    - hammered_circle
+    - heat_gradient
+    - charcoal_grid
+    - measured_line
+    - patina_reveal
+
+evidence_and_ai:
+  evidence_first: true
+  exact_overlay_binding_required: true
+  disclosure_required_for_reconstruction: true
+  source_and_reconstruction_must_be_visually_distinguishable: true
+  prohibited:
+    - fake_archive
+    - unsupported_literal
+    - generated_document_presented_as_real
+    - ai_asset_used_as_proof
+
+review:
+  animatic_questions:
+    - "Can the sequence be understood with placeholders?"
+    - "Does each shot add a new fact, feeling, or causal step?"
+    - "Are exact overlays readable and evidence-bound?"
+    - "Is every reconstruction visibly distinguishable?"
+    - "Can a TopView shot be removed or replaced before spending?"
+  final_questions:
+    - "Does the full cut preserve real evidence as planned?"
+    - "Are asset selection, disclosure, duration, audio, and typography all verifiable?"
+
