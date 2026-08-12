@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openmontage/artifacts/topic_shortlist",
+  "title": "Provider-neutral physical-collapse topic shortlist",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "project_id",
+    "generated_at",
+    "provisional",
+    "scope_definition",
+    "scorecard_ref",
+    "candidates"
+  ],
+  "properties": {
+    "version": {"const": "1.0"},
+    "project_id": {"type": "string", "minLength": 1},
+    "generated_at": {"type": "string", "format": "date-time"},
+    "provisional": {"const": true},
+    "scope_definition": {"const": "physical collapse of a human-made building or structure"},
+    "scorecard_ref": {"const": "config/topic-selection-scorecard.yaml"},
+    "candidates": {
+      "type": "array",
+      "minItems": 10,
+      "items": {"$ref": "#/$defs/candidate"}
+    }
+  },
+  "$defs": {
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "institution", "class", "url", "supports"],
+      "properties": {
+        "title": {"type": "string", "minLength": 1},
+        "institution": {"type": "string", "minLength": 1},
+        "class": {"enum": ["official_or_primary", "trusted_secondary"]},
+        "url": {"type": "string", "format": "uri", "pattern": "^https?://"},
+        "supports": {"type": "string", "minLength": 1}
+      }
+    },
+    "scores": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "event_pull",
+        "causal_depth",
+        "belief_reversal",
+        "evidence_verifiability",
+        "narrative_expandability",
+        "visual_explainability",
+        "meaning_and_lessons",
+        "korean_content_scarcity"
+      ],
+      "properties": {
+        "event_pull": {"type": "integer", "minimum": 0, "maximum": 5},
+        "causal_depth": {"type": "integer", "minimum": 0, "maximum": 5},
+        "belief_reversal": {"type": "integer", "minimum": 0, "maximum": 5},
+        "evidence_verifiability": {"type": "integer", "minimum": 0, "maximum": 5},
+        "narrative_expandability": {"type": "integer", "minimum": 0, "maximum": 5},
+        "visual_explainability": {"type": "integer", "minimum": 0, "maximum": 5},
+        "meaning_and_lessons": {"type": "integer", "minimum": 0, "maximum": 5},
+        "korean_content_scarcity": {"type": "integer", "minimum": 0, "maximum": 5}
+      }
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title",
+        "location",
+        "collapse_date",
+        "structure_type",
+        "collapse_extent",
+        "one_line_question",
+        "provisional",
+        "scope",
+        "sources",
+        "korean_youtube_landscape",
+        "scores",
+        "score_reasons"
+      ],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]+$"},
+        "title": {"type": "string", "minLength": 1},
+        "location": {"type": "string", "minLength": 1},
+        "collapse_date": {"type": "string", "format": "date"},
+        "structure_type": {"type": "string", "minLength": 1},
+        "collapse_extent": {"enum": ["whole", "partial"]},
+        "one_line_question": {"type": "string", "minLength": 1},
+        "provisional": {"const": true},
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["human_made_structure", "physical_collapse", "scope_verified"],
+          "properties": {
+            "human_made_structure": {"const": true},
+            "physical_collapse": {"const": true},
+            "scope_verified": {"const": true}
+          }
+        },
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "contains": {
+            "type": "object",
+            "required": ["class"],
+            "properties": {"class": {"const": "official_or_primary"}}
+          },
+          "items": {"$ref": "#/$defs/source"}
+        },
+        "korean_youtube_landscape": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["query", "checked_at", "assessment"],
+          "properties": {
+            "query": {"type": "string", "minLength": 1},
+            "checked_at": {"type": "string", "format": "date-time"},
+            "assessment": {"type": "string", "minLength": 1}
+          }
+        },
+        "scores": {"$ref": "#/$defs/scores"},
+        "score_reasons": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "event_pull",
+            "causal_depth",
+            "belief_reversal",
+            "evidence_verifiability",
+            "narrative_expandability",
+            "visual_explainability",
+            "meaning_and_lessons",
+            "korean_content_scarcity"
+          ],
+          "properties": {
+            "event_pull": {"type": "string", "minLength": 1},
+            "causal_depth": {"type": "string", "minLength": 1},
+            "belief_reversal": {"type": "string", "minLength": 1},
+            "evidence_verifiability": {"type": "string", "minLength": 1},
+            "narrative_expandability": {"type": "string", "minLength": 1},
+            "visual_explainability": {"type": "string", "minLength": 1},
+            "meaning_and_lessons": {"type": "string", "minLength": 1},
+            "korean_content_scarcity": {"type": "string", "minLength": 1}
+          }
+        }
+      }
+    }
+  }
+}

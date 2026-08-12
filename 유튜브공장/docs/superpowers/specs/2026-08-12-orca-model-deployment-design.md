@@ -95,7 +95,8 @@ LM Studio의 `gemma-4-31b-it-mlx`는 중요한 상충 판단에만 임시로 호
 
 ## 4. 작업공간과 데이터 이동
 
-하나의 저장소를 Orca에 등록하되 역할별 Git worktree를 사용한다.
+부모 Git 저장소 `youtubefac`을 Orca에 등록하되 모든 역할의 실행 시작점은
+반드시 각 worktree의 `유튜브공장/`으로 고정하고 역할별 Git worktree를 사용한다.
 
 ```text
 youtubefac 원본 작업공간
@@ -111,9 +112,14 @@ youtubefac 원본 작업공간
 - Coordinator는 Verification이 통과한 커밋만 통합한다.
 - 대용량 미디어는 Git으로 이동하지 않는다. 원본 `유튜브공장/projects/`를
   canonical runtime root로 사용하고 역할별 단일 작성자 하위 경로를 둔다.
+- 모든 역할의 비밀이 아닌 runtime 환경에 동일한 절대
+  `OPENMONTAGE_PROJECTS_DIR`을 주입한다. Backlot도 이 경로만 관찰한다.
 - 다른 역할은 필요한 경로만 명시적으로 읽는다. 광범위한 홈 디렉터리 공유와
   기존 OpenMontage `projects/` 공유는 금지한다.
 - 기존 Orca Run·worktree·Hyatt 프로젝트는 참조하거나 재사용하지 않는다.
+- 역할 간 handoff에는 `source_commit`, 상대 artifact 경로, SHA-256을 포함한다.
+  검증 보고서도 verdict와 동일 세 필드, 검증 시각, 확인 URL을 기계 판독
+  형태로 저장하며 Coordinator는 커밋과 해시가 모두 같을 때만 통합한다.
 
 ## 5. 모델 라우팅과 장애 시 정책
 
@@ -140,7 +146,9 @@ Manual lane: TopView 브라우저                   사용자 조작
 ```
 
 Orca 작업 상태는 `LOCAL_TEXT_ACTIVE`, `LOCAL_MEDIA_ACTIVE`, `IDLE` 중 하나로
-기록한다. 상태 충돌 시 새 작업을 제출하지 않고 Coordinator에게 되돌린다.
+기록한다. 상태 문자열만 믿지 않고 owner/task ID·획득 시각·TTL을 가진 원자적
+lease를 canonical runtime root에 둔다. 충돌 시 새 작업을 제출하지 않고,
+만료 lease는 PID·작업 상태 확인 뒤 Coordinator만 복구한다.
 
 ## 7. 비밀키 최소 권한
 
@@ -176,11 +184,17 @@ Orca 작업 상태는 `LOCAL_TEXT_ACTIVE`, `LOCAL_MEDIA_ACTIVE`, `IDLE` 중 하�
 
 ### 흐름
 
-1. Research/Qwen이 10개 이상의 후보와 각 후보의 공식·1차 출처를 수집한다.
-2. 결정론 점수 엔진으로 임시 점수와 순위를 계산한다.
-3. Verification/Codex가 범위·출처·점수 근거를 독립 확인하고 보고한다.
-4. Coordinator가 통과한 후보 artifact만 원본 브랜치에 통합한다.
-5. 계약 테스트를 실행하고 `topic_approval: PENDING`에서 중지한다.
+1. OpenMontage `topic_search` stage를 시작하고 Research/Qwen이 10개 이상의
+   후보와 각 후보의 공식·1차 출처를 수집한다.
+2. 결정론 점수 엔진으로 임시 점수와 순위를 계산하고 canonical
+   `topic_shortlist` artifact와 checkpoint를 기록한다.
+3. Research 커밋에서 Verification 입력 worktree를 만들고 Verification/Codex가
+   범위·출처·점수 근거와 정확한 artifact 해시를 독립 확인한다.
+4. `topic_verification` artifact와 checkpoint를 기록한다.
+5. Coordinator가 커밋·해시가 일치한 통과 artifact만 원본 브랜치에 통합한다.
+6. `topic_selection` artifact를 `selection_status: PENDING`으로 만들고
+   `topic_approval` checkpoint를 `awaiting_human`, `human_approved: false`로
+   기록한 뒤 중지한다.
 
 ### 출력
 
@@ -199,4 +213,3 @@ Orca 작업 상태는 `LOCAL_TEXT_ACTIVE`, `LOCAL_MEDIA_ACTIVE`, `IDLE` 중 하�
 - 후보 JSON/Markdown과 독립 검증 보고서가 생성되고 모든 관련 테스트가 통과함
 - 유료 호출·TopView 자동화·게시 없이 `topic_approval: PENDING`에서 정지함
 - 복구 절차와 사용 명령이 운영 문서에 기록됨
-

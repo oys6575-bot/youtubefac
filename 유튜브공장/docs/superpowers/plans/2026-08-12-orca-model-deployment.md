@@ -14,6 +14,10 @@
    - Human Gate 자동 승인 금지
    - 로컬 텍스트/미디어 배타 레인
    - 역할별 secret allowlist
+   - 모든 역할의 시작 위치가 `<worktree>/유튜브공장`인지
+   - canonical `OPENMONTAGE_PROJECTS_DIR` 공유 계약
+   - handoff commit·artifact SHA-256 exact match
+   - 로컬 text/media 원자적 lease와 충돌 거부
 2. `schemas/orchestration/orca-model-routing.schema.json`을 추가한다.
 3. `config/orca-model-routing.yaml`을 추가한다.
 4. `lib/orca_model_routing.py`에서 스키마 검증과 의미 불변식을 검사한다.
@@ -49,19 +53,25 @@
 6. Hermes `ytf-research`, `ytf-production` 프로필을 기존 프로필과 분리해
    생성하고 LM Studio Qwen endpoint를 고정한다.
 7. Research에는 YouTube 키만, Production에는 stock media 키만 배치한다.
-8. 각 역할에서 짧은 무과금 응답과 쓰기 경로 확인을 수행한다.
+8. 비밀이 아닌 `OPENMONTAGE_PROJECTS_DIR`을 모든 역할에 동일하게 배치한다.
+9. 각 역할에서 `유튜브공장/` 시작 위치, 짧은 무과금 응답, 쓰기 경로와
+   shared project visibility를 확인한다.
 
 ## Task 5 — 주제 검색 파일럿
 
 1. Orca task DAG를 Research → Verification → Coordinator 순서로 생성한다.
 2. Research/Qwen에 10개 이상 후보, 공식·1차 출처, 한국어 YouTube 검색면,
    임시 점수 근거를 요청한다.
-3. Research 산출물의 형식 테스트를 실행한다.
-4. Verification/Codex에 원문과 점수 근거의 독립 검증을 요청한다.
-5. 검증 실패 항목은 Research에 한 차례 제한된 수정 작업으로 되돌린다.
-6. 통과 커밋만 Coordinator가 기준 브랜치에 통합한다.
-7. JSON에서 Markdown을 생성·대조하고 전체 주제검색 테스트를 실행한다.
-8. Human Gate를 `topic_approval: PENDING`으로 유지한다.
+3. OpenMontage project를 초기화하고 `topic_search` canonical artifact와
+   checkpoint를 같은 shared projects root에 기록한다.
+4. handoff에 source commit, artifact path, SHA-256을 기록하고 그 커밋에서
+   Verification 입력 작업공간을 만든다.
+5. Verification/Codex에 원문·점수 근거·정확한 입력 바이트의 독립 검증을 요청한다.
+6. 검증 실패 항목은 Research에 한 차례 제한된 수정 작업으로 되돌린다.
+7. verdict의 commit·SHA-256이 일치하는 통과 커밋만 Coordinator가 통합한다.
+8. JSON에서 Markdown을 생성·대조하고 전체 주제검색 테스트를 실행한다.
+9. `topic_selection`을 PENDING으로 만들고 `topic_approval` checkpoint를
+   `awaiting_human`, `human_approved: false`로 기록한다.
 
 ## Task 6 — 운영·복구 문서와 완료 감사
 
@@ -72,4 +82,3 @@
 3. secret scan, Git diff, 테스트, 모델 preflight를 새로 실행한다.
 4. 기존 Hyatt/OpenMontage Run과 worktree가 변하지 않았음을 확인한다.
 5. 산출물 경로, 모델 배치 결과, 남은 Human Gate를 최종 보고한다.
-

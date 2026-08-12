@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openmontage/artifacts/topic_selection",
+  "title": "User-owned topic selection gate artifact",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "project_id",
+    "shortlist_sha256",
+    "verification_sha256",
+    "selection_status",
+    "selected_candidate_id",
+    "human_approved"
+  ],
+  "properties": {
+    "version": {"const": "1.0"},
+    "project_id": {"type": "string", "minLength": 1},
+    "shortlist_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "verification_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "selection_status": {"enum": ["PENDING", "APPROVED", "REJECTED"]},
+    "selected_candidate_id": {"type": ["string", "null"]},
+    "human_approved": {"type": "boolean"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"selection_status": {"const": "PENDING"}}},
+      "then": {
+        "properties": {
+          "selected_candidate_id": {"const": null},
+          "human_approved": {"const": false}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"selection_status": {"const": "APPROVED"}}},
+      "then": {
+        "properties": {
+          "selected_candidate_id": {"type": "string", "minLength": 1},
+          "human_approved": {"const": true}
+        }
+      }
+    }
+  ]
+}
+

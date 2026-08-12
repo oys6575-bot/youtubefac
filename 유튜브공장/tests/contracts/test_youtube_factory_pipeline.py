@@ -18,6 +18,9 @@ def test_pipeline_stage_order_places_manual_work_between_budget_and_asset_gate()
     manifest = load_pipeline("youtube-factory")
 
     assert get_stage_order(manifest) == [
+        "topic_search",
+        "topic_verification",
+        "topic_approval",
         "research",
         "evidence_lock",
         "proposal",
@@ -113,6 +116,7 @@ def test_pipeline_keeps_all_required_human_gates() -> None:
     }
 
     assert gated == {
+        "topic_approval",
         "evidence_lock",
         "proposal",
         "script",
@@ -127,6 +131,17 @@ def test_pipeline_keeps_all_required_human_gates() -> None:
     assert "topview_manual_handoff" in stages["assets"]["tools_available"]
     assert "topview_manual_ingest" in stages["assets"]["tools_available"]
     assert "asset_selection" in stages["edit"]["required_artifacts_in"]
+
+    assert stages["topic_search"]["produces"] == ["topic_shortlist"]
+    assert stages["topic_verification"]["required_artifacts_in"] == [
+        "topic_shortlist"
+    ]
+    assert stages["topic_verification"]["produces"] == ["topic_verification"]
+    assert stages["topic_approval"]["required_artifacts_in"] == [
+        "topic_shortlist",
+        "topic_verification",
+    ]
+    assert stages["topic_approval"]["produces"] == ["topic_selection"]
 
 
 def test_pipeline_director_files_and_local_manual_tools_are_available() -> None:
@@ -169,6 +184,21 @@ def test_asset_selection_checkpoint_cannot_complete_without_human_approval(
             tmp_path,
             "PROJECT_DEMO",
             "asset_selection",
+            "completed",
+            {},
+            pipeline_type="youtube-factory",
+            human_approved=False,
+        )
+
+
+def test_topic_approval_checkpoint_cannot_complete_without_human_approval(
+    tmp_path: Path,
+) -> None:
+    with pytest.raises(CheckpointValidationError, match="GATE VIOLATION"):
+        write_checkpoint(
+            tmp_path,
+            "PROJECT_DEMO",
+            "topic_approval",
             "completed",
             {},
             pipeline_type="youtube-factory",

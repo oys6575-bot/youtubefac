@@ -68,6 +68,7 @@ metadata:
 
 required_skills:
   - pipelines/youtube-factory/executive-producer
+  - pipelines/youtube-factory/topic-director
   - pipelines/youtube-factory/evidence-director
   - pipelines/youtube-factory/proposal-director
   - pipelines/youtube-factory/script-director
@@ -93,6 +94,56 @@ compatible_playbooks:
   custom_allowed: true
 
 stages:
+  - name: topic_search
+    skill: pipelines/youtube-factory/topic-director
+    produces:
+      - topic_shortlist
+    tools_available:
+      - transcript_fetcher
+    checkpoint_required: true
+    human_approval_default: false
+    review_focus:
+      - Every candidate is an actual physical collapse of a human-made structure
+      - Every candidate has at least one official or primary source
+      - Production tools, footage quantity, and generation cost do not affect scores
+    success_criteria:
+      - Schema-valid topic_shortlist with deterministic provisional scores
+      - Research handoff records source commit, artifact path, and SHA-256
+
+  - name: topic_verification
+    skill: pipelines/youtube-factory/topic-director
+    required_artifacts_in:
+      - topic_shortlist
+    produces:
+      - topic_verification
+    tools_available: []
+    checkpoint_required: true
+    human_approval_default: false
+    review_focus:
+      - Scope, dates, official sources, and score evidence are independently checked
+      - Verdict is bound to the exact source commit and artifact SHA-256
+      - Unsupported candidates are blocked rather than silently repaired
+    success_criteria:
+      - Schema-valid topic_verification with exact-byte input binding
+      - Every accepted candidate has a traceable verification record
+
+  - name: topic_approval
+    skill: pipelines/youtube-factory/topic-director
+    required_artifacts_in:
+      - topic_shortlist
+      - topic_verification
+    produces:
+      - topic_selection
+    tools_available: []
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      - Ranked choices and remaining evidence limits are visible to the user
+      - No deep research, script, or production begins before the user chooses
+    success_criteria:
+      - Checkpoint is awaiting_human with human_approved false
+      - GATE_TOPIC_SELECTION completes only after explicit user approval
+
   - name: research
     skill: pipelines/youtube-factory/evidence-director
     produces:

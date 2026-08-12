@@ -18,16 +18,23 @@ from schemas.artifacts import ARTIFACT_NAMES, validate_artifact
 
 # All known stages across all pipelines (used only for artifact name lookup).
 ALL_KNOWN_STAGES = frozenset([
+    "topic_search", "topic_verification", "topic_approval",
     "research", "proposal", "idea", "script", "scene_plan",
     "assets", "edit", "compose", "publish",
 ])
 
 # Backward-compatible alias — existing code / tests that import STAGES still work.
 # New code should use get_pipeline_stages(pipeline_type) instead.
-STAGES = ["research", "proposal", "idea", "script", "scene_plan",
-          "assets", "edit", "compose", "publish"]
+STAGES = [
+    "topic_search", "topic_verification", "topic_approval",
+    "research", "proposal", "idea", "script", "scene_plan",
+    "assets", "edit", "compose", "publish",
+]
 
 CANONICAL_STAGE_ARTIFACTS = {
+    "topic_search": "topic_shortlist",
+    "topic_verification": "topic_verification",
+    "topic_approval": "topic_selection",
     "research": "research_brief",
     "proposal": "proposal_packet",
     "idea": "brief",

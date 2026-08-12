@@ -11,6 +11,9 @@ import jsonschema
 SCHEMA_DIR = Path(__file__).parent
 
 ARTIFACT_NAMES = [
+    "topic_shortlist",
+    "topic_verification",
+    "topic_selection",
     "research_brief",
     "proposal_packet",
     "brief",
