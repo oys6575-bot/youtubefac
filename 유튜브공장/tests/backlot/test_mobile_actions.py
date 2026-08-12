@@ -14,6 +14,7 @@ from backlot.mobile_actions import (
     execute_action,
 )
 from backlot.auto_dispatch import load_job, write_job_state
+from lib.checkpoint import init_project
 from tests.backlot.mobile_fixtures import build_topic_gate
 
 
@@ -196,3 +197,89 @@ def test_failed_auto_dispatch_retry_creates_new_receipt_and_job_without_mutating
     assert retry["trigger_action"] == "retry_auto_dispatch"
     assert retry["state"] == "queued"
     assert retry["current_stage"] == "research"
+
+
+def _build_failed_final_review_gate(tmp_path: Path) -> tuple[Path, str]:
+    project = init_project(
+        "MOBILE_REVIEW",
+        title="검수 반송 테스트",
+        pipeline_type="youtube-factory",
+        pipeline_dir=tmp_path,
+    )
+    edit_decisions = {"version": "1.0", "render_runtime": "ffmpeg", "cuts": []}
+    final_review = {
+        "version": "1.0",
+        "output_path": "renders/review.mp4",
+        "status": "revise",
+        "checks": {
+            "technical_probe": {},
+            "visual_spotcheck": {},
+            "audio_spotcheck": {},
+            "promise_preservation": {},
+            "subtitle_check": {},
+        },
+        "issues_found": ["00:12 자막과 화면이 맞지 않음"],
+        "recommended_action": "revise_edit",
+    }
+    edit_checkpoint = {
+        "version": "1.0",
+        "project_id": project.name,
+        "pipeline_type": "youtube-factory",
+        "stage": "edit",
+        "status": "completed",
+        "timestamp": "2026-08-12T15:00:00+00:00",
+        "checkpoint_policy": "guided",
+        "human_approval_required": False,
+        "human_approved": False,
+        "artifacts": {"edit_decisions": edit_decisions},
+    }
+    review_checkpoint = {
+        "version": "1.0",
+        "project_id": project.name,
+        "pipeline_type": "youtube-factory",
+        "stage": "final_review",
+        "status": "awaiting_human",
+        "timestamp": "2026-08-12T15:20:00+00:00",
+        "checkpoint_policy": "guided",
+        "human_approval_required": True,
+        "human_approved": False,
+        "artifacts": {"final_review": final_review},
+    }
+    (project / "checkpoint_edit.json").write_text(
+        json.dumps(edit_checkpoint), encoding="utf-8"
+    )
+    (project / "checkpoint_final_review.json").write_text(
+        json.dumps(review_checkpoint), encoding="utf-8"
+    )
+    return project, checkpoint_sha256(project, "final_review")
+
+
+def test_return_to_edit_records_human_revision_and_reactivates_edit(tmp_path: Path) -> None:
+    project, expected = _build_failed_final_review_gate(tmp_path)
+
+    result = execute_action(
+        tmp_path,
+        {
+            "action": "return_to_edit",
+            "project_id": project.name,
+            "stage": "final_review",
+            "expected_checkpoint_sha256": expected,
+            "idempotency_key": "return-to-edit-0001",
+            "reason": "00:12 자막과 화면을 맞춘 뒤 다시 검수해 주세요.",
+        },
+        Actor(tailscale_login="owner@example.com", tailscale_user_id="123"),
+        now="2026-08-12T15:30:00+00:00",
+    )
+
+    review = json.loads((project / "checkpoint_final_review.json").read_text())
+    edit = json.loads((project / "checkpoint_edit.json").read_text())
+    requests = list((project / "approvals/review_requests").glob("*.json"))
+    assert result.receipt["action"] == "return_to_edit"
+    assert review["status"] == "failed"
+    assert review["human_approved"] is False
+    assert edit["status"] == "in_progress"
+    assert edit["metadata"]["revision_reason"].startswith("00:12")
+    assert len(requests) == 1
+    assert json.loads(requests[0].read_text())["action"] == "return_to_edit"
+    assert len(list((project / "history").glob("checkpoint_final_review_*.json"))) == 1
+    assert len(list((project / "history").glob("checkpoint_edit_*.json"))) == 1

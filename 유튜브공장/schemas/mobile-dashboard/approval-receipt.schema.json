@@ -20,7 +20,7 @@
     "version": {"const": "1.0"},
     "receipt_id": {"type": "string", "pattern": "^[0-9a-f-]{36}$"},
     "project_id": {"type": "string", "minLength": 1},
-    "action": {"enum": ["approve_topic", "approve_gate", "reject_gate", "request_revision", "request_stop", "retry_auto_dispatch"]},
+    "action": {"enum": ["approve_topic", "approve_gate", "reject_gate", "request_revision", "return_to_edit", "request_stop", "retry_auto_dispatch"]},
     "stage": {"type": "string", "minLength": 1},
     "expected_checkpoint_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "resulting_checkpoint_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},

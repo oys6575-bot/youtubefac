@@ -38,6 +38,7 @@ WRITE_ACTIONS = frozenset(
         "approve_gate",
         "reject_gate",
         "request_revision",
+        "return_to_edit",
         "request_stop",
         "retry_auto_dispatch",
     }
@@ -281,6 +282,75 @@ def _validate_rejection(project: Path, payload: dict[str, Any]) -> None:
         raise ActionValidationError("current_checkpoint_invalid") from exc
 
 
+def _return_to_edit_targets(
+    project: Path,
+    payload: dict[str, Any],
+    now: str,
+) -> tuple[list[tuple[str, bytes]], str]:
+    if payload.get("stage") != "final_review":
+        raise ActionValidationError("return_to_edit_requires_final_review")
+    review_path = project / "checkpoint_final_review.json"
+    edit_path = project / "checkpoint_edit.json"
+    review = _load_json(review_path)
+    edit = _load_json(edit_path)
+    if (
+        review.get("project_id") != payload["project_id"]
+        or review.get("stage") != "final_review"
+        or review.get("status") != "awaiting_human"
+        or not review.get("human_approval_required")
+    ):
+        raise ActionValidationError("gate_not_awaiting_human")
+    artifact = (review.get("artifacts") or {}).get("final_review")
+    if not isinstance(artifact, dict) or artifact.get("status") not in {"revise", "fail"}:
+        raise ActionValidationError("review_does_not_require_revision")
+    if edit.get("project_id") != payload["project_id"] or edit.get("stage") != "edit":
+        raise ActionValidationError("edit_checkpoint_invalid")
+    try:
+        validate_checkpoint(review)
+        validate_checkpoint(edit)
+    except Exception as exc:
+        raise ActionValidationError("current_checkpoint_invalid") from exc
+
+    returned_review = deepcopy(review)
+    returned_review["status"] = "failed"
+    returned_review["human_approved"] = False
+    returned_review["timestamp"] = now
+    returned_review["error"] = "User returned final review to edit"
+    returned_review["metadata"] = {
+        **(returned_review.get("metadata") or {}),
+        "revision_reason": payload["reason"],
+        "returned_to_stage": "edit",
+    }
+    reopened_edit = deepcopy(edit)
+    reopened_edit["status"] = "in_progress"
+    reopened_edit["human_approved"] = False
+    reopened_edit["timestamp"] = now
+    reopened_edit["metadata"] = {
+        **(reopened_edit.get("metadata") or {}),
+        "revision_reason": payload["reason"],
+        "returned_from_stage": "final_review",
+    }
+    try:
+        validate_checkpoint(returned_review)
+        validate_checkpoint(reopened_edit)
+    except Exception as exc:
+        raise ActionValidationError("resulting_checkpoint_invalid") from exc
+
+    old_review = review_path.read_bytes()
+    old_edit = edit_path.read_bytes()
+    review_bytes = _json_bytes(returned_review)
+    targets = [
+        (
+            f"history/checkpoint_final_review_{_sha256(old_review)[:16]}.json",
+            old_review,
+        ),
+        (f"history/checkpoint_edit_{_sha256(old_edit)[:16]}.json", old_edit),
+        ("checkpoint_final_review.json", review_bytes),
+        ("checkpoint_edit.json", _json_bytes(reopened_edit)),
+    ]
+    return targets, _sha256(review_bytes)
+
+
 def _safe_rel(project: Path, rel: str) -> Path:
     pure = PurePosixPath(rel)
     if pure.is_absolute() or ".." in pure.parts:
@@ -437,6 +507,12 @@ def execute_action(
         elif payload["action"] == "retry_auto_dispatch":
             assert retry_source is not None
             resulting_hash = retry_source["trigger_checkpoint_sha256"]
+        elif payload["action"] == "return_to_edit":
+            transition_targets, resulting_hash = _return_to_edit_targets(
+                project, payload, timestamp
+            )
+            targets.extend(transition_targets)
+            targets.append(_request_target(payload, actor, receipt_id, timestamp))
         else:
             if payload["action"] == "reject_gate":
                 _validate_rejection(project, payload)

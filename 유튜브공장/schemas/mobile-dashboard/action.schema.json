@@ -16,6 +16,7 @@
         "approve_gate",
         "reject_gate",
         "request_revision",
+        "return_to_edit",
         "request_stop",
         "retry_auto_dispatch"
       ]
@@ -41,7 +42,7 @@
       "then": {"required": ["selected_candidate_id"]}
     },
     {
-      "if": {"properties": {"action": {"enum": ["reject_gate", "request_revision", "request_stop"]}}},
+      "if": {"properties": {"action": {"enum": ["reject_gate", "request_revision", "return_to_edit", "request_stop"]}}},
       "then": {"required": ["reason"]}
     }
   ]
