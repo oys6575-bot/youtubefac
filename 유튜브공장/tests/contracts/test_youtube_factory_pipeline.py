@@ -5,13 +5,20 @@ from pathlib import Path
 import pytest
 import yaml
 
-from lib.checkpoint import CheckpointValidationError, write_checkpoint
+from lib.checkpoint import CheckpointValidationError, get_next_stage, write_checkpoint
 from lib.pipeline_loader import get_stage_order, load_pipeline
 from styles.playbook_loader import load_playbook
 from tools.tool_registry import ToolRegistry
 
 
 ROOT = Path(__file__).resolve().parents[2]
+
+
+def test_youtube_factory_starts_at_topic_search_without_changing_legacy_default(
+    tmp_path: Path,
+) -> None:
+    assert get_next_stage(tmp_path, "pilot", "youtube-factory") == "topic_search"
+    assert get_next_stage(tmp_path, "legacy") == "research"
 
 
 def test_pipeline_stage_order_places_manual_work_between_budget_and_asset_gate() -> None:

@@ -19,14 +19,23 @@ def test_factory_source_lock_pins_clean_upstream() -> None:
     assert lock["tracked_file_count"] == 2038
 
 
-def test_factory_tree_excludes_existing_runtime_and_secret_material() -> None:
+def test_factory_tree_excludes_existing_runtime_material_and_protects_local_env() -> None:
     forbidden = [
-        FACTORY_ROOT / ".env",
         FACTORY_ROOT / "pexels_6684209.jpg",
         FACTORY_ROOT / "projects" / "aurora",
     ]
 
     assert [str(path.relative_to(FACTORY_ROOT)) for path in forbidden if path.exists()] == []
+
+    env_path = FACTORY_ROOT / ".env"
+    if env_path.exists():
+        assert env_path.stat().st_mode & 0o777 == 0o600
+        ignored = subprocess.run(
+            ["git", "check-ignore", "-q", ".env"],
+            cwd=FACTORY_ROOT,
+            check=False,
+        )
+        assert ignored.returncode == 0
 
     venv_config = (FACTORY_ROOT / ".venv" / "pyvenv.cfg").read_text(encoding="utf-8")
     assert "/Users/mk-macbook/Desktop/openmontage" not in venv_config
