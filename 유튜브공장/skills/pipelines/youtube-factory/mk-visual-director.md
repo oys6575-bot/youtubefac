@@ -37,6 +37,94 @@ direct the visual language; OpenMontage still owns state, gates, execution, and 
 7. Bind exact overlays to verified claim IDs and exact literals.
 8. Mark AI reconstruction and disclosure placement at plan time.
 
+## Cinematic Direction Authoring Order
+
+Author every motion-bearing shot in this order. Do not start with a provider prompt or
+camera preset:
+
+1. **Meaning and evidence** — state what the viewer learns, feels, or verifies and
+   which evidence may constrain the image.
+2. **Technique set** — choose only the registry methods that solve that shot's actual
+   directing problem.
+3. **Opening frame and spatial blocking** — define the readable state before motion,
+   then anchor each important subject in both screen space and world space.
+4. **Observable optical result and timed beats** — describe perspective, background,
+   focus, and subject scale in visible terms; divide the duration into non-overlapping
+   action/camera/result beats.
+5. **Physical causality** — name the force, weight, contact, resistance, follow-through,
+   and settling cues needed to make the important movement believable.
+6. **Visible performance, only when needed** — translate objective, obstacle, tactic,
+   listening, thought, reaction, breath, gaze, posture, and beat change into filmable
+   behavior. Material-only or environment-only shots do not need a `performance` block.
+7. **Reference roles** — bind every generation reference exactly once and say both what
+   it controls and what must not leak from it.
+8. **Route and fallback** — only after the shot is directed, choose one production route
+   and a truthful fallback that preserves the narrative function.
+
+`TOPVIEW_HANDOFF` and `LOCAL_LTX` shots must contain `cinematic_direction` with:
+
+- `opening_frame`: description, visible subjects, environment state, action state, and
+  whether an empty/partial opening is deliberate.
+- `spatial_blocking`: for each important subject, screen position, world anchor,
+  distance relation, body orientation, attention target, and movement path.
+- `optical_result`: camera distance plus observable perspective, background, focus, and
+  subject-scale behavior. A lens name alone is never sufficient.
+- `timed_beats`: `start_seconds`, `end_seconds`, visible action, camera behavior, and
+  physical result. Beats cannot overlap or extend beyond the shot.
+- `physical_cues`: the minimum visible cues that prove weight and cause-and-effect.
+- optional `performance`: objective, obstacle, current tactic, observable behaviors,
+  reaction cue, and beat change.
+- `reference_bindings`: one path-matched record per `generation_brief.reference_paths`
+  entry with a single role, `controls`, and `excludes`.
+
+Write provider-neutral observable direction. Current TopView UI terminology may be
+recorded by the human operator later; Higgsfield, Seedance, or other provider prompt
+syntax never enters this contract.
+
+## Cue and Beat Allocation
+
+Build a cue sheet before approving shot timing. Every cue must have one owner and an
+observable landing point:
+
+- **Narration cue**: the clause or verified claim that motivates the image.
+- **Visual cue**: reveal, contact, gaze shift, document appearance, material change, or
+  other event the viewer must notice.
+- **Camera cue**: start, acceleration, deceleration, focus transfer, stop, or hold. Put
+  peak speed in low-information space and slow or hold on evidence, faces, and text.
+- **Sound cue**: production sound, ambience, impact, silence, J-cut, or L-cut that starts
+  or completes the visual event.
+- **Edit cue**: the exact event that motivates a cut or transition.
+- **Overlay cue**: a claim-bound moment with enough reading time; never place a speed
+  peak across exact typography.
+
+Allocate each cue to `timed_beats`, `audio_layers.sync_event`, `edit_trigger`, transition
+fields, or the canonical beat map. Do not duplicate conflicting timestamps across
+artifacts. One event can coordinate picture, sound, and camera, but one subsystem owns
+the canonical time.
+
+For a still-to-motion shot, explicitly design three states: the source still is first
+read as evidence or memory, a motivated bridge introduces depth or physical life, and
+the moving reconstruction lands on a new factual or emotional focus. A variable-speed
+move must name where it accelerates, where it decelerates, and how long the landing is
+held. A photograph becoming video is never approved merely because it morphs smoothly.
+
+## Shot Grammar and Coverage Distribution
+
+- Establish maker, tool, material, and workspace geography before a long run of details.
+- Give each close-up one tactile or factual purpose; do not repeat generic beauty macros.
+- Preserve screen direction, gaze, prop hand, light direction, and material state across
+  cuts unless their change is the intended beat.
+- Use stillness for verification and reaction, movement for discovery or spatial change,
+  and acceleration only where the viewer is not being asked to read.
+- Choose hard cuts for direct consequence or proof; use match transitions only when the
+  shared shape, gesture, vector, material state, light, or meaning can be named.
+- Re-establish geography after an axis, location, or process-stage change.
+- Alternate scale, motion energy, information density, and hold duration according to
+  the sequence's tension/release curve rather than applying a uniform preset rhythm.
+- Keep exact dates, names, measurements, underlines, maps, and explanatory graphics in
+  HyperFrames/Remotion even when the underlying picture comes from TopView or a local
+  model.
+
 ## Knowledge Vault Gate
 
 The Obsidian vault makes all audited techniques, skills, tools, sources, models, and
@@ -65,6 +153,13 @@ selected technique cards and no more than seven related skill, tool, or source c
 per family. Respect every recorded exclusion. Do not replace a missing or excluded
 record with a similar provider-specific method. The pack cannot call a provider,
 change OpenMontage state, or complete a Human Gate.
+
+The comprehensive notes under `knowledge/10-RESEARCH/cinematic-direction/` remain
+searchable `REFERENCE_ONLY` material and must not be inserted into the normal
+`load_order`. Open only the relevant note or section for a difficult shot, failure
+analysis, research, or registry maintenance. Extract a short provider-neutral rule;
+never paste the whole research note into a shot prompt or silently activate a product
+claim found there.
 
 ## Selective Technique Routing
 
