@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import hashlib
+import json
 from pathlib import Path
 
 from backlot.auto_dispatch import load_job
 from backlot.auto_dispatch_worker import Coordinator
-from backlot.mobile_actions import Actor, execute_action
+from backlot.mobile_actions import Actor, enqueue_approved_topic_job, execute_action
 from backlot.mobile_state import build_mobile_state
 from tests.backlot.mobile_fixtures import build_topic_gate
 from tests.backlot.test_auto_dispatch_worker import FakeRunner, policy_failure
@@ -76,3 +77,34 @@ def test_failed_chain_retries_from_last_hash_bound_stage_without_rewriting_histo
         "evidence_lock",
         "proposal",
     ]
+
+
+def test_pre_feature_approval_can_be_enqueued_once_without_rewriting_receipt(
+    tmp_path: Path,
+) -> None:
+    project, candidate, expected = build_topic_gate(tmp_path)
+    result = execute_action(tmp_path, payload(candidate, expected), ACTOR)
+    job_path = project / f"automation/jobs/{result.receipt['receipt_id']}.json"
+    job_path.unlink()
+    transaction_path = project / f"approvals/transactions/{result.receipt['receipt_id']}.json"
+    transaction = json.loads(transaction_path.read_text())
+    transaction["targets"] = [
+        target
+        for target in transaction["targets"]
+        if not target["path"].startswith("automation/jobs/")
+    ]
+    transaction_path.write_text(json.dumps(transaction), encoding="utf-8")
+    receipt_path = project / f"approvals/receipts/{result.receipt['receipt_id']}.json"
+    receipt_bytes = receipt_path.read_bytes()
+
+    first = enqueue_approved_topic_job(
+        tmp_path, project.name, result.receipt["receipt_id"]
+    )
+    second = enqueue_approved_topic_job(
+        tmp_path, project.name, result.receipt["receipt_id"]
+    )
+
+    assert first is True
+    assert second is False
+    assert receipt_path.read_bytes() == receipt_bytes
+    assert len(list((project / "automation/jobs").glob("*.json"))) == 1

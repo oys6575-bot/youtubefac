@@ -520,3 +520,78 @@ def execute_action(
         journal["state"] = "completed"
         _atomic_write(journal_path, _json_bytes(journal))
         return ActionResult(receipt)
+
+
+def enqueue_approved_topic_job(
+    projects_root: Path,
+    project_id: str,
+    receipt_id: str,
+    *,
+    now: str | None = None,
+) -> bool:
+    """One-time compatibility bridge for a valid pre-feature topic approval.
+
+    The original receipt, checkpoint, and completed transaction are immutable.
+    A separate prepared journal adds only the missing job, making the bridge
+    crash-recoverable and idempotent.
+    """
+
+    root = Path(projects_root)
+    project = _safe_project(root, project_id)
+    timestamp = now or datetime.now(timezone.utc).isoformat()
+    with _project_lock(root, project):
+        recover_transactions(project)
+        job_rel = f"automation/jobs/{receipt_id}.json"
+        job_path = _safe_rel(project, job_rel)
+        if job_path.is_file():
+            job = load_job(job_path)
+            if job["job_id"] != receipt_id or job["project_id"] != project_id:
+                raise ActionConflict("existing_job_identity_mismatch")
+            return False
+        receipt_path = project / f"approvals/receipts/{receipt_id}.json"
+        receipt = _load_json(receipt_path)
+        try:
+            jsonschema.Draft202012Validator(
+                _load_schema(RECEIPT_SCHEMA),
+                format_checker=jsonschema.FormatChecker(),
+            ).validate(receipt)
+        except jsonschema.ValidationError as exc:
+            raise ActionValidationError("legacy_receipt_invalid") from exc
+        if (
+            receipt.get("receipt_id") != receipt_id
+            or receipt.get("project_id") != project_id
+            or receipt.get("action") != "approve_topic"
+            or receipt.get("stage") != "topic_approval"
+        ):
+            raise ActionValidationError("legacy_receipt_not_topic_approval")
+        checkpoint_hash = checkpoint_sha256(project, "topic_approval")
+        if checkpoint_hash != receipt.get("resulting_checkpoint_sha256"):
+            raise ActionConflict("legacy_approval_checkpoint_changed")
+        checkpoint = _load_json(project / "checkpoint_topic_approval.json")
+        if (
+            checkpoint.get("status") != "completed"
+            or checkpoint.get("human_approved") is not True
+        ):
+            raise ActionValidationError("legacy_topic_not_approved")
+        job = build_topic_job(
+            project,
+            receipt,
+            checkpoint_hash,
+            timestamp,
+            topic_selection=checkpoint.get("artifacts", {}).get("topic_selection"),
+        )
+        content = _json_bytes(job)
+        journal = {
+            "version": "1.0",
+            "transaction_id": f"backfill-{receipt_id}",
+            "state": "prepared",
+            "project_id": project_id,
+            "created_at": timestamp,
+            "targets": [_journal_target(job_rel, content)],
+        }
+        journal_path = project / f"approvals/transactions/backfill-{receipt_id}.json"
+        _atomic_write(journal_path, _json_bytes(journal))
+        _apply_journal(project, journal)
+        journal["state"] = "completed"
+        _atomic_write(journal_path, _json_bytes(journal))
+        return True
