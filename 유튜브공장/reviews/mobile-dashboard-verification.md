@@ -6,7 +6,7 @@
 
 ## 1. 기능·회귀 검증
 
-- Python 전체 테스트: **1,138 passed, 10 skipped, 1 subtest passed, 0 failed**
+- Python 전체 테스트: **1,139 passed, 11 skipped, 1 subtest passed, 0 failed**
 - JavaScript syntax: `mobile.js`, `sw.js` **PASS**
 - Python compile, JSON/YAML parse, `git diff --check`: **PASS**
 - 기존 Backlot·contract 회귀를 포함해 실패 없음
@@ -48,4 +48,18 @@
 
 - 접속 URL: `https://youtube-factory.tail6d04f2.ts.net/mobile`
 - 허용 신원: 동일 tailnet의 등록된 사용자 1명
-- 사용자가 휴대폰 Tailscale을 켜고 URL을 열어 최종 단말 화면만 확인하면 된다.
+- 동일 tailnet의 iPhone에서 HTTPS 모바일 앱 화면 열림을 사용자가 실제 확인함.
+
+## 7. 최초 HTTPS 인증서 장애와 재검증
+
+- 최초 휴대폰 접속은 TLS handshake에서 멈춤. 백엔드 요청은 도달하지 않음.
+- Let's Encrypt ACME authorization 원문은 `Incorrect TXT record` 403을 반환함.
+- Tailscale의 DNS-01 TXT가 권한 DNS 서버 4곳에 동시 전파되기 전 검증이 시작된 것을
+  서버별 TXT 집합과 ACME authorization error로 확인함.
+- 5회 실패 제한이 해제된 뒤 DNS 전파를 확인하고 단 1회 재시도해 인증서 발급 성공.
+- 발급 인증서: CN `youtube-factory.tail6d04f2.ts.net`, Let's Encrypt `YE2`,
+  만료 2026-11-10 10:56:29 UTC.
+- preflight에 cached certificate 실존 검사를 추가함. 인증서가 없는 HTTPS 설정을 다시 PASS로
+  보고하지 않음.
+- 최종 preflight: loopback listener, gateway health, Tailscale backend, TLS certificate,
+  private Serve 모두 **PASS**.

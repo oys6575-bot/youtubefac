@@ -52,6 +52,22 @@ def audit_serve_status(status: dict[str, Any], port: int) -> list[str]:
     return findings
 
 
+def audit_cached_certificate(cert_dir: Path, domains: list[str]) -> list[str]:
+    """Require tailscaled's non-empty cached certificate for every Serve domain."""
+    findings: list[str] = []
+    if not domains:
+        return ["no Tailscale certificate domain found"]
+    for domain in domains:
+        cert_file = cert_dir / f"{domain}.crt"
+        if not cert_file.is_file() or cert_file.stat().st_size == 0:
+            findings.append(f"cached TLS certificate is missing: {domain}")
+    return findings
+
+
+def preflight_is_ok(findings: list[str], *, backend: str, health_ok: bool) -> bool:
+    return not findings and backend == "Running" and health_ok
+
+
 def _run_json(command: list[str]) -> dict[str, Any]:
     result = subprocess.run(command, capture_output=True, text=True, timeout=15)
     if result.returncode != 0:
@@ -72,6 +88,11 @@ def main() -> int:
     )
     parser.add_argument("--port", type=int, default=8787)
     parser.add_argument("--tailscale", default="/opt/homebrew/bin/tailscale")
+    parser.add_argument(
+        "--cert-dir",
+        type=Path,
+        default=root / ".runtime/mobile-dashboard/tailscale/state/certs",
+    )
     args = parser.parse_args()
     report: dict[str, Any] = {"ok": False, "checks": {}, "findings": []}
 
@@ -83,11 +104,19 @@ def main() -> int:
         report["checks"]["gateway_health"] = "PASS" if health.get("ok") else "FAIL"
         status = _run_json([args.tailscale, f"--socket={args.socket}", "status", "--json"])
         report["checks"]["tailscale_backend"] = status.get("BackendState", "UNKNOWN")
+        domains = [str(value) for value in status.get("CertDomains", []) if value]
+        certificate_findings = audit_cached_certificate(args.cert_dir, domains)
+        report["findings"].extend(certificate_findings)
+        report["checks"]["tls_certificate"] = "PASS" if not certificate_findings else "FAIL"
         serve = _run_json([args.tailscale, f"--socket={args.socket}", "serve", "status", "--json"])
         findings = audit_serve_status(serve, args.port)
         report["findings"].extend(findings)
         report["checks"]["private_serve"] = "PASS" if not findings else "FAIL"
-        report["ok"] = not findings and status.get("BackendState") == "Running" and health.get("ok") is True
+        report["ok"] = preflight_is_ok(
+            report["findings"],
+            backend=str(status.get("BackendState")),
+            health_ok=health.get("ok") is True,
+        )
     except Exception as exc:
         report["findings"].append(str(exc))
     print(json.dumps(report, ensure_ascii=False, indent=2))

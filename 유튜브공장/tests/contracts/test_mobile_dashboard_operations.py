@@ -68,6 +68,30 @@ def test_serve_status_audit_accepts_only_loopback_proxy_and_no_public_flag() -> 
     assert any("loopback" in finding for finding in module.audit_serve_status(non_loopback, 8787))
 
 
+def test_cached_certificate_audit_rejects_missing_certificate(tmp_path: Path) -> None:
+    """A configured HTTPS proxy is not ready until tailscaled cached its certificate."""
+    module = load_preflight_module()
+    domain = "factory.tail.test"
+
+    assert module.audit_cached_certificate(tmp_path, [domain]) == [
+        f"cached TLS certificate is missing: {domain}"
+    ]
+
+    (tmp_path / f"{domain}.crt").write_text("certificate", encoding="utf-8")
+    assert module.audit_cached_certificate(tmp_path, [domain]) == []
+
+
+def test_preflight_verdict_fails_when_any_finding_exists() -> None:
+    module = load_preflight_module()
+
+    assert module.preflight_is_ok([], backend="Running", health_ok=True) is True
+    assert module.preflight_is_ok(
+        ["cached TLS certificate is missing: factory.tail.test"],
+        backend="Running",
+        health_ok=True,
+    ) is False
+
+
 def test_example_config_has_no_real_identity_and_requires_exact_users() -> None:
     config = (ROOT / "config/mobile-dashboard.example.yaml").read_text(encoding="utf-8")
     assert "owner@example.com" in config
