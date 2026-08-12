@@ -7,7 +7,7 @@ import os
 import shlex
 import subprocess
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
@@ -218,7 +218,7 @@ Read AGENT_GUIDE.md, config/orca-model-routing.yaml, pipeline_defs/youtube-facto
 
 Hard boundaries: no paid API, no TopView dispatch, no asset generation, no script, no visual plan, no render, no upload, no publish, no provider/model fallback, and no fabricated Human Gate approval. Evidence lock must independently verify exact research bytes and return PASS or fail. Proposal must end with checkpoint_proposal.json status awaiting_human, human_approval_required true, human_approved false.
 
-After successful filesystem validation, write JSON to {result_path} with exactly: outcome='success', artifact_paths (safe paths relative to PROJECT), artifact_sha256 (map keyed by those paths), source_commit (40 lowercase hex), verdict ('PASS' for evidence_lock, otherwise 'NOT_APPLICABLE'), run_id, task_id, dispatch_id. The result file must be written last. Then report worker_done exactly once. On any policy or integrity issue, do not write a success result; report failure/escalation.
+After successful filesystem validation, write JSON to {result_path} with exactly: outcome='success', artifact_paths (safe paths relative to PROJECT), artifact_sha256 (map keyed by those paths), source_commit (40 lowercase hex), and verdict ('PASS' for evidence_lock, otherwise 'NOT_APPLICABLE'). Do not add run_id, task_id, or dispatch_id; the Coordinator binds those trusted transport identifiers itself. The result file must be written last. Then report worker_done exactly once. On any policy or integrity issue, do not write a success result; report failure/escalation.
 """
 
     def _create_task(self, run_id: str, sender: str, stage: str, prompt: str) -> str:
@@ -353,6 +353,20 @@ After successful filesystem validation, write JSON to {result_path} with exactly
         messages = result.get("messages") or result.get("items") or []
         return delivery_id, [item for item in messages if isinstance(item, Mapping)]
 
+    @staticmethod
+    def _message_payload(message: Mapping[str, Any]) -> Mapping[str, Any]:
+        payload = message.get("payload")
+        if isinstance(payload, Mapping):
+            return payload
+        if isinstance(payload, str):
+            try:
+                decoded = json.loads(payload)
+            except json.JSONDecodeError:
+                return {}
+            if isinstance(decoded, Mapping):
+                return decoded
+        return {}
+
     def _wait_for_worker(
         self, run_id: str, sender: str, task_id: str, dispatch_id: str
     ) -> tuple[str, str]:
@@ -380,7 +394,7 @@ After successful filesystem validation, write JSON to {result_path} with exactly
             ack, messages = self._messages(delivery)
             for message in messages:
                 kind = str(message.get("type") or message.get("messageType") or "")
-                payload = message.get("payload") if isinstance(message.get("payload"), Mapping) else {}
+                payload = self._message_payload(message)
                 message_task = str(message.get("task_id") or message.get("taskId") or payload.get("taskId") or "")
                 message_dispatch = str(message.get("dispatch_id") or message.get("dispatchId") or payload.get("dispatchId") or "")
                 if message_task and message_task != task_id:
@@ -406,13 +420,25 @@ After successful filesystem validation, write JSON to {result_path} with exactly
             "artifact_sha256",
             "source_commit",
             "verdict",
-            "run_id",
-            "task_id",
-            "dispatch_id",
         }
         if not isinstance(value, dict) or set(value) != allowed or value.get("outcome") != "success":
             raise OrcaAdapterError("stage result contract violation")
         return StageResult(**value)
+
+    @staticmethod
+    def _bind_provenance(
+        result: StageResult,
+        *,
+        run_id: str,
+        task_id: str,
+        dispatch_id: str,
+    ) -> StageResult:
+        return replace(
+            result,
+            run_id=run_id,
+            task_id=task_id,
+            dispatch_id=dispatch_id,
+        )
 
     def run_stage(self, project: Path, job: dict[str, Any], stage: str) -> StageResult:
         run_id = task_id = dispatch_id = ""
@@ -446,13 +472,12 @@ After successful filesystem validation, write JSON to {result_path} with exactly
                     dispatch_id=dispatch_id,
                 )
             result = self._load_result(result_path)
-            if (
-                result.run_id != run_id
-                or result.task_id != task_id
-                or result.dispatch_id != dispatch_id
-            ):
-                raise OrcaAdapterError("stage result provenance mismatch")
-            return result
+            return self._bind_provenance(
+                result,
+                run_id=run_id,
+                task_id=task_id,
+                dispatch_id=dispatch_id,
+            )
         except (OSError, subprocess.SubprocessError, OrcaAdapterError) as exc:
             return StageResult.failure(
                 stage,
