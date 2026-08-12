@@ -205,6 +205,44 @@ class OrcaRunner:
             "proposal": "story_visual",
         }[stage]
         configured = self.routing["roles"][role]
+        stage_contracts = {
+            "research": {
+                "paths": [
+                    "artifacts/research_brief.json",
+                    "artifacts/evidence_registry.json",
+                    "checkpoint_research.json",
+                ],
+                "artifacts": ["research_brief", "evidence_registry"],
+                "status": "completed",
+                "approval_required": "false",
+                "verdict": "NOT_APPLICABLE",
+            },
+            "evidence_lock": {
+                "paths": [
+                    "artifacts/evidence_registry.json",
+                    "artifacts/decision_log.json",
+                    "checkpoint_evidence_lock.json",
+                ],
+                "artifacts": ["evidence_registry", "decision_log"],
+                "status": "completed",
+                "approval_required": "false",
+                "verdict": "PASS",
+            },
+            "proposal": {
+                "paths": [
+                    "artifacts/proposal_packet.json",
+                    "artifacts/decision_log.json",
+                    "checkpoint_proposal.json",
+                ],
+                "artifacts": ["proposal_packet", "decision_log"],
+                "status": "awaiting_human",
+                "approval_required": "true",
+                "verdict": "NOT_APPLICABLE",
+            },
+        }
+        contract = stage_contracts[stage]
+        output_paths = "\n".join(f"- {path}" for path in contract["paths"])
+        artifact_names = ", ".join(contract["artifacts"])
         return f"""You are the {role} worker for the YouTube Factory canonical project.
 
 PROJECT: {project}
@@ -218,7 +256,12 @@ Read AGENT_GUIDE.md, config/orca-model-routing.yaml, pipeline_defs/youtube-facto
 
 Hard boundaries: no paid API, no TopView dispatch, no asset generation, no script, no visual plan, no render, no upload, no publish, no provider/model fallback, and no fabricated Human Gate approval. Evidence lock must independently verify exact research bytes and return PASS or fail. Proposal must end with checkpoint_proposal.json status awaiting_human, human_approval_required true, human_approved false.
 
-After successful filesystem validation, write JSON to {result_path} with exactly: outcome='success', artifact_paths (safe paths relative to PROJECT), artifact_sha256 (map keyed by those paths), source_commit (40 lowercase hex), and verdict ('PASS' for evidence_lock, otherwise 'NOT_APPLICABLE'). Do not add run_id, task_id, or dispatch_id; the Coordinator binds those trusted transport identifiers itself. The result file must be written last. Then report worker_done exactly once. On any policy or integrity issue, do not write a success result; report failure/escalation.
+The complete allowed output path set for this stage is exactly:
+{output_paths}
+
+The checkpoint must satisfy schemas/checkpoints/checkpoint.schema.json and lib.checkpoint.validate_checkpoint. It must use pipeline_type='youtube-factory', stage='{stage}', status='{contract['status']}', checkpoint_policy='guided', human_approval_required={contract['approval_required']}, and human_approved=false. Under checkpoint.artifacts, embed the exact full JSON object for each canonical artifact ({artifact_names}); do not substitute path/SHA pointer objects. Do not add fields rejected by the checkpoint schema.
+
+After validating every artifact with schemas.artifacts.validate_artifact and the checkpoint with lib.checkpoint.validate_checkpoint, write JSON to {result_path} with exactly: outcome='success'; artifact_paths as a JSON array containing every allowed output path above exactly once; artifact_sha256 as a map keyed by those same paths; source_commit as 40 lowercase hex; and verdict='{contract['verdict']}'. Do not add run_id, task_id, or dispatch_id; the Coordinator binds those trusted transport identifiers itself. The result file must be written last. Then report worker_done exactly once. On any policy or integrity issue, do not write a success result; report failure/escalation.
 """
 
     def _create_task(self, run_id: str, sender: str, stage: str, prompt: str) -> str:
@@ -422,6 +465,19 @@ After successful filesystem validation, write JSON to {result_path} with exactly
             "verdict",
         }
         if not isinstance(value, dict) or set(value) != allowed or value.get("outcome") != "success":
+            raise OrcaAdapterError("stage result contract violation")
+        paths = value.get("artifact_paths")
+        hashes = value.get("artifact_sha256")
+        if (
+            not isinstance(paths, list)
+            or not all(isinstance(item, str) and item for item in paths)
+            or len(paths) != len(set(paths))
+            or not isinstance(hashes, dict)
+            or not all(
+                isinstance(key, str) and isinstance(item, str)
+                for key, item in hashes.items()
+            )
+        ):
             raise OrcaAdapterError("stage result contract violation")
         return StageResult(**value)
 
