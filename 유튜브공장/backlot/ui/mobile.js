@@ -155,6 +155,9 @@
 
   function renderAutomation() {
     const automation = dashboard.automation;
+    if (!ui.automationCard || !ui.automationLabel || !ui.automationDetail || !ui.automationActions) {
+      return;
+    }
     if (!automation) {
       ui.automationCard.classList.add("hidden");
       ui.automationActions.replaceChildren();
@@ -318,6 +321,14 @@
   ui.form.addEventListener("submit", submitDecision);
   addEventListener("online", () => { setConnection(); start(); });
   addEventListener("offline", setConnection);
-  if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js", { scope: "/" });
+  if ("serviceWorker" in navigator) {
+    let reloadingForWorker = false;
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (reloadingForWorker) return;
+      reloadingForWorker = true;
+      location.reload();
+    });
+    navigator.serviceWorker.register("/sw.js", { scope: "/" });
+  }
   start();
 })();

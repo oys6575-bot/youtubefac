@@ -22,6 +22,9 @@ def test_pwa_manifest_is_installable_and_has_required_icons() -> None:
 def test_service_worker_caches_shell_only_and_never_approval_data() -> None:
     worker = (UI / "sw.js").read_text(encoding="utf-8")
     assert "APP_SHELL" in worker
+    assert '"/mobile"' not in worker
+    assert 'request.mode === "navigate"' in worker
+    assert 'event.respondWith(fetch(request, { cache: "no-store" }))' in worker
     assert 'startsWith("/api/")' in worker
     assert 'cache: "no-store"' in worker
     assert "approval" not in worker.lower()
@@ -81,3 +84,10 @@ def test_mobile_ui_projects_automation_and_only_exposes_allowlisted_retry() -> N
     assert "자료조사 실행 중" in script
     assert "/shell" not in script
     assert "/orca" not in script
+
+
+def test_mobile_ui_survives_a_stale_html_shell_during_pwa_upgrade() -> None:
+    script = (UI / "mobile.js").read_text(encoding="utf-8")
+
+    assert "if (!ui.automationCard" in script
+    assert 'navigator.serviceWorker.addEventListener("controllerchange"' in script

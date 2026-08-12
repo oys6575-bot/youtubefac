@@ -1,6 +1,5 @@
-const CACHE_NAME = "ytf-shell-v1";
+const CACHE_NAME = "ytf-shell-v2";
 const APP_SHELL = [
-  "/mobile",
   "/ui/mobile.css",
   "/ui/mobile.js",
   "/manifest.webmanifest",
@@ -22,6 +21,10 @@ self.addEventListener("fetch", event => {
   const request = event.request;
   const url = new URL(request.url);
   if (request.method !== "GET" || url.origin !== self.location.origin) return;
+  if (request.mode === "navigate") {
+    event.respondWith(fetch(request, { cache: "no-store" }));
+    return;
+  }
   if (url.pathname.startsWith("/api/") || url.pathname.startsWith("/media/") || url.pathname.startsWith("/thumb/")) {
     event.respondWith(fetch(request, { cache: "no-store" }));
     return;
