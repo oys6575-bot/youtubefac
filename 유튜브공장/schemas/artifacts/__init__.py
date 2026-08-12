@@ -16,6 +16,7 @@ ARTIFACT_NAMES = [
     "topic_selection",
     "research_brief",
     "media_collection_manifest",
+    "media_relevance_review",
     "proposal_packet",
     "brief",
     "script",

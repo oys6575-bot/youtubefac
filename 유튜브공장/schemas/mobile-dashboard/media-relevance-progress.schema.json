@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openmontage/mobile-dashboard/media-relevance-progress",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "project_id", "state", "phase", "counts", "updated_at", "error"],
+  "properties": {
+    "version": {"const": "1.0"},
+    "project_id": {"type": "string", "minLength": 1},
+    "state": {"enum": ["reviewing", "supplementing", "completed", "partial", "failed"]},
+    "phase": {"enum": ["base_review", "archive_supplement", "final_review", "settled"]},
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["total", "reviewed", "eligible", "excluded", "held"],
+      "properties": {
+        "total": {"type": "integer", "minimum": 0},
+        "reviewed": {"type": "integer", "minimum": 0},
+        "eligible": {"type": "integer", "minimum": 0},
+        "excluded": {"type": "integer", "minimum": 0},
+        "held": {"type": "integer", "minimum": 0}
+      }
+    },
+    "updated_at": {"type": "string", "format": "date-time"},
+    "error": {"type": ["string", "null"]}
+  }
+}
