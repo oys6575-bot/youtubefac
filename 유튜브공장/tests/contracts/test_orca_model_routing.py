@@ -23,7 +23,7 @@ def test_role_models_and_runtimes_are_exact() -> None:
     assert routing["roles"]["control"] == {
         "runtime": "codex",
         "model": "gpt-5.6-sol",
-        "effort": "max",
+        "effort": "xhigh",
         "profile": None,
         "resource_lane": "cloud",
         "writes": ["coordination_records", "integration_commits"],

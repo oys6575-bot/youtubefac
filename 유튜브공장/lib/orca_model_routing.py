@@ -24,7 +24,7 @@ EXPECTED_ROLES = {
     "control": {
         "runtime": "codex",
         "model": "gpt-5.6-sol",
-        "effort": "max",
+        "effort": "xhigh",
         "profile": None,
         "resource_lane": "cloud",
         "writes": ["coordination_records", "integration_commits"],

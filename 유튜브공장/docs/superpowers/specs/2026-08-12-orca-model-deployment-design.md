@@ -20,7 +20,7 @@ Orca는 여러 작업공간과 모델의 협업을 조정한다. 제작 상태�
 Orca — 유튜브공장 협업·격리 계층
 └─ OpenMontage Control Plane — 산출물·상태·승인의 진실원
    ├─ 총괄 감독 / Coordinator
-   │  └─ Codex gpt-5.6-sol, max
+   │  └─ Codex gpt-5.6-sol, xhigh
    ├─ 주제·자료 조사
    │  └─ Hermes + LM Studio Qwen3.6-35B-A3B-MLX
    ├─ 사실·출처·계약 검증
@@ -43,7 +43,9 @@ Orca — 유튜브공장 협업·격리 계층
 
 ### 3.1 Coordinator
 
-- 모델: Codex `gpt-5.6-sol`, effort `max`
+- 모델: Codex `gpt-5.6-sol`, effort `xhigh`
+- 근거: 현재 Orca 1.4.180은 이 모델의 `max` 조합을 거부하고 `xhigh`를
+  실제 지원한다. 자동 강등이 아니라 실행기 검증 결과를 계약에 고정한 값이다.
 - 책임: 작업 DAG, 범위·Human Gate·비용·리소스 레인 통제, 검증 결과 병합
 - 쓰기: 조정 기록, 승인 대기 상태, 검증된 커밋 통합
 - 금지: 사용자 승인 대행, 유료 호출, 자동 게시, 사실 근거 없는 제작 진행
