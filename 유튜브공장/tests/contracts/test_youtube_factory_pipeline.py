@@ -30,6 +30,7 @@ def test_pipeline_stage_order_places_manual_work_between_budget_and_asset_gate()
         "topic_approval",
         "research",
         "media_collection",
+        "media_relevance_review",
         "evidence_lock",
         "proposal",
         "script",
@@ -49,7 +50,7 @@ def test_pipeline_stage_order_places_manual_work_between_budget_and_asset_gate()
     assert manifest["extensions"]["custom_tools"] is True
 
 
-def test_media_collection_is_between_research_and_evidence_lock() -> None:
+def test_media_collection_and_review_are_between_research_and_evidence_lock() -> None:
     manifest = load_pipeline("youtube-factory")
     order = get_stage_order(manifest)
     stage = next(
@@ -57,7 +58,8 @@ def test_media_collection_is_between_research_and_evidence_lock() -> None:
     )
 
     assert order[order.index("research") + 1] == "media_collection"
-    assert order[order.index("media_collection") + 1] == "evidence_lock"
+    assert order[order.index("media_collection") + 1] == "media_relevance_review"
+    assert order[order.index("media_relevance_review") + 1] == "evidence_lock"
     assert stage["required_artifacts_in"] == ["research_brief", "evidence_registry"]
     assert stage["produces"] == ["media_collection_manifest"]
     assert stage["tools_available"] == ["rights_cleared_media_collection"]

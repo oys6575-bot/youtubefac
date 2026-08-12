@@ -17,6 +17,28 @@ ARCHIVE_SOURCE_ALLOWLIST = (
     "pond5_pd",
 )
 
+_CC_LICENSE_URLS = {
+    "CC BY 2.5": "https://creativecommons.org/licenses/by/2.5/",
+    "CC BY 3.0": "https://creativecommons.org/licenses/by/3.0/",
+    "CC BY 4.0": "https://creativecommons.org/licenses/by/4.0/",
+    "CC BY-SA 2.5": "https://creativecommons.org/licenses/by-sa/2.5/",
+    "CC BY-SA 3.0": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "CC BY-SA 4.0": "https://creativecommons.org/licenses/by-sa/4.0/",
+}
+
+
+def normalize_supplement_rights(manifest: dict) -> dict:
+    """Correct deterministic Creative Commons version URLs in embedded manifests."""
+    for item in manifest.get("items", []):
+        if not isinstance(item, dict):
+            continue
+        license_text = str(item.get("license") or "").upper().strip()
+        for label, url in _CC_LICENSE_URLS.items():
+            if label in license_text:
+                item["license_url"] = url
+                break
+    return manifest
+
 _LANE_QUERIES = {
     "event_site": ("{event} {location} collapse", "image", ["CLAIM_EVENT_SITE"]),
     "warning_cracks": ("{event} cracks warning day before collapse", "image", ["CLAIM_WARNING_CRACKS"]),
@@ -107,9 +129,12 @@ def collect_archive_supplement(
         ],
         "sources": sources,
         "max_items_per_query": max_items_per_query,
+        "progress_path": str(Path(output_dir).resolve().parents[1] / "automation/progress/media_archive_supplement.json"),
+        "required_identity_phrases": [
+            topic_identity["canonical_name"], *topic_identity.get("aliases", [])
+        ],
     }
     result = (collector or RightsClearedMediaCollection()).execute(inputs)
     if not result.success:
         raise RuntimeError(f"archive supplement failed: {result.error}")
-    return result.data["manifest"]
-
+    return normalize_supplement_rights(result.data["manifest"])

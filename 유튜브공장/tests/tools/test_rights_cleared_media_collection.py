@@ -140,6 +140,12 @@ def test_explicit_reusable_license_downloads_and_validates_manifest(
     assert __import__("json").loads(progress.read_text())["state"] == "completed"
 
 
+def test_cc_version_is_preserved_in_license_url(tmp_path: Path, monkeypatch) -> None:
+    source = FakeSource([candidate(license="CC BY 2.5")])
+    item = run_collection(tmp_path, monkeypatch, source).data["manifest"]["items"][0]
+    assert item["license_url"] == "https://creativecommons.org/licenses/by/2.5/"
+
+
 def test_retry_reuses_existing_file_without_duplicate_bytes(
     tmp_path: Path, monkeypatch
 ) -> None:
@@ -193,3 +199,23 @@ def test_one_source_failure_preserves_other_source_success(
     assert result.data["accepted"] == 1
     assert result.data["source_errors"][0]["source"] == "failed"
     assert result.data["manifest"]["collection_status"] == "partial"
+
+
+def test_required_identity_is_checked_before_download(tmp_path: Path, monkeypatch) -> None:
+    from tools.video.rights_cleared_media_collection import RightsClearedMediaCollection
+
+    source = FakeSource([
+        candidate(source_id="wrong", source_tags="unrelated federal archive record"),
+        candidate(source_id="right", source_tags="Rana Plaza collapse rescue photograph"),
+    ])
+    monkeypatch.setattr("tools.video.stock_sources.available_sources", lambda: [source])
+    result = RightsClearedMediaCollection().execute({
+        "project_id": "COLLAPSE_PILOT",
+        "output_dir": str(tmp_path / "assets/source"),
+        "queries": [{"query": "Rana Plaza collapse", "kind": "image", "claim_ids": []}],
+        "required_identity_phrases": ["Rana Plaza"],
+    })
+    assert result.success is True
+    assert result.data["accepted"] == 1
+    assert result.data["rejected_counts"] == {"identity_mismatch": 1}
+    assert source.download_calls == ["fake_right"]

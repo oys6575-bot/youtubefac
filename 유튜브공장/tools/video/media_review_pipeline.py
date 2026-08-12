@@ -15,7 +15,10 @@ import jsonschema
 
 from lib.checkpoint import validate_checkpoint
 from schemas.artifacts import validate_artifact
-from tools.video.media_archive_supplement import collect_archive_supplement
+from tools.video.media_archive_supplement import (
+    collect_archive_supplement,
+    normalize_supplement_rights,
+)
 from tools.video.media_relevance_review import review_manifest
 
 
@@ -106,6 +109,8 @@ def run_media_review(
     supplement: bool = True,
     max_items_per_query: int = 8,
     generated_at: str | None = None,
+    archive_source_names: tuple[str, ...] | None = None,
+    reuse_existing_supplement: bool = False,
 ) -> dict:
     """Run base review, gap-only archive supplement, and final canonical review."""
     project = Path(project).resolve()
@@ -138,15 +143,25 @@ def run_media_review(
                     first["counts"], now,
                 ),
             )
-            supplement_manifest = collect_archive_supplement(
-                project_id=manifest["project_id"],
-                output_dir=project / "assets/source",
-                topic_identity=identity,
-                missing_lanes=missing,
-                max_items_per_query=max_items_per_query,
-                generated_at=now,
+            previous = (
+                _read(project / "artifacts/media_relevance_review.json")
+                if reuse_existing_supplement
+                else {}
             )
+            if isinstance(previous.get("supplement_manifest"), dict):
+                supplement_manifest = previous["supplement_manifest"]
+            else:
+                supplement_manifest = collect_archive_supplement(
+                    project_id=manifest["project_id"],
+                    output_dir=project / "assets/source",
+                    topic_identity=identity,
+                    missing_lanes=missing,
+                    max_items_per_query=max_items_per_query,
+                    generated_at=now,
+                    available_source_names=archive_source_names,
+                )
             base_ids = {row["id"] for row in manifest.get("items", [])}
+            supplement_manifest = normalize_supplement_rights(supplement_manifest)
             supplement_manifest["items"] = [
                 row for row in supplement_manifest.get("items", []) if row["id"] not in base_ids
             ]
@@ -197,11 +212,15 @@ def main() -> int:
     parser.add_argument("--project", required=True, type=Path)
     parser.add_argument("--no-supplement", action="store_true")
     parser.add_argument("--max-items-per-query", type=int, default=8)
+    parser.add_argument("--archive-source", action="append", dest="archive_sources")
+    parser.add_argument("--reuse-existing-supplement", action="store_true")
     args = parser.parse_args()
     result = run_media_review(
         args.project,
         supplement=not args.no_supplement,
         max_items_per_query=args.max_items_per_query,
+        archive_source_names=tuple(args.archive_sources) if args.archive_sources else None,
+        reuse_existing_supplement=args.reuse_existing_supplement,
     )
     print(json.dumps({"ok": True, "counts": result["counts"]}, ensure_ascii=False))
     return 0

@@ -46,6 +46,8 @@ _MISMATCH_TERMS = {
     "demolished": "different event type: demolition",
     "rock on shore": "unrelated scene: shore rocks",
     "rocks on shore": "unrelated scene: shore rocks",
+    "rocks on the shore": "unrelated scene: shore rocks",
+    "gray rocks": "unrelated scene: shore rocks",
     "bazaar": "unrelated scene: bazaar",
 }
 _NEWS_TERMS = ("news", "report", "broadcast", "newspaper", "front page", "footage", "interview")
@@ -84,13 +86,15 @@ _EXPLANATORY_TERMS = (
 
 
 def _normalise(value: object) -> str:
-    text = unicodedata.normalize("NFKC", unquote(str(value or ""))).lower()
+    text = unicodedata.normalize("NFKC", unquote(str(value or ""))).lower().replace("_", " ")
     return re.sub(r"[^\w]+", " ", text, flags=re.UNICODE).strip()
 
 
 def _metadata_text(item: dict) -> str:
     # Deliberately excludes query, query_text and claim_ids.
-    fields = ("title", "description", "source_url", "direct_url", "creator", "source")
+    fields = (
+        "title", "description", "source_tags", "source_url", "direct_url", "creator", "source"
+    )
     return " ".join(part for part in (_normalise(item.get(key)) for key in fields) if part)
 
 
@@ -151,7 +155,11 @@ def review_one(
     reviewed_at = reviewed_at or datetime.now(timezone.utc).isoformat()
     text = _metadata_text(item)
     identity = _identity_matches(text, topic_identity)
-    mismatch = [reason for term, reason in _MISMATCH_TERMS.items() if _normalise(term) in text]
+    mismatch = list(
+        dict.fromkeys(
+            reason for term, reason in _MISMATCH_TERMS.items() if _normalise(term) in text
+        )
+    )
     visual = visual_evidence or {}
     visual_status = visual.get("status", "unavailable")
     labels = [str(label) for label in visual.get("labels", [])]

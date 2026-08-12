@@ -49,7 +49,9 @@ _LICENSE_URLS = {
     "unsplash": "https://unsplash.com/license",
     "cc0": "https://creativecommons.org/publicdomain/zero/1.0/",
     "cc-by-4.0": "https://creativecommons.org/licenses/by/4.0/",
+    "cc-by-2.5": "https://creativecommons.org/licenses/by/2.5/",
     "cc-by-sa-4.0": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "cc-by-sa-2.5": "https://creativecommons.org/licenses/by-sa/2.5/",
     "cc-by-3.0": "https://creativecommons.org/licenses/by/3.0/",
     "cc-by-sa-3.0": "https://creativecommons.org/licenses/by-sa/3.0/",
 }
@@ -115,9 +117,17 @@ def evaluate_rights(candidate: Candidate) -> RightsDecision:
 
     cc_key: str | None = None
     if "cc by-sa" in normalized or "creative commons attribution-sharealike" in normalized:
-        cc_key = "cc-by-sa-3.0" if "3.0" in normalized else "cc-by-sa-4.0"
+        cc_key = (
+            "cc-by-sa-2.5" if "2.5" in normalized
+            else "cc-by-sa-3.0" if "3.0" in normalized
+            else "cc-by-sa-4.0"
+        )
     elif "cc by" in normalized or "creative commons attribution" in normalized:
-        cc_key = "cc-by-3.0" if "3.0" in normalized else "cc-by-4.0"
+        cc_key = (
+            "cc-by-2.5" if "2.5" in normalized
+            else "cc-by-3.0" if "3.0" in normalized
+            else "cc-by-4.0"
+        )
     if cc_key:
         attribution = _attribution(candidate)
         return RightsDecision(
@@ -188,6 +198,12 @@ class RightsClearedMediaCollection(BaseTool):
             "sources": {"type": "array", "items": {"type": "string"}},
             "max_items_per_query": {"type": "integer", "minimum": 1, "maximum": 80},
             "filters": {"type": "object"},
+            "progress_path": {"type": "string"},
+            "required_identity_phrases": {
+                "type": "array",
+                "items": {"type": "string", "minLength": 2},
+                "uniqueItems": True,
+            },
         },
     }
     resource_profile = ResourceProfile(
@@ -225,7 +241,17 @@ class RightsClearedMediaCollection(BaseTool):
                     error="output_dir must be the canonical project assets/source directory",
                 )
             project_root = output_dir.parent.parent
-            progress_path = project_root / "automation/progress/media_collection.json"
+            requested_progress = inputs.get("progress_path")
+            progress_path = (
+                Path(str(requested_progress)).resolve()
+                if requested_progress
+                else project_root / "automation/progress/media_collection.json"
+            )
+            progress_root = (project_root / "automation/progress").resolve()
+            try:
+                progress_path.relative_to(progress_root)
+            except ValueError:
+                return ToolResult(success=False, error="progress_path must stay in automation/progress")
             output_dir.mkdir(parents=True, exist_ok=True)
             staging = output_dir / ".staging"
             staging.mkdir(parents=True, exist_ok=True)
@@ -249,6 +275,11 @@ class RightsClearedMediaCollection(BaseTool):
             queries = list(inputs["queries"])
             filters_in = dict(inputs.get("filters") or {})
             max_items = int(inputs.get("max_items_per_query", 20))
+            required_identity_phrases = [
+                _normalise_identity(value)
+                for value in inputs.get("required_identity_phrases", [])
+                if _normalise_identity(value)
+            ]
             attempted = [source.name for source in sources]
             completed_sources: set[str] = set()
             failed_sources: set[str] = set()
@@ -339,6 +370,14 @@ class RightsClearedMediaCollection(BaseTool):
 
                     discovered += len(candidates)
                     for candidate in candidates[:max_items]:
+                        if required_identity_phrases and not _candidate_has_identity(
+                            candidate, required_identity_phrases
+                        ):
+                            rejected_counts["identity_mismatch"] = (
+                                rejected_counts.get("identity_mismatch", 0) + 1
+                            )
+                            write_progress("searching", source.name, query_record["text"])
+                            continue
                         decision = evaluate_rights(candidate)
                         if not decision.accepted:
                             rejected_counts[decision.reason] = (
@@ -471,6 +510,25 @@ def _safe_query_summary(value: str | None) -> str | None:
     return summary[:160] or None
 
 
+def _normalise_identity(value: object) -> str:
+    text = urllib.parse.unquote(str(value or "")).lower()
+    return re.sub(r"[^\w]+", " ", text, flags=re.UNICODE).strip()
+
+
+def _candidate_has_identity(candidate: Candidate, phrases: list[str]) -> bool:
+    metadata = _normalise_identity(
+        " ".join(
+            [
+                candidate.source_url or "",
+                candidate.source_tags or "",
+                candidate.creator or "",
+                json.dumps(candidate.extra or {}, ensure_ascii=False, sort_keys=True),
+            ]
+        )
+    )
+    return any(phrase in metadata for phrase in phrases)
+
+
 def _atomic_json_write(path: Path, value: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_name(f".{path.name}.{os.getpid()}.tmp")
@@ -546,6 +604,7 @@ def _freeze_candidate(
             "source_url": candidate.source_url,
             "direct_url": None,
             "creator": candidate.creator or "",
+            "source_tags": candidate.source_tags or "",
             "license": candidate.license,
             "license_url": decision.license_url,
             "public_domain_basis": decision.public_domain_basis,

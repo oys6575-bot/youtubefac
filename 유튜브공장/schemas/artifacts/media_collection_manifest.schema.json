@@ -124,6 +124,7 @@
         "source_url": {"type": "string", "format": "uri", "minLength": 1},
         "direct_url": {"type": ["string", "null"], "format": "uri"},
         "creator": {"type": "string", "maxLength": 500},
+        "source_tags": {"type": "string", "maxLength": 20000},
         "license": {"type": "string", "minLength": 1, "maxLength": 500},
         "license_url": {"type": ["string", "null"], "format": "uri"},
         "public_domain_basis": {"type": ["string", "null"], "minLength": 1, "maxLength": 1000},

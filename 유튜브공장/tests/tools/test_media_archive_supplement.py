@@ -77,4 +77,7 @@ def test_collector_receives_exact_queries_and_only_available_allowlisted_sources
     assert result == {"items": ["sentinel"]}
     assert collector.inputs["sources"] == ["archive_org", "wikimedia"]
     assert all("Rana Plaza" in row["query"] for row in collector.inputs["queries"])
-
+    assert collector.inputs["progress_path"].endswith(
+        "automation/progress/media_archive_supplement.json"
+    )
+    assert "Rana Plaza" in collector.inputs["required_identity_phrases"]

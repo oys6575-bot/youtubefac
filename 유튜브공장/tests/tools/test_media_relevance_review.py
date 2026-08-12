@@ -56,6 +56,19 @@ def test_exact_rana_plaza_news_metadata_is_news_report() -> None:
     assert decision["identity_evidence"]
 
 
+def test_wikimedia_savar_filename_is_direct_event_evidence() -> None:
+    decision = review_one(
+        item(
+            "MEDIA_COMMONS",
+            "https://commons.wikimedia.org/wiki/File:2013_savar_building_collapse_aftermath.jpg",
+        ),
+        rana_plaza_identity(),
+        reviewed_at=NOW,
+    )
+    assert decision["category"] == "event_direct"
+    assert decision["eligibility"] == "eligible"
+
+
 def test_ambiguous_item_fails_closed_without_visual_evidence() -> None:
     decision = review_one(
         item("MEDIA_AMBIGUOUS", "https://example.test/asset/1", claim_ids=[]),
