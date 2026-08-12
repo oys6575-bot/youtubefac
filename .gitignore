@@ -9,4 +9,5 @@ coverage/
 tmp/
 work/
 outputs/
+.worktrees/
 *.log
