@@ -6,6 +6,7 @@ Status is a production constraint, not decoration. `BLOCKED`, `PROHIBITED`, or r
 
 - ACTIVE: 31
 - ACTIVE_LOCAL: 33
+- ACTIVE_RIGHTS_CLEARED: 1
 - ANECDOTAL_SIGNAL: 6
 - BLOCKED: 10
 - CITED_REFERENCE: 17

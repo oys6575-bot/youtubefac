@@ -26,7 +26,7 @@ ALL_KNOWN_STAGES = frozenset([
 # Backward-compatible alias — existing code / tests that import STAGES still work.
 # New code should use get_pipeline_stages(pipeline_type) instead.
 STAGES = [
-    "research", "media_collection", "proposal", "idea", "script", "scene_plan",
+    "research", "proposal", "idea", "script", "scene_plan",
     "assets", "edit", "compose", "publish",
 ]
 

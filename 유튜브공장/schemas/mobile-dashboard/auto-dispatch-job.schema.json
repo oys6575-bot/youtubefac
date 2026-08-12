@@ -37,7 +37,12 @@
       "enum": ["queued", "running", "retrying", "awaiting_human", "failed", "completed"]
     },
     "current_stage": {"enum": ["research", "media_collection", "evidence_lock", "proposal"]},
-    "stages": {"const": ["research", "media_collection", "evidence_lock", "proposal"]},
+    "stages": {
+      "oneOf": [
+        {"const": ["research", "media_collection", "evidence_lock", "proposal"]},
+        {"const": ["research", "evidence_lock", "proposal"]}
+      ]
+    },
     "attempt": {"type": "integer", "minimum": 0, "maximum": 1},
     "max_retries": {"const": 1},
     "created_at": {"type": "string", "format": "date-time"},

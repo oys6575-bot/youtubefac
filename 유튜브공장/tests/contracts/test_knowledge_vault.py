@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[2]
 EXPECTED_ENTITY_COUNTS = {
     "technique": 49,
     "skill": 107,
-    "tool": 104,
+    "tool": 105,
     "creative_source": 16,
     "research_url": 23,
     "model": 6,
@@ -43,7 +43,7 @@ def test_loads_every_audited_knowledge_source() -> None:
     assert sources.project_root == ROOT.resolve()
     assert len(sources.techniques) == 49
     assert len(sources.skills) == 107
-    assert len(sources.tools) == 104
+    assert len(sources.tools) == 105
     assert len(sources.creative_sources) == 16
     assert len(sources.research_links) == 23
     assert sum(link.host == "www.reddit.com" for link in sources.research_links) == 6
@@ -66,7 +66,7 @@ def test_sync_creates_complete_portable_vault(tmp_path: Path) -> None:
     report = module.sync_vault(sources, root=tmp_path)
     vault = tmp_path / "knowledge"
 
-    assert report.entity_cards == 390
+    assert report.entity_cards == 391
     assert report.entity_counts == EXPECTED_ENTITY_COUNTS
     assert len(list(vault.rglob("*.md"))) > 380
     assert (vault / "00-START-HERE.md").is_file()

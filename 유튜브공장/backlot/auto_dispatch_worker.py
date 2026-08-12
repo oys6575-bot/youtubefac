@@ -235,12 +235,15 @@ class Coordinator:
         project: Path, manifest: dict[str, Any]
     ) -> None:
         source_root = (project / "assets/source").resolve()
-        seen: set[str] = set()
+        seen: dict[str, str] = {}
         for item in manifest.get("items", []):
             relative = item.get("local_path")
-            if not isinstance(relative, str) or relative in seen:
-                raise JobValidationError("source media path is invalid or duplicated")
-            seen.add(relative)
+            digest = item.get("sha256")
+            if not isinstance(relative, str):
+                raise JobValidationError("source media path is invalid")
+            if relative in seen and seen[relative] != digest:
+                raise JobValidationError("deduplicated source media hash drift")
+            seen[relative] = digest
             path = _safe_path(project, relative)
             try:
                 path.relative_to(source_root)

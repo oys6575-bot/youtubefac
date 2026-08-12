@@ -15,6 +15,7 @@ import jsonschema
 ROOT = Path(__file__).resolve().parents[1]
 JOB_SCHEMA = ROOT / "schemas/mobile-dashboard/auto-dispatch-job.schema.json"
 AUTO_STAGES = ["research", "media_collection", "evidence_lock", "proposal"]
+LEGACY_AUTO_STAGES = ["research", "evidence_lock", "proposal"]
 MUTABLE_FIELDS = frozenset(
     {
         "state",
@@ -60,6 +61,18 @@ def validate_job(value: Mapping[str, Any]) -> dict[str, Any]:
         f"approvals/receipts/{payload['job_id']}.json"
     ):
         raise JobValidationError("trigger receipt must match job_id")
+    stages = payload["stages"]
+    result_stages = [item["stage"] for item in payload["stage_results"]]
+    if result_stages != stages[: len(result_stages)]:
+        raise JobValidationError("settled stage order drift")
+    if stages == LEGACY_AUTO_STAGES and payload["state"] not in {
+        "failed",
+        "awaiting_human",
+        "completed",
+    }:
+        raise JobValidationError(
+            "legacy automatic job is historical and cannot be reactivated"
+        )
     return payload
 
 
@@ -123,6 +136,10 @@ def build_retry_job(
     if receipt.get("retry_job_id") != source["job_id"]:
         raise JobValidationError("retry receipt does not match original job")
     settled = deepcopy(source["stage_results"])
+    if [item["stage"] for item in settled] != AUTO_STAGES[: len(settled)]:
+        raise JobValidationError(
+            "legacy retry can migrate only a settled prefix through research"
+        )
     if len(settled) >= len(AUTO_STAGES):
         raise JobValidationError("completed automatic workflow cannot be retried")
     job = {

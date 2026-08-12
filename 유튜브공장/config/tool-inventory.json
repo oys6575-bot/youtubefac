@@ -448,6 +448,22 @@
       "factory_status": "EXPLICIT_OPT_IN"
     },
     {
+      "name": "rights_cleared_media_collection",
+      "version": "0.1.0",
+      "tier": "source",
+      "capability": "clip_acquisition",
+      "provider": "openmontage",
+      "runtime": "hybrid",
+      "captured_status": "available",
+      "stability": "beta",
+      "dependencies": [
+        "python:requests"
+      ],
+      "agent_skills": [],
+      "network_required": true,
+      "factory_status": "ACTIVE_RIGHTS_CLEARED"
+    },
+    {
       "name": "doubao_tts",
       "version": "0.1.0",
       "tier": "voice",

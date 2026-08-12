@@ -6,11 +6,20 @@ from pathlib import Path
 
 from backlot.auto_dispatch import load_job
 from backlot.auto_dispatch_worker import Coordinator
+from backlot.orca_auto_dispatch import StageResult
 from backlot.mobile_actions import Actor, enqueue_approved_topic_job, execute_action
 from backlot.mobile_state import build_mobile_state
 from tests.backlot.mobile_fixtures import build_topic_gate
-from tests.backlot.test_auto_dispatch_worker import FakeRunner, policy_failure
+from tests.backlot.test_auto_dispatch_worker import (
+    FakeRunner,
+    _checkpoint,
+    _sha256,
+    canonical_bytes,
+    policy_failure,
+)
 from tests.backlot.test_mobile_actions import payload
+from tests.tools.test_rights_cleared_media_collection import FakeSource, candidate
+from tools.video.rights_cleared_media_collection import RightsClearedMediaCollection
 
 
 ACTOR = Actor(tailscale_login="owner@example.com", tailscale_user_id="123")
@@ -112,3 +121,83 @@ def test_pre_feature_approval_can_be_enqueued_once_without_rewriting_receipt(
     assert second is False
     assert receipt_path.read_bytes() == receipt_bytes
     assert len(list((project / "automation/jobs").glob("*.json"))) == 1
+
+
+def test_collection_integration_freezes_only_usable_media_and_embeds_manifest(
+    tmp_path: Path, monkeypatch
+) -> None:
+    class FailedSource(FakeSource):
+        name = "failed"
+
+        def search(self, query, filters):
+            del query, filters
+            raise RuntimeError("temporary source failure")
+
+    project = tmp_path / "INTEGRATION_MEDIA"
+    project.mkdir()
+    usable = FakeSource(
+        [
+            candidate(source_id="1001", license="CC BY 4.0"),
+            candidate(source_id="1002", license="Permission required"),
+            candidate(source_id="1003", license="CC0 1.0"),
+        ],
+        payload=b"same-rights-cleared-bytes" * 256,
+    )
+    monkeypatch.setattr(
+        "tools.video.stock_sources.available_sources",
+        lambda: [FailedSource([]), usable],
+    )
+
+    collected = RightsClearedMediaCollection().execute(
+        {
+            "project_id": project.name,
+            "output_dir": str(project / "assets/source"),
+            "queries": [{"query": "collapse archive", "kind": "image", "claim_ids": []}],
+        }
+    )
+
+    assert collected.success is True
+    manifest = collected.data["manifest"]
+    assert manifest["collection_status"] == "partial"
+    assert manifest["source_summary"]["accepted"] == 2
+    assert manifest["source_summary"]["duplicates"] == 1
+    assert manifest["source_summary"]["rejected_counts"] == {
+        "permission_required": 1
+    }
+    assert usable.download_calls == ["fake_1001", "fake_1003"]
+    assert len(list((project / "assets/source/images").iterdir())) == 1
+    assert all("selected_for_edit" not in item for item in manifest["items"])
+
+    artifact = project / "artifacts/media_collection_manifest.json"
+    artifact.parent.mkdir(parents=True)
+    artifact.write_bytes(canonical_bytes(manifest))
+    checkpoint = _checkpoint(
+        project,
+        "media_collection",
+        "completed",
+        {"media_collection_manifest": manifest},
+    )
+    progress = project / "automation/progress/media_collection.json"
+    paths = [
+        artifact.relative_to(project).as_posix(),
+        progress.relative_to(project).as_posix(),
+        checkpoint.relative_to(project).as_posix(),
+    ]
+    stage_result = StageResult(
+        outcome="success",
+        artifact_paths=paths,
+        artifact_sha256={path: _sha256(project / path) for path in paths},
+        source_commit="a" * 40,
+        verdict="NOT_APPLICABLE",
+        run_id="run_media",
+        task_id="task_media",
+        dispatch_id="dispatch_media",
+    )
+
+    Coordinator(project.parent, FakeRunner([]))._validate_success(
+        project, "media_collection", stage_result
+    )
+    stored_checkpoint = json.loads(checkpoint.read_text(encoding="utf-8"))
+    assert stored_checkpoint["artifacts"]["media_collection_manifest"] == manifest
+    for item in manifest["items"]:
+        assert _sha256(project / item["local_path"]) == item["sha256"]

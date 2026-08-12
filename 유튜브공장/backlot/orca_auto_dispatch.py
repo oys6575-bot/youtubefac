@@ -319,11 +319,17 @@ After validating every artifact with schemas.artifacts.validate_artifact and the
             "proposal": "story_visual",
         }.get(stage)
         hermes_stage = {
-            "research": ("research", "ytf-research"),
-            "media_collection": ("production", "ytf-production"),
+            "research": (
+                "research",
+                "exec ytf-research --no-restore-cwd",
+            ),
+            "media_collection": (
+                "production",
+                "exec ytf-production --no-restore-cwd",
+            ),
         }.get(stage)
         if hermes_stage is not None:
-            role_label, profile = hermes_stage
+            role_label, command = hermes_stage
             terminal = self._run_json(
                 [
                     self.orca_cli,
@@ -335,8 +341,7 @@ After validating every artifact with schemas.artifacts.validate_artifact and the
                     f"YTF {role_label} {task_id}",
                     "--command",
                     (
-                        f"cd {shlex.quote(str(self.factory_root))} && "
-                        f"exec {profile} --no-restore-cwd"
+                        f"cd {shlex.quote(str(self.factory_root))} && " + command
                     ),
                     "--json",
                 ]

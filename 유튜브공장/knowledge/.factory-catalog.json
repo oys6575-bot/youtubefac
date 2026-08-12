@@ -1639,6 +1639,12 @@
       "status": "ACTIVE_LOCAL"
     },
     {
+      "card_id": "tool.rights_cleared_media_collection",
+      "entity_type": "tool",
+      "path": "08-TOOLS/clip_acquisition/rights_cleared_media_collection.md",
+      "status": "ACTIVE_RIGHTS_CLEARED"
+    },
+    {
       "card_id": "tool.runway_video",
       "entity_type": "tool",
       "path": "08-TOOLS/video_generation/runway_video.md",
@@ -2341,7 +2347,7 @@
       "status": "ACTIVE"
     }
   ],
-  "entity_count": 390,
+  "entity_count": 391,
   "knowledge_schema": "1.0",
   "visual_technique_catalog_version": "2026-08-12"
 }

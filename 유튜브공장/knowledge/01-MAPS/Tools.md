@@ -38,6 +38,10 @@ Generated navigation; canonical registries remain authoritative.
 - [[08-TOOLS/video_post/video_trimmer|video_trimmer]]
 - [[08-TOOLS/analysis/visual_qa|visual_qa]]
 
+## ACTIVE_RIGHTS_CLEARED
+
+- [[08-TOOLS/clip_acquisition/rights_cleared_media_collection|rights_cleared_media_collection]]
+
 ## DISABLED_BY_DEFAULT
 
 - [[08-TOOLS/video_generation/jimeng_video|jimeng_video]]

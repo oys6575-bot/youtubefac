@@ -78,3 +78,31 @@ def test_job_contract_rejects_unsafe_or_drifted_fields(
 
     with pytest.raises(JobValidationError):
         validate_job(mutated)
+
+
+def test_legacy_three_stage_terminal_job_remains_readable(tmp_path: Path) -> None:
+    project, candidate_id, expected = build_topic_gate(tmp_path)
+    execute_action(tmp_path, payload(candidate_id, expected), ACTOR)
+    path = next((project / "automation/jobs").glob("*.json"))
+    legacy = json.loads(path.read_text(encoding="utf-8"))
+    legacy["stages"] = ["research", "evidence_lock", "proposal"]
+    legacy["state"] = "failed"
+    legacy["last_error"] = {
+        "stage": "research",
+        "class": "ordinary",
+        "message": "legacy failure",
+        "timestamp": "2026-08-12T12:10:00+00:00",
+    }
+    path.write_text(json.dumps(legacy), encoding="utf-8")
+
+    assert load_job(path)["stages"] == ["research", "evidence_lock", "proposal"]
+
+
+def test_legacy_three_stage_active_job_is_not_reactivated(tmp_path: Path) -> None:
+    project, candidate_id, expected = build_topic_gate(tmp_path)
+    execute_action(tmp_path, payload(candidate_id, expected), ACTOR)
+    job = json.loads(next((project / "automation/jobs").glob("*.json")).read_text())
+    job["stages"] = ["research", "evidence_lock", "proposal"]
+
+    with pytest.raises(JobValidationError, match="legacy automatic job is historical"):
+        validate_job(job)
