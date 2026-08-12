@@ -174,7 +174,9 @@ lease를 canonical runtime root에 둔다. 충돌 시 새 작업을 제출하지
 5. `final_edit_approval`: 최종 편집 승인
 6. `publish_approval`: 공개·업로드 승인
 
-첫 파일럿은 `topic_approval: PENDING`에서 반드시 멈춘다.
+첫 파일럿은 `topic_approval` checkpoint가 `awaiting_human`,
+`human_approved: false`이고 그 안의 `topic_selection` artifact가
+`selection_status: PENDING`인 상태에서 반드시 멈춘다.
 
 ## 9. 첫 실증 작업
 

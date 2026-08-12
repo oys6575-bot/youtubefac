@@ -121,6 +121,7 @@ TopView가 생성한 화면 안에는 중요한 날짜·숫자·인용문을 넣
 
 ## 장부와 상세 문서
 
+- Orca 역할·모델 배치와 복구: [`ORCA-MODEL-DEPLOYMENT.md`](ORCA-MODEL-DEPLOYMENT.md)
 - 전체 조사와 채택 판단: [`2026-08-11-tool-skill-capability-audit.md`](../research/2026-08-11-tool-skill-capability-audit.md)
 - TopView 수동 운용: [`TOPVIEW-MANUAL-RUNBOOK.md`](TOPVIEW-MANUAL-RUNBOOK.md)
 - 고정 도구 버전: [`config/toolchain-lock.json`](../../config/toolchain-lock.json)
