@@ -1,7 +1,7 @@
 # Provider-Neutral Cinematic Direction Principles
 
 **Date:** 2026-08-12  
-**Status:** Approved direction, pending implementation  
+**Status:** Revised after user review, pending renewed approval  
 **Scope:** Isolated YouTube Factory only
 
 ## Goal
@@ -15,6 +15,11 @@ visible performance, optical result, physical causality, timed action, and refer
 roles. It must continue to work with the existing OpenMontage control plane and the
 human-operated TopView handoff.
 
+The Obsidian vault must also retain comprehensive coverage of all useful topics,
+exceptions, failure patterns, and operating cautions found during the three-file review.
+This full knowledge layer is paraphrased and searchable; it is not loaded wholesale into
+every production prompt.
+
 ## Non-Goals
 
 - Do not copy, vendor, quote, or redistribute the three source Markdown files.
@@ -22,6 +27,7 @@ human-operated TopView handoff.
 - Do not install a global Claude, Codex, or provider skill.
 - Do not automate TopView, submit paid jobs, or weaken any Human Gate.
 - Do not replace sequence meaning, evidence policy, or the existing visual grammar.
+- Do not confuse comprehensive Obsidian retention with automatic technique activation.
 
 ## Chosen Approach
 
@@ -36,6 +42,10 @@ Two alternatives were rejected:
    unverified licensing, and let provider prompt rules bypass OpenMontage planning.
 2. Storing only prose in Obsidian would make the ideas searchable but would not ensure
    that a selected shot or TopView job packet carries the direction forward.
+
+The chosen design therefore has two layers: comprehensive paraphrased knowledge in
+Obsidian and a small operational contract containing only the principles selected for a
+real sequence or shot.
 
 ## Principle Set
 
@@ -84,6 +94,43 @@ visual_plan
 OpenMontage candidate ingest, selection, edit, compose, and QC
 ```
 
+## Comprehensive Obsidian Retention
+
+Create a project-authored Obsidian collection under
+`knowledge/10-RESEARCH/cinematic-direction/`:
+
+1. `Camera-Spatial-Physics-Direction.md` covers the full reviewed camera-direction
+   surface: current-shot isolation, opening-frame control, location mapping, blocking,
+   gaze and body direction, landmark anchoring, single-take versus controlled cuts,
+   continuity across cuts, optical-result language, camera operation, timing, physics,
+   lighting, audio, prompt-density control, and final QA.
+2. `Behavioral-Performance-Direction.md` covers objectives, obstacles, stakes, tactics,
+   beats, subtext, listening, reaction timing, gaze, breath, posture, physical business,
+   distance, status, speech rhythm, voice continuity, ensemble response, state inertia,
+   failure patterns, and performance review.
+3. `Image-Reference-Asset-Direction.md` covers image-task diagnosis, character/location/
+   prop preparation, edit-versus-regenerate decisions, prompt density, positive
+   description, palette and material control, reference identity, text and tattoo
+   handling, surgical edits, preserved properties, location-view changes, state
+   variants, and model-claim verification boundaries.
+4. `Cinematic-Direction-Map.md` links the three full notes to the six active generic
+   techniques and shows when to load each note.
+
+All four notes use original project wording. Their metadata records:
+
+- `type: research-synthesis`;
+- `activation_status: REFERENCE_ONLY` for the full notes;
+- `copyright_mode: paraphrase_only`;
+- source URLs, retrieval date, and local audit hashes as provenance only;
+- provider-specific statements as historical or unverified claims that require a live
+  check before use;
+- stable `coverage_ids` proving that every reviewed topic is represented.
+
+The full notes are never placed in a normal 3–7 technique knowledge pack. Agents load a
+full note only for research, a difficult shot, or maintenance of the derived active
+techniques. This keeps the entire knowledge accessible without flooding ordinary shot
+planning or allowing reference-only material to become executable policy.
+
 ## Contract Changes
 
 Add one compact `cinematic_direction` object to a shot. It contains:
@@ -115,6 +162,9 @@ no approval state.
   existing limit of three to seven techniques per sequence and one to four per shot.
 - Generate normal Obsidian technique cards from the registry. The vault remains a
   retrieval layer and cannot activate a provider or approve a gate.
+- Preserve the four comprehensive cinematic-direction notes as hand-authored Obsidian
+  knowledge. Vault synchronization must not overwrite them, and vault audit must verify
+  their metadata, links, and coverage IDs.
 - Keep Higgsfield- and Seedance-specific records isolated as `ON_DEMAND`; none of their
   syntax may appear in a TopView knowledge pack or job packet.
 
@@ -132,7 +182,9 @@ Use tests to prove:
 6. the TopView job packet preserves cinematic direction and reference roles without
    API, MCP, browser automation, or budget changes;
 7. the Obsidian vault syncs and audits cleanly with the new technique count;
-8. existing visual-plan, bridge, handoff, and factory contract suites remain green.
+8. all declared source-topic coverage IDs occur exactly once in the three comprehensive
+   notes, their Map links resolve, and none enters a normal production knowledge pack;
+9. existing visual-plan, bridge, handoff, and factory contract suites remain green.
 
 ## Success Criteria
 
@@ -142,3 +194,6 @@ camera result, acceleration and landing, contact weight, material response, and 
 human performance readable without using the reviewed files or provider-specific
 terminology.
 
+The same project must let a human open Obsidian and find the complete paraphrased camera,
+performance, and image/reference knowledge—not merely the six currently active
+principles—while keeping those long reference notes outside routine production context.
