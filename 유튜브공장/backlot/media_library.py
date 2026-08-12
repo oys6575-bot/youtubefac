@@ -70,3 +70,38 @@ def resolve_mobile_media(project: Path, asset_id: str) -> MobileMedia | None:
         content_type=content_type,
     )
 
+
+def resolve_mobile_render(project: Path, *, require_pass: bool) -> MobileMedia | None:
+    """Resolve the latest render, optionally requiring a passed final review."""
+    try:
+        report = json.loads(
+            (project / "artifacts/render_report.json").read_text(encoding="utf-8")
+        )
+        review = json.loads(
+            (project / "artifacts/final_review.json").read_text(encoding="utf-8")
+        )
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        return None
+    if require_pass and review.get("status") != "pass":
+        return None
+    outputs = report.get("outputs") if isinstance(report, dict) else None
+    if not isinstance(outputs, list) or not outputs or not isinstance(outputs[0], dict):
+        return None
+    raw_path = outputs[0].get("path")
+    if not isinstance(raw_path, str) or not raw_path:
+        return None
+    candidate = Path(raw_path)
+    target = candidate.resolve() if candidate.is_absolute() else (project / candidate).resolve()
+    try:
+        target.relative_to(project.resolve())
+    except (ValueError, OSError):
+        return None
+    content_type = ALLOWED_SUFFIXES.get(target.suffix.lower())
+    if content_type not in {"video/mp4", "video/quicktime", "video/webm"} or not target.is_file():
+        return None
+    return MobileMedia(
+        asset_id="final" if require_pass else "latest",
+        media_type="video",
+        path=target,
+        content_type=content_type,
+    )

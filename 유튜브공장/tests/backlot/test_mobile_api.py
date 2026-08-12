@@ -254,3 +254,52 @@ def test_mobile_media_rejects_unknown_and_manifest_path_escape(
 
     assert unknown.status_code == 404
     assert escaped.status_code == 404
+
+
+def test_mobile_render_latest_and_final_require_review_pass(mobile_client) -> None:
+    client, project, _candidate, _hash = mobile_client
+    render = project / "renders/review.mp4"
+    render.write_bytes(b"video-bytes")
+    report = {
+        "version": "1.0",
+        "outputs": [
+            {
+                "path": "renders/review.mp4",
+                "format": "mp4",
+                "resolution": "1920x1080",
+                "duration_seconds": 30,
+            }
+        ],
+    }
+    review = {
+        "version": "1.0",
+        "output_path": "renders/review.mp4",
+        "status": "revise",
+        "checks": {},
+    }
+    (project / "artifacts/render_report.json").write_text(
+        json.dumps(report), encoding="utf-8"
+    )
+    (project / "artifacts/final_review.json").write_text(
+        json.dumps(review), encoding="utf-8"
+    )
+
+    latest = client.get(
+        "/api/mobile/project/MOBILE_TEST/render/latest", headers=IDENTITY
+    )
+    blocked_final = client.get(
+        "/api/mobile/project/MOBILE_TEST/render/final", headers=IDENTITY
+    )
+    review["status"] = "pass"
+    (project / "artifacts/final_review.json").write_text(
+        json.dumps(review), encoding="utf-8"
+    )
+    final = client.get(
+        "/api/mobile/project/MOBILE_TEST/render/final?download=1", headers=IDENTITY
+    )
+
+    assert latest.status_code == 200
+    assert latest.content == b"video-bytes"
+    assert blocked_final.status_code == 404
+    assert final.status_code == 200
+    assert "attachment" in final.headers["content-disposition"]

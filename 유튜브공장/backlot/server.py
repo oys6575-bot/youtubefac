@@ -308,6 +308,52 @@ def create_app(*, mobile_config: Optional[dict] = None) -> FastAPI:
             headers={"Cache-Control": "no-store"},
         )
 
+    @app.get("/api/mobile/project/{project_id}/render/{render_kind}")
+    async def mobile_render(
+        project_id: str,
+        render_kind: str,
+        request: Request,
+        download: int = 0,
+    ):
+        from backlot.media_library import resolve_mobile_render
+
+        try:
+            _mobile_actor(request)
+        except MobileAuthError as exc:
+            return _auth_error(exc)
+        if render_kind not in {"latest", "final"}:
+            return JSONResponse(
+                status_code=404,
+                content={"ok": False, "code": "render_not_found"},
+                headers={"Cache-Control": "no-store"},
+            )
+        try:
+            project_dir = _safe_project_dir(project_id)
+        except HTTPException:
+            return JSONResponse(
+                status_code=404,
+                content={"ok": False, "code": "project_not_found"},
+                headers={"Cache-Control": "no-store"},
+            )
+        render = await asyncio.to_thread(
+            resolve_mobile_render,
+            project_dir,
+            require_pass=render_kind == "final",
+        )
+        if render is None:
+            return JSONResponse(
+                status_code=404,
+                content={"ok": False, "code": "render_not_found"},
+                headers={"Cache-Control": "no-store"},
+            )
+        return FileResponse(
+            render.path,
+            media_type=render.content_type,
+            filename=render.path.name if download else None,
+            content_disposition_type="attachment" if download else "inline",
+            headers={"Cache-Control": "no-store"},
+        )
+
     @app.get("/api/mobile/project/{project_id}/events")
     async def mobile_project_events(project_id: str, request: Request):
         try:
