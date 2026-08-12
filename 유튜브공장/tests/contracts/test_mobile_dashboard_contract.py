@@ -33,17 +33,28 @@ def test_service_worker_caches_shell_only_and_never_approval_data() -> None:
     assert "backgroundSync" not in worker
 
 
-def test_mobile_ui_has_eight_sections_two_step_gates_and_no_offline_queue() -> None:
+def test_mobile_ui_has_seven_production_sections_and_media_first_assets() -> None:
     html = (UI / "mobile.html").read_text(encoding="utf-8")
     css = (UI / "mobile.css").read_text(encoding="utf-8")
     script = (UI / "mobile.js").read_text(encoding="utf-8")
-    for label in (
-        "제작 현황", "주제 후보", "자료·출처", "대본·VisualPlan",
-        "에셋·TopView", "편집·렌더", "검수 보고서", "모델·도구",
-    ):
+    for label in ("현황", "주제", "대본", "에셋", "편집", "검수", "최종"):
         assert label in html
+    for removed in ("자료·출처", "모델·도구", "에셋·TopView"):
+        assert removed not in html
+    assert html.count('class="nav-item') == 7
+    assert html.count('data-panel-view=') == 7
+    for element_id in (
+        "current-work-card", "script-tabs", "script-sections", "visual-prompts",
+        "asset-filters", "asset-grid", "media-dialog", "edit-gaps",
+        "review-player", "review-findings", "final-player",
+    ):
+        assert f'id="{element_id}"' in html
     for stage in ("budget", "asset_selection", "final_review", "title_thumbnail", "publish"):
         assert stage in script
+    assert "function renderAssetLibrary()" in script
+    assert "function openMedia(asset)" in script
+    assert "preview_url" in script
+    assert 'ui.gateCard.classList.add("hidden")' in script
     assert "navigator.onLine" in script
     assert "localStorage" not in script
     assert "sessionStorage" not in script
@@ -52,7 +63,8 @@ def test_mobile_ui_has_eight_sections_two_step_gates_and_no_offline_queue() -> N
     assert "min-height: 44px" in css
     assert "@media (max-width: 760px)" in css
     assert ".bottom-nav" in css
-    assert ".role-status { color: #6f7d8f; text-align: right; overflow: hidden;" in css
+    assert ".asset-grid" in css
+    assert ".media-dialog" in css
 
 
 def test_ui_never_contains_publish_or_shell_execution_endpoint() -> None:
