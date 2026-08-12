@@ -70,6 +70,7 @@ required_skills:
   - pipelines/youtube-factory/executive-producer
   - pipelines/youtube-factory/topic-director
   - pipelines/youtube-factory/evidence-director
+  - pipelines/youtube-factory/media-collection-director
   - pipelines/youtube-factory/proposal-director
   - pipelines/youtube-factory/script-director
   - pipelines/youtube-factory/mk-visual-director
@@ -155,7 +156,6 @@ stages:
       - video_downloader
       - frame_sampler
       - scene_detect
-      - direct_clip_search
     checkpoint_required: true
     human_approval_default: false
     review_focus:
@@ -165,6 +165,28 @@ stages:
     success_criteria:
       - Schema-valid research_brief and evidence_registry artifacts
       - Exact dates, numbers, and quotations are represented as claims
+
+  - name: media_collection
+    skill: pipelines/youtube-factory/media-collection-director
+    required_artifacts_in:
+      - research_brief
+      - evidence_registry
+    produces:
+      - media_collection_manifest
+    tools_available:
+      - rights_cleared_media_collection
+    checkpoint_required: true
+    human_approval_default: false
+    review_focus:
+      - Rights are decided before any candidate bytes are downloaded
+      - Unknown, restricted, permission-required, paid, preview-only, and watermarked material is discarded
+      - Accepted files have stable provenance, checksums, and technical metadata
+      - Collection does not make a creative edit selection
+    success_criteria:
+      - Schema-valid media_collection_manifest contains accepted real files only
+      - Every manifest SHA-256 matches a file beneath assets/source
+      - Retrying is idempotent and does not duplicate accepted bytes
+      - No Gemini, paid API, TopView, generation, upload, or publish call occurs
 
   - name: evidence_lock
     skill: pipelines/youtube-factory/evidence-director
