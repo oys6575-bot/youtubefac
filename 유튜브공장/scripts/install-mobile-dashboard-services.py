@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Install isolated per-user launchd services for gateway and tailscaled."""
+"""Install isolated per-user dashboard, Tailscale, and Coordinator services."""
 
 from __future__ import annotations
 
 import argparse
 import os
 import plistlib
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -13,6 +14,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 LABEL_DASHBOARD = "com.mk.youtube-factory.dashboard"
 LABEL_TAILSCALE = "com.mk.youtube-factory.tailscale"
+LABEL_COORDINATOR = "com.mk.youtube-factory.coordinator"
 
 
 def service_plists() -> dict[str, dict]:
@@ -25,9 +27,14 @@ def service_plists() -> dict[str, dict]:
     config = ROOT / "config/mobile-dashboard.yaml"
     projects = ROOT / "projects"
     tailscaled = Path("/opt/homebrew/opt/tailscale/bin/tailscaled")
-    for required in (python, config, tailscaled):
+    coordinator = ROOT / "scripts/mobile-dashboard-coordinator.py"
+    routing = ROOT / "config/orca-model-routing.yaml"
+    orca = shutil.which("orca")
+    for required in (python, config, tailscaled, coordinator, routing):
         if not required.is_file():
             raise FileNotFoundError(f"required service file not found: {required}")
+    if not orca:
+        raise FileNotFoundError("required Orca CLI not found on PATH")
     tailscale_runtime.mkdir(parents=True, exist_ok=True)
     tailscale_socket_dir.mkdir(parents=True, exist_ok=True)
     (tailscale_runtime / "state").mkdir(exist_ok=True)
@@ -62,6 +69,40 @@ def service_plists() -> dict[str, dict]:
             "StandardErrorPath": str(logs / "tailscaled.err.log"),
             **common,
         },
+        LABEL_COORDINATOR: {
+            "Label": LABEL_COORDINATOR,
+            "ProgramArguments": [
+                str(python),
+                str(coordinator),
+                "--projects",
+                str(projects),
+                "--routing",
+                str(routing),
+                "--health",
+                str(runtime / "coordinator-health.json"),
+                "--poll-seconds",
+                "2",
+            ],
+            "WorkingDirectory": str(ROOT),
+            "EnvironmentVariables": {
+                "PYTHONPATH": str(ROOT),
+                "OPENMONTAGE_PROJECTS_DIR": str(projects),
+                "ORCA_CLI": orca,
+                "HOME": str(Path.home()),
+                "PATH": ":".join(
+                    [
+                        str(Path(orca).parent),
+                        str(Path.home() / ".local/bin"),
+                        "/opt/homebrew/bin",
+                        "/usr/bin",
+                        "/bin",
+                    ]
+                ),
+            },
+            "StandardOutPath": str(logs / "coordinator.out.log"),
+            "StandardErrorPath": str(logs / "coordinator.err.log"),
+            **common,
+        },
     }
 
 
@@ -76,7 +117,7 @@ def main() -> int:
     domain = f"gui/{os.getuid()}"
 
     if args.remove:
-        for label in (LABEL_DASHBOARD, LABEL_TAILSCALE):
+        for label in (LABEL_DASHBOARD, LABEL_TAILSCALE, LABEL_COORDINATOR):
             path = launch_agents / f"{label}.plist"
             subprocess.run(["launchctl", "bootout", domain, str(path)], capture_output=True)
             if path.exists():

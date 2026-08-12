@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import importlib.util
+import json
+import os
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
@@ -12,6 +15,15 @@ ROOT = Path(__file__).resolve().parents[2]
 def load_preflight_module():
     path = ROOT / "scripts/mobile-dashboard-preflight.py"
     spec = importlib.util.spec_from_file_location("mobile_dashboard_preflight", path)
+    module = importlib.util.module_from_spec(spec)
+    assert spec and spec.loader
+    spec.loader.exec_module(module)
+    return module
+
+
+def load_installer_module():
+    path = ROOT / "scripts/install-mobile-dashboard-services.py"
+    spec = importlib.util.spec_from_file_location("mobile_dashboard_installer", path)
     module = importlib.util.module_from_spec(spec)
     assert spec and spec.loader
     spec.loader.exec_module(module)
@@ -101,9 +113,47 @@ def test_example_config_has_no_real_identity_and_requires_exact_users() -> None:
     assert "0.0.0.0" not in config
 
 
-def test_launch_agent_installer_uses_two_separate_services() -> None:
+def test_launch_agent_installer_uses_three_separate_services() -> None:
     installer = (ROOT / "scripts/install-mobile-dashboard-services.py").read_text(encoding="utf-8")
     assert "com.mk.youtube-factory.dashboard" in installer
     assert "com.mk.youtube-factory.tailscale" in installer
+    assert "com.mk.youtube-factory.coordinator" in installer
     assert "KeepAlive" in installer
     assert "plistlib" in installer
+
+
+def test_installer_defines_dedicated_coordinator_service() -> None:
+    module = load_installer_module()
+    plists = module.service_plists()
+    worker = plists["com.mk.youtube-factory.coordinator"]
+
+    assert "mobile-dashboard-coordinator.py" in " ".join(worker["ProgramArguments"])
+    assert worker["EnvironmentVariables"]["OPENMONTAGE_PROJECTS_DIR"].endswith(
+        "/projects"
+    )
+    assert worker["KeepAlive"] is True
+    assert "Sockets" not in worker
+
+
+def test_coordinator_health_requires_live_fresh_process(tmp_path: Path) -> None:
+    module = load_preflight_module()
+    path = tmp_path / "coordinator-health.json"
+
+    assert module.audit_coordinator_health(path)
+    path.write_text(
+        json.dumps(
+            {
+                "pid": os.getpid(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "queue_counts": {"queued": 0, "running": 0},
+                "last_settled_job": None,
+            }
+        ),
+        encoding="utf-8",
+    )
+    assert module.audit_coordinator_health(path) == []
+
+    stale = json.loads(path.read_text())
+    stale["timestamp"] = "2026-08-12T00:00:00+00:00"
+    path.write_text(json.dumps(stale), encoding="utf-8")
+    assert any("stale" in item for item in module.audit_coordinator_health(path))

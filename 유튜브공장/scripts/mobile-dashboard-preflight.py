@@ -10,6 +10,7 @@ import socket
 import subprocess
 import sys
 import urllib.request
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
@@ -64,6 +65,26 @@ def audit_cached_certificate(cert_dir: Path, domains: list[str]) -> list[str]:
     return findings
 
 
+def audit_coordinator_health(
+    path: Path, *, max_age_seconds: float = 30.0
+) -> list[str]:
+    if not path.is_file():
+        return ["coordinator health file is missing"]
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+        pid = int(value["pid"])
+        timestamp = datetime.fromisoformat(str(value["timestamp"]).replace("Z", "+00:00"))
+        age = (datetime.now(timezone.utc) - timestamp.astimezone(timezone.utc)).total_seconds()
+        if age < -5 or age > max_age_seconds:
+            return [f"coordinator health is stale: {age:.1f}s"]
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return ["coordinator process is not running"]
+    except (OSError, ValueError, KeyError, TypeError, json.JSONDecodeError) as exc:
+        return [f"coordinator health is invalid: {exc}"]
+    return []
+
+
 def preflight_is_ok(findings: list[str], *, backend: str, health_ok: bool) -> bool:
     return not findings and backend == "Running" and health_ok
 
@@ -85,6 +106,11 @@ def main() -> int:
         "--socket",
         type=Path,
         default=Path(f"/tmp/ytf-mobile-{os.getuid()}/tailscaled.sock"),
+    )
+    parser.add_argument(
+        "--coordinator-health",
+        type=Path,
+        default=root / ".runtime/mobile-dashboard/coordinator-health.json",
     )
     parser.add_argument("--port", type=int, default=8787)
     parser.add_argument("--tailscale", default="/opt/homebrew/bin/tailscale")
@@ -112,6 +138,11 @@ def main() -> int:
         findings = audit_serve_status(serve, args.port)
         report["findings"].extend(findings)
         report["checks"]["private_serve"] = "PASS" if not findings else "FAIL"
+        coordinator_findings = audit_coordinator_health(args.coordinator_health)
+        report["findings"].extend(coordinator_findings)
+        report["checks"]["coordinator"] = (
+            "PASS" if not coordinator_findings else "FAIL"
+        )
         report["ok"] = preflight_is_ok(
             report["findings"],
             backend=str(status.get("BackendState")),

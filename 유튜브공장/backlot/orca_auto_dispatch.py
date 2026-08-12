@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import time
 from dataclasses import dataclass, field
@@ -67,6 +68,7 @@ class OrcaRunner:
         self.routing = load_routing(routing_path)
         self.command_timeout = command_timeout
         self.stage_timeout = stage_timeout
+        self.orca_cli = os.environ.get("ORCA_CLI", "orca")
         self._senders: dict[str, str] = {}
         self._runs: dict[str, str] = {}
 
@@ -126,7 +128,7 @@ class OrcaRunner:
         title = f"YTF Coordinator {job_id[:8]}"
         listed = self._run_json(
             [
-                "orca",
+                self.orca_cli,
                 "terminal",
                 "list",
                 "--worktree",
@@ -147,7 +149,7 @@ class OrcaRunner:
                 return terminal["handle"]
         created = self._run_json(
             [
-                "orca",
+                self.orca_cli,
                 "terminal",
                 "create",
                 "--worktree",
@@ -173,7 +175,7 @@ class OrcaRunner:
             return existing
         created = self._run_json(
             [
-                "orca",
+                self.orca_cli,
                 "orchestration",
                 "run-create",
                 "--objective",
@@ -221,7 +223,7 @@ After successful filesystem validation, write JSON to {result_path} with exactly
     def _create_task(self, run_id: str, sender: str, stage: str, prompt: str) -> str:
         created = self._run_json(
             [
-                "orca",
+                self.orca_cli,
                 "orchestration",
                 "task-create",
                 "--spec",
@@ -257,7 +259,7 @@ After successful filesystem validation, write JSON to {result_path} with exactly
         if stage == "research":
             terminal = self._run_json(
                 [
-                    "orca",
+                    self.orca_cli,
                     "terminal",
                     "create",
                     "--worktree",
@@ -276,7 +278,7 @@ After successful filesystem validation, write JSON to {result_path} with exactly
                 raise OrcaAdapterError("Orca did not return the Hermes terminal")
             self._run_json(
                 [
-                    "orca",
+                    self.orca_cli,
                     "terminal",
                     "wait",
                     "--terminal",
@@ -291,7 +293,7 @@ After successful filesystem validation, write JSON to {result_path} with exactly
             )
             dispatched = self._run_json(
                 [
-                    "orca",
+                    self.orca_cli,
                     "orchestration",
                     "dispatch",
                     "--task",
@@ -309,7 +311,7 @@ After successful filesystem validation, write JSON to {result_path} with exactly
         else:
             role = self.routing["roles"][str(role_name)]
             args = [
-                "orca",
+                self.orca_cli,
                 "orchestration",
                 "worker-start",
                 "--task",
@@ -461,7 +463,7 @@ After successful filesystem validation, write JSON to {result_path} with exactly
                 try:
                     self._run_json(
                         [
-                            "orca",
+                            self.orca_cli,
                             "orchestration",
                             "worker-release",
                             "--dispatch",
