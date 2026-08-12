@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import shutil
 import time
 from contextlib import asynccontextmanager, suppress
 from pathlib import Path
@@ -23,6 +24,10 @@ from backlot.state import PROJECTS_DIR, REPO_ROOT, list_projects, load_board_sta
 UI_DIR = Path(__file__).resolve().parent / "ui"
 THUMB_CACHE_DIR = REPO_ROOT / ".backlot" / "thumbs"
 THUMB_WIDTHS = (320, 640, 960)
+FFMPEG_CANDIDATES = (
+    Path("/opt/homebrew/bin/ffmpeg"),
+    Path("/usr/local/bin/ffmpeg"),
+)
 
 # Paths inside a project whose changes are pure noise for the board.
 _IGNORE_PARTS = {"node_modules", ".git", "__pycache__", ".cache"}
@@ -673,6 +678,16 @@ def _sse(payload: dict) -> str:
     return f"data: {json.dumps(payload)}\n\n"
 
 
+def _ffmpeg_binary() -> str | None:
+    discovered = shutil.which("ffmpeg")
+    if discovered:
+        return discovered
+    for candidate in FFMPEG_CANDIDATES:
+        if candidate.is_file() and candidate.stat().st_mode & 0o111:
+            return str(candidate)
+    return None
+
+
 def _thumbnail_for(source: Path, width: int) -> Optional[Path]:
     """Downscale an image (or extract a video poster frame) to a cached JPEG."""
     suffix = source.suffix.lower()
@@ -696,8 +711,11 @@ def _thumbnail_for(source: Path, width: int) -> Optional[Path]:
         tmp = THUMB_CACHE_DIR / f"{key}.{uuid.uuid4().hex[:8]}.tmp.jpg"
         if is_video:
             import subprocess
+            ffmpeg = _ffmpeg_binary()
+            if ffmpeg is None:
+                return None
             result = subprocess.run(
-                ["ffmpeg", "-y", "-loglevel", "error", "-ss", "1.5",
+                [ffmpeg, "-y", "-loglevel", "error", "-ss", "1.5",
                  "-i", str(source), "-frames:v", "1",
                  "-vf", f"scale={width}:-2", str(tmp)],
                 capture_output=True, timeout=30,
