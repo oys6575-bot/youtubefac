@@ -243,6 +243,71 @@ def create_app(*, mobile_config: Optional[dict] = None) -> FastAPI:
         state = await asyncio.to_thread(build_mobile_state, project_dir)
         return JSONResponse(state, headers={"Cache-Control": "no-store"})
 
+    @app.get("/api/mobile/project/{project_id}/media/{asset_id}")
+    async def mobile_media(project_id: str, asset_id: str, request: Request):
+        from backlot.media_library import resolve_mobile_media
+
+        try:
+            _mobile_actor(request)
+        except MobileAuthError as exc:
+            return _auth_error(exc)
+        try:
+            project_dir = _safe_project_dir(project_id)
+        except HTTPException:
+            return JSONResponse(
+                status_code=404,
+                content={"ok": False, "code": "project_not_found"},
+                headers={"Cache-Control": "no-store"},
+            )
+        media = await asyncio.to_thread(resolve_mobile_media, project_dir, asset_id)
+        if media is None:
+            return JSONResponse(
+                status_code=404,
+                content={"ok": False, "code": "asset_not_found"},
+                headers={"Cache-Control": "no-store"},
+            )
+        return FileResponse(
+            media.path,
+            media_type=media.content_type,
+            headers={"Cache-Control": "no-store"},
+        )
+
+    @app.get("/api/mobile/project/{project_id}/preview/{asset_id}")
+    async def mobile_media_preview(project_id: str, asset_id: str, request: Request):
+        from backlot.media_library import resolve_mobile_media
+
+        try:
+            _mobile_actor(request)
+        except MobileAuthError as exc:
+            return _auth_error(exc)
+        try:
+            project_dir = _safe_project_dir(project_id)
+        except HTTPException:
+            return JSONResponse(
+                status_code=404,
+                content={"ok": False, "code": "project_not_found"},
+                headers={"Cache-Control": "no-store"},
+            )
+        media = await asyncio.to_thread(resolve_mobile_media, project_dir, asset_id)
+        if media is None:
+            return JSONResponse(
+                status_code=404,
+                content={"ok": False, "code": "asset_not_found"},
+                headers={"Cache-Control": "no-store"},
+            )
+        preview = await asyncio.to_thread(_thumbnail_for, media.path, 640)
+        if preview is None:
+            return JSONResponse(
+                status_code=404,
+                content={"ok": False, "code": "preview_not_available"},
+                headers={"Cache-Control": "no-store"},
+            )
+        return FileResponse(
+            preview,
+            media_type="image/jpeg",
+            headers={"Cache-Control": "no-store"},
+        )
+
     @app.get("/api/mobile/project/{project_id}/events")
     async def mobile_project_events(project_id: str, request: Request):
         try:

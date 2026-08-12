@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import json
 
 import pytest
 from fastapi.testclient import TestClient
@@ -174,3 +175,82 @@ def test_project_id_mismatch_and_oversize_payload_are_rejected(mobile_client) ->
     )
     assert mismatch.status_code == 422
     assert oversize.status_code == 413
+
+
+def _write_mobile_media(project: Path) -> None:
+    from PIL import Image
+
+    image_path = project / "assets/source/images/rescue.jpg"
+    image_path.parent.mkdir(parents=True, exist_ok=True)
+    Image.new("RGB", (64, 36), color=(35, 71, 83)).save(image_path, "JPEG")
+    manifest = {
+        "schema_version": "1.0.0",
+        "project_id": project.name,
+        "collection_status": "completed",
+        "queries": [],
+        "source_summary": {},
+        "items": [
+            {
+                "id": "MEDIA_IMAGE_1",
+                "media_type": "image",
+                "local_path": "assets/source/images/rescue.jpg",
+                "technical": {"format": "jpg"},
+            }
+        ],
+    }
+    (project / "artifacts/media_collection_manifest.json").write_text(
+        json.dumps(manifest), encoding="utf-8"
+    )
+
+
+def test_mobile_media_and_preview_are_authenticated_manifest_bound(mobile_client) -> None:
+    client, project, _candidate, _hash = mobile_client
+    _write_mobile_media(project)
+
+    assert client.get(
+        "/api/mobile/project/MOBILE_TEST/media/MEDIA_IMAGE_1"
+    ).status_code == 401
+    media = client.get(
+        "/api/mobile/project/MOBILE_TEST/media/MEDIA_IMAGE_1", headers=IDENTITY
+    )
+    preview = client.get(
+        "/api/mobile/project/MOBILE_TEST/preview/MEDIA_IMAGE_1", headers=IDENTITY
+    )
+
+    assert media.status_code == 200
+    assert media.headers["content-type"] == "image/jpeg"
+    assert media.headers["cache-control"] == "no-store"
+    assert media.content[:2] == b"\xff\xd8"
+    assert preview.status_code == 200
+    assert preview.headers["content-type"] == "image/jpeg"
+    assert preview.headers["cache-control"] == "no-store"
+
+
+def test_mobile_media_rejects_unknown_and_manifest_path_escape(
+    mobile_client, tmp_path: Path
+) -> None:
+    client, project, _candidate, _hash = mobile_client
+    secret = tmp_path / "secret.jpg"
+    secret.write_bytes(b"private")
+    manifest = {
+        "items": [
+            {
+                "id": "MEDIA_ESCAPE",
+                "media_type": "image",
+                "local_path": "../../secret.jpg",
+            }
+        ]
+    }
+    (project / "artifacts/media_collection_manifest.json").write_text(
+        json.dumps(manifest), encoding="utf-8"
+    )
+
+    unknown = client.get(
+        "/api/mobile/project/MOBILE_TEST/media/UNKNOWN", headers=IDENTITY
+    )
+    escaped = client.get(
+        "/api/mobile/project/MOBILE_TEST/media/MEDIA_ESCAPE", headers=IDENTITY
+    )
+
+    assert unknown.status_code == 404
+    assert escaped.status_code == 404
