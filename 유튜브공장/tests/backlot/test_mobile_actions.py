@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 from pathlib import Path
 
 import pytest
@@ -12,6 +13,7 @@ from backlot.mobile_actions import (
     checkpoint_sha256,
     execute_action,
 )
+from backlot.auto_dispatch import load_job, write_job_state
 from tests.backlot.mobile_fixtures import build_topic_gate
 
 
@@ -145,3 +147,52 @@ def test_high_impact_gate_requires_server_side_typed_confirmation(tmp_path: Path
             },
             Actor(tailscale_login="owner@example.com", tailscale_user_id="123"),
         )
+
+
+def test_failed_auto_dispatch_retry_creates_new_receipt_and_job_without_mutating_original(
+    tmp_path: Path,
+) -> None:
+    project, candidate, expected = build_topic_gate(tmp_path)
+    actor = Actor(tailscale_login="owner@example.com", tailscale_user_id="123")
+    execute_action(tmp_path, payload(candidate, expected), actor)
+    original_path = next((project / "automation/jobs").glob("*.json"))
+    original = load_job(original_path)
+    failed = write_job_state(
+        original_path,
+        "queued",
+        {
+            "state": "failed",
+            "updated_at": "2026-08-12T12:10:00+00:00",
+            "last_error": {
+                "stage": "research",
+                "class": "ordinary",
+                "message": "temporary failure",
+                "timestamp": "2026-08-12T12:10:00+00:00",
+            },
+        },
+    )
+    original_bytes = original_path.read_bytes()
+    expected_job_hash = hashlib.sha256(original_bytes).hexdigest()
+
+    result = execute_action(
+        tmp_path,
+        {
+            "action": "retry_auto_dispatch",
+            "project_id": "MOBILE_TEST",
+            "retry_job_id": failed["job_id"],
+            "expected_job_sha256": expected_job_hash,
+            "idempotency_key": "retry-auto-dispatch-0001",
+            "reason": "일시 오류 해결 후 다시 실행",
+        },
+        actor,
+    )
+
+    assert original_path.read_bytes() == original_bytes
+    jobs = sorted((project / "automation/jobs").glob("*.json"))
+    assert len(jobs) == 2
+    retry = load_job(next(path for path in jobs if path != original_path))
+    assert retry["job_id"] == result.receipt["receipt_id"]
+    assert retry["retry_of"] == original["job_id"]
+    assert retry["trigger_action"] == "retry_auto_dispatch"
+    assert retry["state"] == "queued"
+    assert retry["current_stage"] == "research"

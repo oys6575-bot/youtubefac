@@ -143,6 +143,11 @@ h1 { margin-bottom: 6px; font-size: clamp(25px, 3vw, 38px); letter-spacing: -.04
 .empty-state > span { color: var(--teal); font-size: 32px; }
 .empty-state h2 { margin: 14px 0 8px; }
 .empty-state p { color: var(--muted); max-width: 520px; line-height: 1.7; }
+.automation-card { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin: 14px 0; padding: 18px 20px; border: 1px solid rgba(49,229,192,.28); border-radius: var(--radius); background: linear-gradient(135deg, rgba(49,229,192,.08), rgba(13,18,25,.9)); }
+.automation-card h2 { margin: 2px 0 7px; font-size: 18px; }
+.automation-card p:last-child { margin: 0; color: var(--muted); font-size: 11px; line-height: 1.55; }
+.automation-card[data-state="failed"] { border-color: rgba(255,104,122,.45); background: rgba(255,104,122,.06); }
+.automation-actions { flex: 0 0 auto; }
 .provider-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; }
 .provider-card { border: 1px solid var(--line); border-radius: 13px; background: #0d1219; padding: 16px; }
 .provider-card header { display: flex; justify-content: space-between; gap: 10px; }
@@ -182,6 +187,8 @@ textarea:focus, input:focus { border-color: var(--teal); }
   .stage-card { padding: 15px 13px; }
   .stage-step { min-width: 76px; }
   .gate-card { padding: 18px 16px; }
+  .automation-card { align-items: stretch; flex-direction: column; padding: 16px; }
+  .automation-actions .button { width: 100%; }
   .gate-body { display: block; }
   .gate-stage { display: inline-block; margin-top: 14px; }
   .gate-actions .button { flex: 1 1 calc(50% - 9px); }

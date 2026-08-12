@@ -10,6 +10,7 @@ from typing import Any
 
 import yaml
 
+from backlot.auto_dispatch import JobValidationError, load_job
 from backlot.state import load_board_state
 from lib.topic_scorecard import rank_candidates
 
@@ -159,6 +160,52 @@ def _providers(project: Path) -> dict[str, dict[str, Any]]:
     return output
 
 
+def _automation(project: Path) -> dict[str, Any] | None:
+    jobs_dir = project / "automation/jobs"
+    if not jobs_dir.is_dir():
+        return None
+    jobs: list[tuple[Path, dict[str, Any]]] = []
+    for path in jobs_dir.glob("*.json"):
+        try:
+            jobs.append((path, load_job(path)))
+        except JobValidationError:
+            continue
+    if not jobs:
+        return None
+    path, job = max(jobs, key=lambda item: (item[1]["created_at"], item[1]["job_id"]))
+    stage_labels = {
+        "research": "자료조사",
+        "evidence_lock": "사실검증",
+        "proposal": "기획안 작성",
+    }
+    state = job["state"]
+    if state == "queued":
+        label = f"{stage_labels[job['current_stage']]} 시작 대기"
+    elif state == "running":
+        label = f"{stage_labels[job['current_stage']]} 실행 중"
+    elif state == "retrying":
+        label = f"{stage_labels[job['current_stage']]} 재시도 중"
+    elif state == "awaiting_human":
+        label = "기획안 승인 대기"
+    elif state == "failed":
+        label = "실패 · 다시 실행 가능"
+    else:
+        label = "자동 작업 완료"
+    return {
+        "job_id": job["job_id"],
+        "job_sha256": _raw_hash(path),
+        "state": state,
+        "current_stage": job["current_stage"],
+        "label": label,
+        "attempt": job["attempt"],
+        "max_retries": job["max_retries"],
+        "completed_stages": [item["stage"] for item in job["stage_results"]],
+        "last_error": job["last_error"],
+        "can_retry": state == "failed",
+        "updated_at": job["updated_at"],
+    }
+
+
 def build_mobile_state(project_dir: Path) -> dict[str, Any]:
     """Derive a bounded mobile view without network/provider side effects."""
     project = Path(project_dir)
@@ -208,6 +255,7 @@ def build_mobile_state(project_dir: Path) -> dict[str, Any]:
         "stages": stages,
         "current_gate": current_gate,
         "topic_candidates": candidates,
+        "automation": _automation(project),
         "roles": _roles(project),
         "providers": _providers(project),
         "cost": board.get("cost") or {

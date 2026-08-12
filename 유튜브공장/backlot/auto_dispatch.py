@@ -93,6 +93,7 @@ def build_topic_job(
         "project_id": receipt["project_id"],
         "trigger_receipt_path": f"approvals/receipts/{receipt['receipt_id']}.json",
         "trigger_checkpoint_sha256": resulting_checkpoint_sha256,
+        "trigger_action": "approve_topic",
         "selected_candidate_id": selected_candidate_id,
         "state": "queued",
         "current_stage": "research",
@@ -103,6 +104,45 @@ def build_topic_job(
         "updated_at": now,
         "stage_results": [],
         "last_error": None,
+    }
+    return validate_job(job)
+
+
+def build_retry_job(
+    original: Mapping[str, Any],
+    receipt: Mapping[str, Any],
+    now: str,
+) -> dict[str, Any]:
+    """Create a new immutable retry chain entry without rewriting history."""
+
+    source = validate_job(original)
+    if source["state"] != "failed":
+        raise JobValidationError("only failed jobs can be retried")
+    if receipt.get("action") != "retry_auto_dispatch":
+        raise JobValidationError("retry job requires a retry receipt")
+    if receipt.get("retry_job_id") != source["job_id"]:
+        raise JobValidationError("retry receipt does not match original job")
+    settled = deepcopy(source["stage_results"])
+    if len(settled) >= len(AUTO_STAGES):
+        raise JobValidationError("completed automatic workflow cannot be retried")
+    job = {
+        "version": "1.0",
+        "job_id": receipt["receipt_id"],
+        "project_id": source["project_id"],
+        "trigger_receipt_path": f"approvals/receipts/{receipt['receipt_id']}.json",
+        "trigger_checkpoint_sha256": source["trigger_checkpoint_sha256"],
+        "trigger_action": "retry_auto_dispatch",
+        "selected_candidate_id": source["selected_candidate_id"],
+        "state": "queued",
+        "current_stage": AUTO_STAGES[len(settled)],
+        "stages": AUTO_STAGES,
+        "attempt": 0,
+        "max_retries": 1,
+        "created_at": now,
+        "updated_at": now,
+        "stage_results": settled,
+        "last_error": None,
+        "retry_of": source["job_id"],
     }
     return validate_job(job)
 

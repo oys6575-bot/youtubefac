@@ -68,3 +68,16 @@ def test_mobile_decision_dialog_close_controls_do_not_submit_the_form() -> None:
     assert "function closeDecision()" in script
     assert 'querySelectorAll("[data-dialog-close]")' in script
     assert 'button.addEventListener("click", closeDecision)' in script
+
+
+def test_mobile_ui_projects_automation_and_only_exposes_allowlisted_retry() -> None:
+    html = (UI / "mobile.html").read_text(encoding="utf-8")
+    script = (UI / "mobile.js").read_text(encoding="utf-8")
+
+    assert 'id="automation-card"' in html
+    assert 'id="automation-label"' in html
+    assert "retry_auto_dispatch" in script
+    assert "expected_job_sha256" in script
+    assert "자료조사 실행 중" in script
+    assert "/shell" not in script
+    assert "/orca" not in script

@@ -10,6 +10,7 @@
     "project_id",
     "trigger_receipt_path",
     "trigger_checkpoint_sha256",
+    "trigger_action",
     "selected_candidate_id",
     "state",
     "current_stage",
@@ -30,6 +31,7 @@
       "pattern": "^approvals/receipts/[0-9a-f-]{36}\\.json$"
     },
     "trigger_checkpoint_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "trigger_action": {"enum": ["approve_topic", "retry_auto_dispatch"]},
     "selected_candidate_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,95}$"},
     "state": {
       "enum": ["queued", "running", "retrying", "awaiting_human", "failed", "completed"]

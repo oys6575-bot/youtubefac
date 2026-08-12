@@ -4,7 +4,9 @@ import json
 from pathlib import Path
 
 from backlot.mobile_state import build_mobile_state
+from backlot.mobile_actions import Actor, execute_action
 from tests.backlot.mobile_fixtures import build_topic_gate
+from tests.backlot.test_mobile_actions import payload
 
 
 def test_mobile_projection_has_full_stage_gate_candidates_and_roles(tmp_path: Path) -> None:
@@ -68,3 +70,21 @@ def test_missing_optional_files_degrade_to_unavailable(tmp_path: Path) -> None:
     assert state["current_gate"] is None
     assert state["topic_candidates"] == []
     assert state["data_quality"]["topic_candidates"] == "unavailable"
+
+
+def test_mobile_projection_shows_durable_automation_state(tmp_path: Path) -> None:
+    project, candidate, expected = build_topic_gate(tmp_path)
+    execute_action(
+        tmp_path,
+        payload(candidate, expected),
+        Actor(tailscale_login="owner@example.com", tailscale_user_id="123"),
+        now="2026-08-12T12:00:00+00:00",
+    )
+
+    state = build_mobile_state(project)
+
+    assert state["automation"]["state"] == "queued"
+    assert state["automation"]["current_stage"] == "research"
+    assert state["automation"]["label"] == "자료조사 시작 대기"
+    assert state["automation"]["can_retry"] is False
+    assert len(state["automation"]["job_sha256"]) == 64

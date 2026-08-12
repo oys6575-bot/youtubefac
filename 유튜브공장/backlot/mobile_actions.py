@@ -23,7 +23,7 @@ from typing import Any, Callable, Iterator, Mapping
 
 import jsonschema
 
-from backlot.auto_dispatch import build_topic_job
+from backlot.auto_dispatch import build_retry_job, build_topic_job, load_job
 from lib.checkpoint import _enforce_stage_prerequisites, validate_checkpoint
 from lib.pipeline_loader import load_pipeline_readonly
 from schemas.artifacts import validate_artifact
@@ -33,7 +33,14 @@ ROOT = Path(__file__).resolve().parents[1]
 ACTION_SCHEMA = ROOT / "schemas/mobile-dashboard/action.schema.json"
 RECEIPT_SCHEMA = ROOT / "schemas/mobile-dashboard/approval-receipt.schema.json"
 WRITE_ACTIONS = frozenset(
-    {"approve_topic", "approve_gate", "reject_gate", "request_revision", "request_stop"}
+    {
+        "approve_topic",
+        "approve_gate",
+        "reject_gate",
+        "request_revision",
+        "request_stop",
+        "retry_auto_dispatch",
+    }
 )
 TWO_STEP_GATES = frozenset(
     {"budget", "asset_selection", "final_review", "title_thumbnail", "publish"}
@@ -397,9 +404,23 @@ def execute_action(
         if replay is not None:
             return ActionResult(replay, replayed=True)
 
-        current_hash = checkpoint_sha256(project, payload["stage"])
-        if current_hash != payload["expected_checkpoint_sha256"]:
-            raise ActionConflict("stale_checkpoint")
+        retry_source: dict[str, Any] | None = None
+        if payload["action"] == "retry_auto_dispatch":
+            retry_path = project / f"automation/jobs/{payload['retry_job_id']}.json"
+            if not retry_path.is_file():
+                raise ActionValidationError("retry_job_not_found")
+            if _sha256(retry_path.read_bytes()) != payload["expected_job_sha256"]:
+                raise ActionConflict("stale_job")
+            retry_source = load_job(retry_path)
+            if retry_source["project_id"] != payload["project_id"]:
+                raise ActionValidationError("retry_job_project_mismatch")
+            if retry_source["state"] != "failed":
+                raise ActionValidationError("retry_job_not_failed")
+            current_hash = retry_source["trigger_checkpoint_sha256"]
+        else:
+            current_hash = checkpoint_sha256(project, payload["stage"])
+            if current_hash != payload["expected_checkpoint_sha256"]:
+                raise ActionConflict("stale_checkpoint")
 
         receipt_id = str(uuid.uuid4())
         targets: list[tuple[str, bytes]] = []
@@ -413,6 +434,9 @@ def execute_action(
             targets.append((history_name, old_checkpoint))
             targets.extend(approval_targets)
             resulting_hash = _sha256(approval_targets[-1][1])
+        elif payload["action"] == "retry_auto_dispatch":
+            assert retry_source is not None
+            resulting_hash = retry_source["trigger_checkpoint_sha256"]
         else:
             if payload["action"] == "reject_gate":
                 _validate_rejection(project, payload)
@@ -424,8 +448,11 @@ def execute_action(
             "receipt_id": receipt_id,
             "project_id": payload["project_id"],
             "action": payload["action"],
-            "stage": payload["stage"],
-            "expected_checkpoint_sha256": payload["expected_checkpoint_sha256"],
+            "stage": payload.get("stage")
+            or (retry_source or {}).get("current_stage", "research"),
+            "expected_checkpoint_sha256": payload.get(
+                "expected_checkpoint_sha256", current_hash
+            ),
             "resulting_checkpoint_sha256": resulting_hash,
             "actor": {
                 "tailscale_login": actor.tailscale_login,
@@ -438,6 +465,12 @@ def execute_action(
             receipt["selected_candidate_id"] = payload["selected_candidate_id"]
         if payload.get("reason"):
             receipt["reason"] = payload["reason"]
+        if payload.get("retry_job_id"):
+            receipt["retry_job_id"] = payload["retry_job_id"]
+        if retry_source is not None:
+            receipt["selected_candidate_id"] = retry_source[
+                "selected_candidate_id"
+            ]
         try:
             jsonschema.Draft202012Validator(_load_schema(RECEIPT_SCHEMA)).validate(receipt)
         except jsonschema.ValidationError as exc:
@@ -454,6 +487,12 @@ def execute_action(
                 timestamp,
                 topic_selection=approved_checkpoint["artifacts"]["topic_selection"],
             )
+            targets.append(
+                (f"automation/jobs/{receipt_id}.json", _json_bytes(job))
+            )
+        elif payload["action"] == "retry_auto_dispatch":
+            assert retry_source is not None
+            job = build_retry_job(retry_source, receipt, timestamp)
             targets.append(
                 (f"automation/jobs/{receipt_id}.json", _json_bytes(job))
             )

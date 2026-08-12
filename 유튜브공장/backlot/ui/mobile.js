@@ -8,6 +8,8 @@
     error: document.querySelector("#error-notice"), sync: document.querySelector("#last-sync"),
     stageCount: document.querySelector("#stage-count"), progress: document.querySelector("#stage-progress"),
     rail: document.querySelector("#stage-rail"), gateCard: document.querySelector("#gate-card"),
+    automationCard: document.querySelector("#automation-card"), automationLabel: document.querySelector("#automation-label"),
+    automationDetail: document.querySelector("#automation-detail"), automationActions: document.querySelector("#automation-actions"),
     gateTitle: document.querySelector("#gate-title"), gateDetail: document.querySelector("#gate-detail"),
     gateStage: document.querySelector("#gate-stage"), gateSelection: document.querySelector("#gate-selection"),
     gateActions: document.querySelector("#gate-actions"), topCandidates: document.querySelector("#top-candidates"),
@@ -151,6 +153,33 @@
     renderGateActions();
   }
 
+  function renderAutomation() {
+    const automation = dashboard.automation;
+    if (!automation) {
+      ui.automationCard.classList.add("hidden");
+      ui.automationActions.replaceChildren();
+      return;
+    }
+    const fallbackLabels = {
+      queued: "자료조사 시작 대기",
+      running: automation.current_stage === "research" ? "자료조사 실행 중" : automation.current_stage === "evidence_lock" ? "사실검증 실행 중" : "기획안 작성 중",
+      retrying: "자동 작업 재시도 중",
+      failed: "실패 · 다시 실행 가능",
+      awaiting_human: "기획안 승인 대기",
+      completed: "자동 작업 완료",
+    };
+    ui.automationCard.classList.remove("hidden");
+    ui.automationCard.dataset.state = automation.state;
+    ui.automationLabel.textContent = automation.label || fallbackLabels[automation.state] || "자동 작업 상태";
+    const completed = automation.completed_stages.length ? `완료: ${automation.completed_stages.join(" → ")}` : "완료된 자동 단계 없음";
+    const error = automation.last_error ? ` · ${automation.last_error.message}` : "";
+    ui.automationDetail.textContent = `${completed} · 현재 ${automation.current_stage}${error}`;
+    ui.automationActions.replaceChildren();
+    if (automation.can_retry) {
+      ui.automationActions.append(actionButton("다시 실행", "retry_auto_dispatch", "primary"));
+    }
+  }
+
   function renderRoles() {
     ui.roles.replaceChildren();
     dashboard.roles.forEach(role => {
@@ -189,27 +218,29 @@
     ui.title.textContent = dashboard.project.title;
     ui.projectId.textContent = `${dashboard.project.project_id} · ${dashboard.project.pipeline_type}`;
     ui.sync.textContent = dashboard.project.last_sync ? `마지막 동기화 ${new Date(dashboard.project.last_sync).toLocaleString("ko-KR")}` : "동기화 기록 없음";
-    renderStages(); renderGate(); renderRoles(); renderMetrics(); renderProviders();
+    renderStages(); renderAutomation(); renderGate(); renderRoles(); renderMetrics(); renderProviders();
     ui.topCandidates.replaceChildren(...dashboard.topic_candidates.slice(0, 3).map(item => candidateCard(item)));
     ui.topicList.replaceChildren(...dashboard.topic_candidates.map(item => candidateCard(item, true)));
     setConnection();
   }
 
   function openDecision(action) {
-    if (!navigator.onLine || !dashboard.current_gate) return;
+    const isRetry = action === "retry_auto_dispatch";
+    if (!navigator.onLine || (!isRetry && !dashboard.current_gate)) return;
+    if (isRetry && !(dashboard.automation && dashboard.automation.can_retry)) return;
     const gate = dashboard.current_gate;
     if (action === "approve_topic" && !selectedCandidate) return;
     pendingAction = action;
-    const needsReason = ["reject_gate", "request_revision", "request_stop"].includes(action);
-    const needsTypedConfirmation = TWO_STEP_GATES.has(gate.stage) && ["approve_gate", "approve_topic"].includes(action);
-    const labels = { approve_topic: "주제 선택 승인", approve_gate: "Human Gate 승인", reject_gate: "Gate 거부", request_revision: "수정 요청", request_stop: "작업 중지 요청" };
+    const needsReason = ["reject_gate", "request_revision", "request_stop", "retry_auto_dispatch"].includes(action);
+    const needsTypedConfirmation = !isRetry && TWO_STEP_GATES.has(gate.stage) && ["approve_gate", "approve_topic"].includes(action);
+    const labels = { approve_topic: "주제 선택 승인", approve_gate: "Human Gate 승인", reject_gate: "Gate 거부", request_revision: "수정 요청", request_stop: "작업 중지 요청", retry_auto_dispatch: "자동 작업 다시 실행" };
     ui.dialogTitle.textContent = labels[action];
-    ui.dialogSummary.textContent = selectedCandidate && action === "approve_topic" ? `${selectedCandidate.title}을 다음 제작 주제로 승인합니다.` : gate.summary.title;
-    ui.dialogImpact.textContent = action.startsWith("approve") ? "이 결정은 다음 단계 실행을 허용하는 기록입니다. 유료 호출이나 게시를 즉시 실행하지 않습니다." : "이 요청은 Coordinator가 확인할 작업 기록으로 남습니다. 임의 명령을 실행하지 않습니다.";
+    ui.dialogSummary.textContent = isRetry ? `${dashboard.automation.current_stage} 단계부터 새 작업 기록으로 다시 실행합니다.` : selectedCandidate && action === "approve_topic" ? `${selectedCandidate.title}을 다음 제작 주제로 승인합니다.` : gate.summary.title;
+    ui.dialogImpact.textContent = action.startsWith("approve") ? "이 결정은 다음 단계 실행을 허용하는 기록입니다. 유료 호출이나 게시를 즉시 실행하지 않습니다." : isRetry ? "기존 실패 기록은 그대로 보존하고, 허용된 단계만 새 작업으로 다시 실행합니다." : "이 요청은 Coordinator가 확인할 작업 기록으로 남습니다. 임의 명령을 실행하지 않습니다.";
     ui.reasonField.classList.toggle("hidden", !needsReason);
     ui.confirmField.classList.toggle("hidden", !needsTypedConfirmation);
     ui.reason.value = ""; ui.confirmInput.value = "";
-    ui.submit.textContent = action.startsWith("approve") ? "승인 기록" : "요청 기록";
+    ui.submit.textContent = isRetry ? "다시 실행 기록" : action.startsWith("approve") ? "승인 기록" : "요청 기록";
     ui.dialog.showModal();
   }
 
@@ -220,13 +251,21 @@
 
   async function submitDecision(event) {
     event.preventDefault();
-    if (!pendingAction || !dashboard.current_gate || !navigator.onLine) return;
+    const isRetry = pendingAction === "retry_auto_dispatch";
+    if (!pendingAction || (!isRetry && !dashboard.current_gate) || !navigator.onLine) return;
     const gate = dashboard.current_gate;
-    const needsReason = ["reject_gate", "request_revision", "request_stop"].includes(pendingAction);
-    const needsTypedConfirmation = TWO_STEP_GATES.has(gate.stage) && ["approve_gate", "approve_topic"].includes(pendingAction);
+    const needsReason = ["reject_gate", "request_revision", "request_stop", "retry_auto_dispatch"].includes(pendingAction);
+    const needsTypedConfirmation = !isRetry && TWO_STEP_GATES.has(gate.stage) && ["approve_gate", "approve_topic"].includes(pendingAction);
     if (needsReason && !ui.reason.value.trim()) { ui.reason.focus(); return; }
     if (needsTypedConfirmation && ui.confirmInput.value !== "CONFIRM") { ui.confirmInput.focus(); return; }
-    const body = {
+    const body = isRetry ? {
+      action: pendingAction,
+      project_id: dashboard.project.project_id,
+      retry_job_id: dashboard.automation.job_id,
+      expected_job_sha256: dashboard.automation.job_sha256,
+      idempotency_key: crypto.randomUUID(),
+      reason: ui.reason.value.trim(),
+    } : {
       action: pendingAction,
       project_id: dashboard.project.project_id,
       stage: gate.stage,

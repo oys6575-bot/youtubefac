@@ -7,8 +7,6 @@
   "required": [
     "action",
     "project_id",
-    "stage",
-    "expected_checkpoint_sha256",
     "idempotency_key"
   ],
   "properties": {
@@ -18,18 +16,26 @@
         "approve_gate",
         "reject_gate",
         "request_revision",
-        "request_stop"
+        "request_stop",
+        "retry_auto_dispatch"
       ]
     },
     "project_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{1,95}$"},
     "stage": {"type": "string", "pattern": "^[a-z][a-z0-9_]{1,63}$"},
     "expected_checkpoint_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "retry_job_id": {"type": "string", "pattern": "^[0-9a-f-]{36}$"},
+    "expected_job_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "idempotency_key": {"type": "string", "minLength": 8, "maxLength": 128, "pattern": "^[A-Za-z0-9._:-]+$"},
     "selected_candidate_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,95}$"},
     "reason": {"type": "string", "minLength": 1, "maxLength": 2000},
     "confirmation": {"type": "string", "enum": ["CONFIRM"]}
   },
   "allOf": [
+    {
+      "if": {"properties": {"action": {"const": "retry_auto_dispatch"}}},
+      "then": {"required": ["retry_job_id", "expected_job_sha256", "reason"]},
+      "else": {"required": ["stage", "expected_checkpoint_sha256"]}
+    },
     {
       "if": {"properties": {"action": {"const": "approve_topic"}}},
       "then": {"required": ["selected_candidate_id"]}

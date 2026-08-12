@@ -149,15 +149,33 @@ class Coordinator:
             ).validate(receipt)
         except jsonschema.ValidationError as exc:
             raise JobValidationError("trigger receipt is invalid") from exc
-        if (
-            receipt.get("receipt_id") != job["job_id"]
-            or receipt.get("project_id") != job["project_id"]
-            or receipt.get("action") != "approve_topic"
-            or receipt.get("stage") != "topic_approval"
-            or receipt.get("selected_candidate_id") != job["selected_candidate_id"]
-            or receipt.get("resulting_checkpoint_sha256")
-            != job["trigger_checkpoint_sha256"]
-        ):
+        receipt_matches = (
+            receipt.get("receipt_id") == job["job_id"]
+            and receipt.get("project_id") == job["project_id"]
+            and receipt.get("selected_candidate_id") == job["selected_candidate_id"]
+            and receipt.get("resulting_checkpoint_sha256")
+            == job["trigger_checkpoint_sha256"]
+            and receipt.get("action") == job["trigger_action"]
+        )
+        if job["trigger_action"] == "approve_topic":
+            receipt_matches = receipt_matches and receipt.get("stage") == "topic_approval"
+        else:
+            receipt_matches = (
+                receipt_matches
+                and receipt.get("retry_job_id") == job.get("retry_of")
+                and isinstance(job.get("retry_of"), str)
+            )
+            original_path = project / f"automation/jobs/{job.get('retry_of')}.json"
+            original = load_job(original_path)
+            receipt_matches = (
+                receipt_matches
+                and original["project_id"] == job["project_id"]
+                and original["selected_candidate_id"] == job["selected_candidate_id"]
+                and original["trigger_checkpoint_sha256"]
+                == job["trigger_checkpoint_sha256"]
+                and original["stage_results"] == job["stage_results"]
+            )
+        if not receipt_matches:
             raise JobValidationError("trigger receipt does not match job")
         checkpoint_path = project / "checkpoint_topic_approval.json"
         if _sha256(checkpoint_path) != job["trigger_checkpoint_sha256"]:
