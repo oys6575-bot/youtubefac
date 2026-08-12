@@ -1,7 +1,7 @@
 {
   "version": "1.0",
   "project_id": "collapse-topic-pilot-2026-08-12",
-  "generated_at": "2026-08-12T07:37:20Z",
+  "generated_at": "2026-08-12T07:55:34Z",
   "provisional": true,
   "scope_definition": "physical collapse of a human-made building or structure",
   "scorecard_ref": "config/topic-selection-scorecard.yaml",
@@ -206,7 +206,7 @@
       "korean_youtube_landscape": {"query": "타코마 내로스 다리 붕괴 원인", "checked_at": "2026-08-12T07:37:20Z", "assessment": "교육 영상이 많은 대표 사례라 한국어 희소성은 낮을 가능성이 높다."},
       "scores": {"event_pull": 5, "causal_depth": 3, "belief_reversal": 4, "evidence_verifiability": 5, "narrative_expandability": 4, "visual_explainability": 5, "meaning_and_lessons": 5, "korean_content_scarcity": 2},
       "score_reasons": {
-        "event_pull": "실제 붕괴 영상의 움직임이 강한 첫 장면을 만든다.",
+        "event_pull": "거대한 상판이 비틀리다 추락하는 사건 자체가 강렬하다.",
         "causal_depth": "공기탄성 플러터가 핵심이라 원인 축은 비교적 집중된다.",
         "belief_reversal": "단순 공진이라는 대중적 오해를 바로잡을 수 있다.",
         "evidence_verifiability": "공식 역사 기록과 영상·공학 연구가 풍부하다.",
@@ -361,7 +361,7 @@
         "belief_reversal": "당대 최고 규모 도전이 기본 하중 추정에서 흔들렸다.",
         "evidence_verifiability": "정부 기록은 확실하지만 세부 원자료 접근성이 낮다.",
         "narrative_expandability": "1차 붕괴와 재건, 2차 사고까지 역사 서사가 이어진다.",
-        "visual_explainability": "캔틸레버 좌굴은 설명 가능하나 원영상 자료는 제한적이다.",
+        "visual_explainability": "캔틸레버 압축부 좌굴은 정교한 단계 도식이 필요하다.",
         "meaning_and_lessons": "독립 검토와 현장 우려 전달 체계의 교훈이 크다.",
         "korean_content_scarcity": "한국어 심층 다큐는 잠정적으로 드문 사건이다."
       }
