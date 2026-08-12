@@ -82,6 +82,9 @@ def test_mobile_ui_projects_automation_and_only_exposes_allowlisted_retry() -> N
     assert "retry_auto_dispatch" in script
     assert "expected_job_sha256" in script
     assert "자료조사 실행 중" in script
+    assert "공식 출처와 핵심 주장 수집·정리 중" in script
+    assert "경과" in script
+    assert "setInterval(refreshAutomationClock" in script
     assert "/shell" not in script
     assert "/orca" not in script
 

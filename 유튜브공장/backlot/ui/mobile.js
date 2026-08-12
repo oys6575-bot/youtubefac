@@ -153,6 +153,29 @@
     renderGateActions();
   }
 
+  function elapsedLabel(updatedAt) {
+    const started = Date.parse(updatedAt || "");
+    if (!Number.isFinite(started)) return "경과시간 계산 중";
+    const seconds = Math.max(0, Math.floor((Date.now() - started) / 1000));
+    if (seconds < 60) return `${seconds}초 경과`;
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes}분 경과`;
+    return `${Math.floor(minutes / 60)}시간 ${minutes % 60}분 경과`;
+  }
+
+  function automationActivity(automation) {
+    if (automation.state === "queued") return "Coordinator가 작업 시작을 준비 중";
+    if (automation.state === "failed") return "자동 실행이 멈춤";
+    if (automation.state === "awaiting_human") return "기획안 작성 완료 · 사용자 검토 대기";
+    if (automation.state === "completed") return "허용된 자동 작업 완료";
+    const activities = {
+      research: "공식 출처와 핵심 주장 수집·정리 중",
+      evidence_lock: "출처 원문과 주장 일치 여부 교차검증 중",
+      proposal: "검증된 사실로 구성·영상 기획안 작성 중",
+    };
+    return activities[automation.current_stage] || "자동 작업 실행 중";
+  }
+
   function renderAutomation() {
     const automation = dashboard.automation;
     if (!ui.automationCard || !ui.automationLabel || !ui.automationDetail || !ui.automationActions) {
@@ -174,9 +197,15 @@
     ui.automationCard.classList.remove("hidden");
     ui.automationCard.dataset.state = automation.state;
     ui.automationLabel.textContent = automation.label || fallbackLabels[automation.state] || "자동 작업 상태";
-    const completed = automation.completed_stages.length ? `완료: ${automation.completed_stages.join(" → ")}` : "완료된 자동 단계 없음";
+    const stageNames = { research: "자료조사", evidence_lock: "사실검증", proposal: "기획안" };
+    const completed = automation.completed_stages.length
+      ? `완료: ${automation.completed_stages.map(stage => stageNames[stage] || stage).join(" → ")}`
+      : "완료 단계 없음";
+    const elapsed = ["running", "retrying", "queued"].includes(automation.state)
+      ? ` · ${elapsedLabel(automation.updated_at)}`
+      : "";
     const error = automation.last_error ? ` · ${automation.last_error.message}` : "";
-    ui.automationDetail.textContent = `${completed} · 현재 ${automation.current_stage}${error}`;
+    ui.automationDetail.textContent = `현재 작업: ${automationActivity(automation)}${elapsed} · ${completed}${error}`;
     ui.automationActions.replaceChildren();
     if (automation.can_retry) {
       ui.automationActions.append(actionButton("다시 실행", "retry_auto_dispatch", "primary"));
@@ -296,6 +325,10 @@
     render();
   }
 
+  function refreshAutomationClock() {
+    if (dashboard && dashboard.automation) renderAutomation();
+  }
+
   async function start() {
     setConnection();
     if (!navigator.onLine) return;
@@ -321,6 +354,7 @@
   ui.form.addEventListener("submit", submitDecision);
   addEventListener("online", () => { setConnection(); start(); });
   addEventListener("offline", setConnection);
+  setInterval(refreshAutomationClock, 30000);
   if ("serviceWorker" in navigator) {
     let reloadingForWorker = false;
     navigator.serviceWorker.addEventListener("controllerchange", () => {
