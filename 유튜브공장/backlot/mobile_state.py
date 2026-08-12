@@ -7,6 +7,7 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from urllib.parse import quote
 
 import yaml
 import jsonschema
@@ -48,6 +49,172 @@ def _raw_hash(path: Path) -> str | None:
         return hashlib.sha256(path.read_bytes()).hexdigest()
     except OSError:
         return None
+
+
+def _timestamp(value: Any) -> datetime | None:
+    if not isinstance(value, str) or not value:
+        return None
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    return parsed if parsed.tzinfo else parsed.replace(tzinfo=timezone.utc)
+
+
+def _stale_gate(stage: str, stages: list[dict[str, Any]]) -> bool:
+    """Return true when a newer upstream rerun invalidates a pending gate."""
+    if stage != "proposal":
+        return False
+    by_name = {item.get("name"): item for item in stages}
+    proposal_time = _timestamp((by_name.get("proposal") or {}).get("timestamp"))
+    collection_time = _timestamp(
+        (by_name.get("media_collection") or {}).get("timestamp")
+    )
+    return bool(proposal_time and collection_time and collection_time > proposal_time)
+
+
+def _script_view(project: Path) -> dict[str, Any]:
+    script = _read_json(project / "artifacts/script.json") or {}
+    plan = _read_json(project / "artifacts/visual_plan.json") or {}
+    sections = []
+    for section in script.get("sections", []):
+        if not isinstance(section, dict):
+            continue
+        sections.append(
+            {
+                "id": section.get("id"),
+                "label": section.get("label") or section.get("id"),
+                "text": section.get("text", ""),
+                "start_seconds": float(section.get("start_seconds") or 0),
+                "end_seconds": float(section.get("end_seconds") or 0),
+            }
+        )
+    prompts = []
+    for sequence in plan.get("sequences", []):
+        if not isinstance(sequence, dict):
+            continue
+        for shot in sequence.get("shots", []):
+            if not isinstance(shot, dict):
+                continue
+            prompts.append(
+                {
+                    "sequence_id": sequence.get("sequence_id"),
+                    "sequence_purpose": sequence.get("purpose"),
+                    "pacing_profile": sequence.get("pacing_profile"),
+                    "shot_id": shot.get("shot_id"),
+                    "representation": shot.get("representation"),
+                    "prompt": shot.get("prompt_intent", ""),
+                    "provider_route": shot.get("provider_route"),
+                    "duration_seconds": float(shot.get("duration_seconds") or 0),
+                }
+            )
+    return {
+        "status": "available" if sections else "preparing",
+        "title": script.get("title"),
+        "total_duration_seconds": float(script.get("total_duration_seconds") or 0),
+        "sections": sections,
+        "visual_prompts": prompts,
+    }
+
+
+def _asset_label(item: dict[str, Any], queries: list[dict[str, Any]]) -> str:
+    claims = set(item.get("claim_ids") or [])
+    for query in queries:
+        if isinstance(query, dict) and claims.intersection(query.get("claim_ids") or []):
+            text = query.get("text")
+            if isinstance(text, str) and text:
+                return text
+    return str(item.get("id") or "에셋")
+
+
+def _asset_library(project: Path, project_id: str) -> dict[str, Any]:
+    manifest = _read_json(project / "artifacts/media_collection_manifest.json") or {}
+    queries = [item for item in manifest.get("queries", []) if isinstance(item, dict)]
+    items = []
+    counts = {"image": 0, "video": 0, "audio": 0}
+    for item in manifest.get("items", []):
+        if not isinstance(item, dict):
+            continue
+        media_type = item.get("media_type")
+        asset_id = item.get("id")
+        if media_type not in counts or not isinstance(asset_id, str) or not asset_id:
+            continue
+        technical = item.get("technical") if isinstance(item.get("technical"), dict) else {}
+        encoded_project = quote(project_id, safe="")
+        encoded_asset = quote(asset_id, safe="")
+        counts[media_type] += 1
+        items.append(
+            {
+                "id": asset_id,
+                "media_type": media_type,
+                "label": _asset_label(item, queries),
+                "media_url": f"/api/mobile/project/{encoded_project}/media/{encoded_asset}",
+                "preview_url": f"/api/mobile/project/{encoded_project}/preview/{encoded_asset}",
+                "width": int(technical.get("width") or 0),
+                "height": int(technical.get("height") or 0),
+                "duration_seconds": float(technical.get("duration_seconds") or 0),
+            }
+        )
+    return {
+        "status": manifest.get("collection_status", "preparing"),
+        "summary": {
+            "total": len(items),
+            "images": counts["image"],
+            "videos": counts["video"],
+            "audio": counts["audio"],
+        },
+        "items": items,
+    }
+
+
+def _edit_view(project: Path) -> dict[str, Any]:
+    edit = _read_json(project / "artifacts/edit_decisions.json") or {}
+    cuts = []
+    for cut in edit.get("cuts", []):
+        if not isinstance(cut, dict):
+            continue
+        cuts.append(
+            {
+                "id": cut.get("id"),
+                "in_seconds": float(cut.get("in_seconds") or 0),
+                "out_seconds": float(cut.get("out_seconds") or 0),
+                "reason": cut.get("reason"),
+            }
+        )
+    return {
+        "status": "in_progress" if cuts else "not_started",
+        "render_runtime": edit.get("render_runtime"),
+        "cuts": cuts,
+        "gaps": list((edit.get("metadata") or {}).get("asset_gaps") or [])
+        if isinstance(edit.get("metadata"), dict)
+        else [],
+    }
+
+
+def _review_and_final_views(project: Path, project_id: str) -> tuple[dict[str, Any], dict[str, Any]]:
+    review = _read_json(project / "artifacts/final_review.json") or {}
+    report = _read_json(project / "artifacts/render_report.json") or {}
+    outputs = [item for item in report.get("outputs", []) if isinstance(item, dict)]
+    review_view = {
+        "status": review.get("status", "not_ready"),
+        "checks": review.get("checks") if isinstance(review.get("checks"), dict) else {},
+        "issues": list(review.get("issues_found") or []),
+        "recommended_action": review.get("recommended_action"),
+        "has_preview": bool(outputs),
+        "preview_url": f"/api/mobile/project/{quote(project_id, safe='')}/render/latest" if outputs else None,
+    }
+    passed = review.get("status") == "pass" and bool(outputs)
+    final_view = {
+        "status": "ready" if passed else "not_ready",
+        "video_url": f"/api/mobile/project/{quote(project_id, safe='')}/render/final" if passed else None,
+        "download_url": f"/api/mobile/project/{quote(project_id, safe='')}/render/final?download=1" if passed else None,
+        "output": {
+            "format": outputs[0].get("format"),
+            "resolution": outputs[0].get("resolution"),
+            "duration_seconds": outputs[0].get("duration_seconds"),
+        } if passed else None,
+    }
+    return review_view, final_view
 
 
 def _topic_artifacts(project: Path, board: dict[str, Any]) -> tuple[dict | None, dict | None]:
@@ -256,7 +423,6 @@ def build_mobile_state(project_dir: Path) -> dict[str, Any]:
     candidates = _candidate_cards(shortlist, verification)
 
     stages: list[dict[str, Any]] = []
-    current_gate = None
     for item in board.get("stages", []):
         stage = item.get("name")
         checkpoint_hash = _raw_hash(project / f"checkpoint_{stage}.json") if stage else None
@@ -269,14 +435,58 @@ def build_mobile_state(project_dir: Path) -> dict[str, Any]:
             "timestamp": item.get("timestamp"),
         }
         stages.append(card)
-        if current_gate is None and card["status"] == "awaiting_human" and card["gated"]:
+
+    current_gate = None
+    for card in stages:
+        stage = card["name"]
+        if (
+            current_gate is None
+            and card["status"] == "awaiting_human"
+            and card["gated"]
+            and not _stale_gate(stage, stages)
+        ):
             current_gate = {
                 "stage": stage,
-                "checkpoint_sha256": checkpoint_hash,
+                "checkpoint_sha256": card["checkpoint_sha256"],
                 "status": "awaiting_human",
                 "requires_two_step": stage in TWO_STEP_GATES,
                 "summary": _gate_summary(stage, board, candidates),
             }
+
+    stale_proposal = _stale_gate("proposal", stages)
+    automation = _automation(project)
+    if stale_proposal:
+        current_work = {
+            "stage": "proposal_refresh",
+            "status": "in_progress",
+            "title": "수집 자료를 반영한 새 기획안 준비",
+            "detail": "새 기획안이 만들어질 때까지 이전 구성안 승인은 숨깁니다.",
+        }
+    elif automation:
+        current_work = {
+            "stage": automation.get("active_stage") or automation.get("current_stage"),
+            "status": automation.get("state"),
+            "title": automation.get("label"),
+            "detail": "현재 제작 상태를 프로젝트 기록에서 실시간으로 읽고 있습니다.",
+        }
+    else:
+        active = next(
+            (
+                item
+                for item in stages
+                if item["status"] in {"in_progress", "awaiting_human"}
+            ),
+            None,
+        )
+        current_work = {
+            "stage": active["name"] if active else None,
+            "status": active["status"] if active else "idle",
+            "title": "현재 작업 대기" if active is None else active["name"].replace("_", " "),
+            "detail": "다음 제작 단계가 시작되면 여기에 표시됩니다.",
+        }
+
+    project_id = str(board.get("project_id", project.name))
+    review_view, final_view = _review_and_final_views(project, project_id)
 
     last_activity = board.get("last_activity") or 0
     last_sync = (
@@ -288,7 +498,7 @@ def build_mobile_state(project_dir: Path) -> dict[str, Any]:
         "version": "1.0",
         "source_of_truth": "openmontage",
         "project": {
-            "project_id": board.get("project_id", project.name),
+            "project_id": project_id,
             "title": board.get("title", project.name),
             "pipeline_type": (board.get("pipeline") or {}).get("pipeline_type"),
             "last_sync": last_sync,
@@ -296,8 +506,14 @@ def build_mobile_state(project_dir: Path) -> dict[str, Any]:
         },
         "stages": stages,
         "current_gate": current_gate,
+        "current_work": current_work,
         "topic_candidates": candidates,
-        "automation": _automation(project),
+        "script_view": _script_view(project),
+        "asset_library": _asset_library(project, project_id),
+        "edit_view": _edit_view(project),
+        "review_view": review_view,
+        "final_view": final_view,
+        "automation": automation,
         "roles": _roles(project),
         "providers": _providers(project),
         "cost": board.get("cost") or {

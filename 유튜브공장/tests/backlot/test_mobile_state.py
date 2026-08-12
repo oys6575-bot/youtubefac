@@ -5,6 +5,7 @@ from pathlib import Path
 
 from backlot.mobile_state import build_mobile_state
 from backlot.mobile_actions import Actor, execute_action
+from lib.checkpoint import init_project, write_checkpoint
 from tests.backlot.mobile_fixtures import build_topic_gate
 from tests.backlot.test_mobile_actions import payload
 
@@ -188,3 +189,206 @@ def test_manual_collection_is_visible_without_rewriting_terminal_job(
     assert automation["current_stage"] == "proposal"
     assert automation["active_stage"] == "media_collection"
     assert automation["label"] == "실제 자료 수집 실행 중"
+
+
+def test_newer_media_collection_suppresses_stale_proposal_gate(tmp_path: Path) -> None:
+    project = init_project(
+        "STALE_GATE",
+        title="오래된 승인 제거",
+        pipeline_type="youtube-factory",
+        pipeline_dir=tmp_path,
+    )
+    (project / "checkpoint_proposal.json").write_text(
+        json.dumps(
+            {
+                "stage": "proposal",
+                "status": "awaiting_human",
+                "timestamp": "2026-08-12T14:09:20+00:00",
+                "human_approved": False,
+                "artifacts": {},
+            }
+        ),
+        encoding="utf-8",
+    )
+    (project / "checkpoint_media_collection.json").write_text(
+        json.dumps(
+            {
+                "stage": "media_collection",
+                "status": "completed",
+                "timestamp": "2026-08-12T14:49:37+00:00",
+                "human_approved": False,
+                "artifacts": {},
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    state = build_mobile_state(project)
+
+    assert state["current_gate"] is None
+    assert state["current_work"]["stage"] == "proposal_refresh"
+    assert state["current_work"]["status"] == "in_progress"
+    assert "새 기획안" in state["current_work"]["detail"]
+
+
+def test_mobile_projection_exposes_media_previews_without_private_metadata(
+    tmp_path: Path,
+) -> None:
+    project = init_project(
+        "MEDIA_LIBRARY",
+        title="에셋 자료함",
+        pipeline_type="youtube-factory",
+        pipeline_dir=tmp_path,
+    )
+    artifacts = project / "artifacts"
+    artifacts.mkdir(exist_ok=True)
+    manifest = {
+        "schema_version": "1.0.0",
+        "project_id": project.name,
+        "collection_status": "completed",
+        "queries": [
+            {
+                "query_id": "Q001",
+                "text": "building collapse rescue workers rubble",
+                "kind": "image",
+                "claim_ids": ["CLAIM_RESCUE"],
+            }
+        ],
+        "source_summary": {
+            "attempted": ["pexels"],
+            "completed": ["pexels"],
+            "failed": [],
+            "discovered": 2,
+            "accepted": 2,
+            "downloaded": 2,
+            "duplicates": 0,
+            "rejected_counts": {},
+        },
+        "items": [
+            {
+                "id": "MEDIA_IMAGE_1",
+                "media_type": "image",
+                "local_path": "assets/source/images/rescue.jpeg",
+                "source_url": "https://private.example/image",
+                "direct_url": "https://signed.example/secret",
+                "license": "internal-only",
+                "claim_ids": ["CLAIM_RESCUE"],
+                "technical": {
+                    "width": 1920,
+                    "height": 1080,
+                    "duration_seconds": 0,
+                    "size_bytes": 2048,
+                },
+            },
+            {
+                "id": "MEDIA_VIDEO_1",
+                "media_type": "video",
+                "local_path": "assets/source/video/rescue.mp4",
+                "source_url": "https://private.example/video",
+                "direct_url": None,
+                "license": "internal-only",
+                "claim_ids": ["CLAIM_RESCUE"],
+                "technical": {
+                    "width": 1280,
+                    "height": 720,
+                    "duration_seconds": 12,
+                    "size_bytes": 4096,
+                },
+            },
+        ],
+    }
+    (artifacts / "media_collection_manifest.json").write_text(
+        json.dumps(manifest), encoding="utf-8"
+    )
+
+    library = build_mobile_state(project)["asset_library"]
+
+    assert library["summary"] == {
+        "total": 2,
+        "images": 1,
+        "videos": 1,
+        "audio": 0,
+    }
+    assert library["items"][0] == {
+        "id": "MEDIA_IMAGE_1",
+        "media_type": "image",
+        "label": "building collapse rescue workers rubble",
+        "media_url": "/api/mobile/project/MEDIA_LIBRARY/media/MEDIA_IMAGE_1",
+        "preview_url": "/api/mobile/project/MEDIA_LIBRARY/preview/MEDIA_IMAGE_1",
+        "width": 1920,
+        "height": 1080,
+        "duration_seconds": 0.0,
+    }
+    serialized = json.dumps(library)
+    assert "local_path" not in serialized
+    assert "private.example" not in serialized
+    assert "signed.example" not in serialized
+    assert "license" not in serialized
+
+
+def test_mobile_projection_separates_script_and_visual_prompts(tmp_path: Path) -> None:
+    project = init_project(
+        "SCRIPT_VIEW",
+        title="대본 화면",
+        pipeline_type="youtube-factory",
+        pipeline_dir=tmp_path,
+    )
+    artifacts = project / "artifacts"
+    artifacts.mkdir(exist_ok=True)
+    (artifacts / "script.json").write_text(
+        json.dumps(
+            {
+                "version": "1.0",
+                "title": "균열이 나타난 날",
+                "total_duration_seconds": 20,
+                "sections": [
+                    {
+                        "id": "S01",
+                        "label": "도입",
+                        "text": "건물에는 이미 균열이 나타났습니다.",
+                        "start_seconds": 0,
+                        "end_seconds": 8,
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    (artifacts / "visual_plan.json").write_text(
+        json.dumps(
+            {
+                "sequences": [
+                    {
+                        "sequence_id": "SEQ01",
+                        "purpose": "경고 제시",
+                        "pacing_profile": "accelerating",
+                        "shots": [
+                            {
+                                "shot_id": "SHOT01",
+                                "representation": "REAL",
+                                "prompt_intent": "균열을 따라 천천히 이동한 뒤 급정지",
+                                "provider_route": "REAL_INGEST",
+                                "duration_seconds": 5,
+                            }
+                        ],
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    script_view = build_mobile_state(project)["script_view"]
+
+    assert script_view["title"] == "균열이 나타난 날"
+    assert script_view["sections"][0]["text"] == "건물에는 이미 균열이 나타났습니다."
+    assert script_view["visual_prompts"][0] == {
+        "sequence_id": "SEQ01",
+        "sequence_purpose": "경고 제시",
+        "pacing_profile": "accelerating",
+        "shot_id": "SHOT01",
+        "representation": "REAL",
+        "prompt": "균열을 따라 천천히 이동한 뒤 급정지",
+        "provider_route": "REAL_INGEST",
+        "duration_seconds": 5.0,
+    }
